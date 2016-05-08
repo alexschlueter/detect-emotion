@@ -36,19 +36,21 @@ int main() {
         where[i] = in[i].begin();
     }
 
-    cv::namedWindow("Image");
-    cv::Mat all = cv::Mat(1000, 1920, CV_8UC1);
+    cv::namedWindow("Image", CV_WINDOW_NORMAL);
+    const int vidH = 768;
+    const int vidW = 1024;
+    cv::Mat all = cv::Mat(2 * vidH, 5 * vidW, CV_8UC1);
     for (;;) {
         for (int i = 0; i < 2; ++i) {
             for (int j = 0; j < 5; ++j) {
-                cv::Mat thisimg = cv::Mat(all, {i * 500, (i + 1) * 500}, {j * 384, (j + 1) * 384});
-                thisimg = cv::Mat::zeros(500, 384, CV_8UC1);
+                cv::Mat thisimg = cv::Mat(all, {i * vidH, (i + 1) * vidH}, {j * vidW, (j + 1) * vidW});
+                thisimg = cv::Mat::zeros(vidH, vidW, CV_8UC1);
 
                 for (int k = 0; k < 66; ++k) {
                     // img.at<uchar>(frame[i])=255;
                     cv::Point2f center = (*where[(i + 1) * (j + 1) - 1])[k];
-                    center.x *= 384.0 / 1024.0;
-                    center.y *= 500.0 / 768.0;
+                    // center.x *= 384.0 / 1024.0;
+                    // center.y *= 500.0 / 768.0;
                     cv::circle(thisimg, center, 3, {100, 100, 100});
                     // cv::putText(img, to_string((int)frame[i].x) + ", " + to_string((int)frame[i].y), frame[i], cv::FONT_HERSHEY_SIMPLEX, 0.3, {100, 100, 100});
                 }
