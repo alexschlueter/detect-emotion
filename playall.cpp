@@ -48,31 +48,31 @@ int main() {
     for (;;) {
         cv::setTrackbarPos("Frame", "Image", f);
         if (selected == -1) {
-            all = cv::Mat::zeros(2 * vidH, 5 * vidW, CV_8UC1);
+            all = cv::Scalar(255);
             for (int i = 0; i < 2; ++i) {
                 for (int j = 0; j < 5; ++j) {
-                    const int idx = (i + 1) * (j + 1) - 1;
+                    const int idx = i * 5 + j;
                     if (f >= in[idx].size()) break;
 
                     cv::Mat thisimg = cv::Mat(all, {i * vidH, (i + 1) * vidH}, {j * vidW, (j + 1) * vidW});
 
-                    cv::putText(thisimg, to_string(idx), {50, 50}, cv::FONT_HERSHEY_SIMPLEX, 1, {100, 100, 100});
+                    cv::putText(thisimg, to_string(idx), {50, 50}, cv::FONT_HERSHEY_SIMPLEX, 1, {0, 0, 0});
                     for (int k = 0; k < 66; ++k) {
                         cv::Point2f center = in[idx][f][k];
-                        cv::circle(thisimg, center, 3, {100, 100, 100});
+                        cv::circle(thisimg, center, 3, {0, 0, 0});
                     }
                 }
             }
             cv::imshow("Image", all);
         } else if (f < in[selected].size()) { // selected != -1
-            cv::Mat thisimg = cv::Mat::zeros(vidH, vidW, CV_8UC1);
+            cv::Mat thisimg = cv::Mat(vidH, vidW, CV_8UC1, cv::Scalar(255));;
 
-            cv::putText(thisimg, to_string(selected), {50, 50}, cv::FONT_HERSHEY_SIMPLEX, 1, {100, 100, 100});
+            cv::putText(thisimg, to_string(selected), {50, 50}, cv::FONT_HERSHEY_SIMPLEX, 1, {0, 0, 0});
             for (int k = 0; k < 66; ++k) {
                 cv::Point2f center = in[selected][f][k];
-                cv::circle(thisimg, center, 3, {100, 100, 100});
+                cv::circle(thisimg, center, 3, {0, 0, 0});
                 if (lmNums) {
-                cv::putText(thisimg, to_string(k), cv::Point2f(center.x + 2, center.y - 2), cv::FONT_HERSHEY_SIMPLEX, 0.3, {100, 100, 100});
+                cv::putText(thisimg, to_string(k), cv::Point2f(center.x + 2, center.y - 2), cv::FONT_HERSHEY_SIMPLEX, 0.3, {0, 0, 0});
                 }
             }
             cv::imshow("Image", thisimg);
