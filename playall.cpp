@@ -85,7 +85,7 @@ int main() {
 
                     cv::Mat thisimg = cv::Mat(all, {i * vidH, (i + 1) * vidH}, {j * vidW, (j + 1) * vidW});
 
-                    cv::putText(thisimg, to_string(idx), {50, 50}, font, 1, {0, 0, 0});
+                    cv::putText(thisimg, to_string(idx), {100, 150}, font, 5, {0, 0, 0});
                     for (int k = 0; k < 66; ++k) {
                         cv::Point2f center = videos[idx][f][k];
                         cv::circle(thisimg, center, 3, {0, 0, 0});

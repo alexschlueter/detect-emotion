@@ -1,3 +1,5 @@
+![](https://raw.githubusercontent.com/alexschlueter/detect-emotion/master/demo.gif)
+
 ### playall Keybindings
 Key | Action
 ------|------
