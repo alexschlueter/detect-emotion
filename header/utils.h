@@ -7,12 +7,13 @@
 
 template <typename T>
 T findMaxInArrayHelper(const T & a, const T & b){
-	static_assert(!std::is_arithmetic<T>::value, "Not Implemented findMaxInArrayHelper");
+	static_assert(std::is_arithmetic<T>::value, "Not Implemented findMaxInArrayHelper");
+  return a < b? b : a;
 }
 
 template <>
 cv::Point2f findMaxInArrayHelper(const cv::Point2f& a, const cv::Point2f & b){
-	return cv::Point2f(std::max(a.x,b.x),std::max(a.y,b.y));
+	return cv::Point2f(findMaxInArrayHelper(a.x,b.x),findMaxInArrayHelper(a.y,b.y));
 }
 
 template<typename T, int N> 
