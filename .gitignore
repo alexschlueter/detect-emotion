@@ -58,6 +58,9 @@ install_manifest.txt
 # proportion of contributors will probably not be using SublimeText
 *.sublime-project
 
+# ctags
+*.tags*
+
 ###VisualStudio###
 
 ## Ignore Visual Studio temporary files, build results, and
