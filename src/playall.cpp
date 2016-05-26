@@ -3,7 +3,7 @@
 #include <vector>
 #include <array>
 #include <string>
-
+#include "controls.h"
 #include "opencv2/opencv.hpp"
 
 using namespace std;
@@ -110,11 +110,11 @@ int main() {
             cv::imshow("Image", thisimg);
         }
         int k = cv::waitKey(50);
-        if (k >= 48 && k <= 57) selected = k - 48;
-        else if (k == 110) lmNums = ! lmNums;
-        else if (k == 65361) f -= 1;
-        else if (k == 65363) f += 1;
-        else if (k == 32) paused = ! paused;
+        if (k >= controls::KEY_0 && k <= controls::KEY_9) selected = k - controls::KEY_0;
+        else if (k == controls::KEY_N) lmNums = ! lmNums;
+        else if (k == controls::KEY_LEFT) f -= 1;
+        else if (k == controls::KEY_RIGHT) f += 1;
+        else if (k == controls::KEY_SPACE) paused = ! paused;
         else if (k != -1) selected = -1;
 
         if (! paused) ++f;
