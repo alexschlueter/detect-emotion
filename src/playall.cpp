@@ -5,11 +5,38 @@
 #include <string>
 #include "controls.h"
 #include "opencv2/opencv.hpp"
-
+#include <functional>
+#include <map>
 using namespace std;
 
 void onTrackbarChange(int pos, void *userdata) {
     *(int*)userdata = pos;
+}
+
+void skipFrames(int &currentFrame, int toSkip)
+{
+    cout << "Skipping " << toSkip << " frames." << endl;
+    currentFrame += toSkip;
+}
+
+void toggleLandmarkNumbers(bool &showLandmarkNumbers)
+{
+    string onOrOff = showLandmarkNumbers ? "off" : "on";
+    cout << "Toggling landmark numbers " << onOrOff << "." << endl;
+    showLandmarkNumbers = !showLandmarkNumbers;
+}
+
+void togglePause(bool &paused)
+{
+    string resumeOrPause = paused ? "Resuming." : "Pausing.";
+    cout << resumeOrPause << endl;
+    paused = !paused;
+}
+
+void selectPerson(int &selectedPerson, int select)
+{
+    cout << "Selecting person " << select << "." << endl;
+    selectedPerson = select;
 }
 
 int main() {
@@ -67,6 +94,18 @@ int main() {
     bool lmNums = false;
     bool paused = false;
 
+    /** Binding controls. */
+    auto controls = Controls({
+        {Controls::KEY_SPACE, std::bind(togglePause, std::ref(paused))},
+        {Controls::KEY_LEFT, std::bind(skipFrames, std::ref(f), -1)},
+        {Controls::KEY_RIGHT, std::bind(skipFrames, std::ref(f), +1)},
+        {Controls::KEY_N, std::bind(toggleLandmarkNumbers, std::ref(lmNums))}
+    });
+    for(int key = Controls::KEY_0; key <= Controls::KEY_9; key++)
+    {
+        controls.Bind(key, std::bind(selectPerson, std::ref(selected), key - Controls::KEY_0));
+    }
+
     double fontHeight = cv::getTextSize("0", font, 1, 1, nullptr).height;
 
     cv::namedWindow("Image", CV_WINDOW_NORMAL);
@@ -110,13 +149,10 @@ int main() {
             cv::imshow("Image", thisimg);
         }
         int k = cv::waitKey(50);
-        if (k >= controls::KEY_0 && k <= controls::KEY_9) selected = k - controls::KEY_0;
-        else if (k == controls::KEY_N) lmNums = ! lmNums;
-        else if (k == controls::KEY_LEFT) f -= 1;
-        else if (k == controls::KEY_RIGHT) f += 1;
-        else if (k == controls::KEY_SPACE) paused = ! paused;
-        else if (k != -1) selected = -1;
+        if(!controls.HandleInput(k) && k != -1)
+            selected = -1;
 
-        if (! paused) ++f;
+        if (!paused)
+            ++f;
     }
 }
