@@ -1,5 +1,5 @@
-#ifndef ENDIAN_H
-#define ENDIAN_H 
+#ifndef MYENDIAN_H
+#define MYENDIAN_H 
 
 #include <cstring>
 
@@ -49,4 +49,4 @@ void toEndianType(const T* src, T* dst){
 }
 
 
-#endif /* ifndef ENDIAN */
+#endif /* ifndef MYENDIAN */

@@ -8,7 +8,7 @@ Controls::Controls(const std::map<int, std::function<void()>> &keyMap/* = std::m
 
 bool Controls::HandleInput(int keyCode)
 {
-    auto iterator = keyMap.find(keyCode);
+    auto iterator = keyMap.find(keyCode & 0xFFFF);
     if(iterator == keyMap.end())
         return false;
 

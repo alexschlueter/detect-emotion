@@ -1,3 +1,9 @@
+project(keytest)
+find_package( OpenCV REQUIRED )
+add_executable(keytest keytest.cpp)
+target_include_directories(keytest PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(keytest ${OpenCV_LIBS})
+
 project(playone)
 find_package( OpenCV REQUIRED )
 set(CMAKE_INCLUDE_CURRENT_DIR ON)

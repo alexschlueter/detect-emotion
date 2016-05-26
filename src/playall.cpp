@@ -97,8 +97,10 @@ int main() {
     /** Binding controls. */
     auto controls = Controls({
         {Controls::KEY_SPACE, std::bind(togglePause, std::ref(paused))},
-        {Controls::KEY_LEFT, std::bind(skipFrames, std::ref(f), -1)},
-        {Controls::KEY_RIGHT, std::bind(skipFrames, std::ref(f), +1)},
+        // {Controls::KEY_LEFT, std::bind(skipFrames, std::ref(f), -1)},
+        // {Controls::KEY_RIGHT, std::bind(skipFrames, std::ref(f), +1)},
+        {Controls::KEY_LEFT, []{}},
+        {Controls::KEY_RIGHT, []{}},
         {Controls::KEY_N, std::bind(toggleLandmarkNumbers, std::ref(lmNums))}
     });
     for(int key = Controls::KEY_0; key <= Controls::KEY_9; key++)
