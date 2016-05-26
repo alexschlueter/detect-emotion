@@ -37,4 +37,20 @@ std::vector<std::array<cv::Point2f, N>> readBinaryFile(std::istream & inputstrea
    }
    return result;
 }
+
+/**
+ * Reads a binary landmark file.
+ * N is the number of landmarks for a frame.
+ * @param filename filname of the binary landmark file
+ * @return vector containing an array landmark for every frame
+ *         zero-length vector on fail.
+ */
+template <int N=66>
+std::vector<std::array<cv::Point2f, N>> readBinaryFile(const std::string & filename){
+    std::ifstream stream(filename,std::ios::binary);
+    auto res = readBinaryFile<N>(stream);
+    stream.close();
+    return res;
+}
+
 #endif

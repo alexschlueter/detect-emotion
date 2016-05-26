@@ -4,6 +4,8 @@
 #include <array>
 #include <string>
 #include "controls.h"
+#include "reader.h"
+#include "actionunit.h"
 #include "opencv2/opencv.hpp"
 #include <functional>
 #include <map>
@@ -45,14 +47,13 @@ int main() {
                                   "Lip Corner Puller", "Lip Corner Depressor", "Chin Raiser",
                                   "Lip Stretcher", "Lips Part", "Jaw Drop"};
     int font = cv::FONT_HERSHEY_SIMPLEX;
-    string lmpath = "../Landmark_Points_bin/landmarks0";
-    string aupath = "../ActionUnit_Labels/SN0";
+    string lmpath = "../../Landmark_Points_bin/landmarks0";
+    string aupath = "../../ActionUnit_Labels/SN0";
 
     typedef vector<array<cv::Point2f, 66>> VideoT;
-    typedef vector<array<int, 12>> ActionUnitsT;
 
-    array<VideoT, 10> videos;
-    array<ActionUnitsT, 10> aus;
+    vector<VideoT> videos;
+    vector<ActionUnit> aus;
 
     int maxFrames = 0;
     for (int k = 0; k < 10; ++k) {
@@ -65,26 +66,15 @@ int main() {
         }
         filestr += to_string(k + 1);
 
-        ifstream lmfile(lmpath + filestr + ".bin", ios::binary);
-        ifstream aufile(aupath + filestr + "/SN0" + filestr + "_AUs.txt");
 
-        string auline;
-        getline(aufile, auline);
+        string binaryfilename(lmpath + filestr + ".bin");
+        videos.push_back(readBinaryFile(binaryfilename));
 
-        int j;
-        for (j = 0; getline(aufile, auline); ++j) {
-            array<int, 12> frameaus;
-            for (int au = 0; au < 12; ++au) {
-                frameaus[au] = stoi(auline.substr(5 + 2 * au, 1));
-            }
-            aus[k].push_back(frameaus);
-            videos[k].push_back({});
-            for (int i = 0; i < 66; ++i) {
-                lmfile.read((char*)&videos[k][j][i].x, sizeof(float));
-                lmfile.read((char*)&videos[k][j][i].y, sizeof(float));
-            }
-        }
-        if (j > maxFrames) maxFrames = j;
+        string actionfilename(aupath + filestr + "/SN0" + filestr + "_AUs.txt");
+        auto actionunit = readActionUnitFromFile(actionfilename);
+        aus.push_back(actionunit);
+
+        maxFrames = std::max(maxFrames,actionunit.mat.rows-1);
     }
 
     cout << "loaded!" << endl;
@@ -138,8 +128,11 @@ int main() {
             cv::Mat thisimg = cv::Mat(vidH, vidW, CV_8UC1, cv::Scalar(255));;
 
             cv::putText(thisimg, "Subject " + to_string(selected), {50, 50}, font, 1, {0, 0, 0});
-            for (int au = 0; au < 12; ++au) {
-                cv::putText(thisimg, to_string(aus[selected][f][au]) + " " + aulabels[au], cv::Point2f(50, 70 + (au + 1) * fontHeight * 1.2), font, 1, {0, 0, 0});
+            auto actionunit = aus.at(selected);
+            auto actionlabels = actionunit.getActionsAsName();
+            auto actionintens = actionunit.getActionsIntensity(f);
+            for (int i=0; i< actionlabels.size();i++){
+                cv::putText(thisimg, to_string(actionintens[i]) + " " + actionlabels[i], cv::Point2f(50, 70 + (i + 1) * fontHeight * 1.2), font, 1, {0, 0, 0});
             }
             for (int k = 0; k < 66; ++k) {
                 cv::Point2f center = videos[selected][f][k];
@@ -153,6 +146,7 @@ int main() {
         int k = cv::waitKey(50);
         if(!controls.HandleInput(k) && k != -1)
             selected = -1;
+        if (k=='q') break;
 
         if (!paused)
             ++f;
