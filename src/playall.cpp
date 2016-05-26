@@ -130,7 +130,7 @@ int main() {
             cv::putText(thisimg, "Subject " + to_string(selected), {50, 50}, font, 1, {0, 0, 0});
             auto actionunit = aus.at(selected);
             auto actionlabels = actionunit.getActionsAsName();
-            auto actionintens = actionunit.getActionsIntensity(f);
+            auto actionintens = actionunit.getActionsIntensity(f + 1);
             for (int i=0; i< actionlabels.size();i++){
                 cv::putText(thisimg, to_string(actionintens[i]) + " " + actionlabels[i], cv::Point2f(50, 70 + (i + 1) * fontHeight * 1.2), font, 1, {0, 0, 0});
             }

@@ -33,7 +33,8 @@ std::vector<std::array<cv::Point2f, N>> readBinaryFile(std::istream & inputstrea
       frame[i].x = a;
       frame[i].y = b;
     }
-    result.push_back(frame);
+    if (cont)
+        result.push_back(frame);
    }
    return result;
 }
