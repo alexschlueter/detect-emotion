@@ -42,10 +42,6 @@ void selectPerson(int &selectedPerson, int select)
 }
 
 int main() {
-    array<string, 12> aulabels = {"Inner Brow Raiser", "Outer Brow Raiser", "Brow Lowerer",
-                                  "Upper Lid Raiser", "Cheek Raiser", "Nose Wrinkler",
-                                  "Lip Corner Puller", "Lip Corner Depressor", "Chin Raiser",
-                                  "Lip Stretcher", "Lips Part", "Jaw Drop"};
     int font = cv::FONT_HERSHEY_SIMPLEX;
     string lmpath = "../../Landmark_Points_bin/landmarks0";
     string aupath = "../../ActionUnit_Labels/SN0";

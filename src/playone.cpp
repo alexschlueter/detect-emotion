@@ -20,7 +20,7 @@ int main(int argc, char** argv) {
     ifstream lm1(argv[1], ios::binary);
     // lm1.ignore(numeric_limits<streamsize>::max(), '\n');
     auto landmarks = readBinaryFile(lm1);
-    if (! landmarks.empty()) cout << "ups";
+    if (landmarks.empty()) cout << "ups";
 
     cv::namedWindow("Image");
     for (auto frame : landmarks) {
