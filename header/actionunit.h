@@ -5,6 +5,8 @@
 #include <string>
 #include <opencv2/core/core.hpp>
 #include <stdint.h>
+#include <fstream>
+
 static constexpr std::array<const char*,28> ActionUnitName = {
         "Inner Brow Raiser",
         "Outer Brow Raiser",
@@ -42,7 +44,7 @@ public:
         /**
          * Returns the name/label of the actions.
          */
-        inline std::vector<std::string> getActionsAsName(){
+        inline std::vector<std::string> getActionsAsName() const{
                 auto numbers = getActionsAsNumber();
                 std::vector<std::string> result;
                 result.reserve(numbers.size());
@@ -58,7 +60,7 @@ public:
         /**
          * Returns the numbers of the actions.
          */
-        inline std::vector<int>    getActionsAsNumber(){
+        inline std::vector<int>    getActionsAsNumber() const{
                 return getActionsIntensity(0);
         }
         //Frame is starting at 1
@@ -69,17 +71,22 @@ public:
          * V[i] is the intensity of the action i.
          * For the name of the action see getActionsAsName()[i].
          */
-        inline std::vector<int>    getActionsIntensity(int frame){
+        inline std::vector<int>    getActionsIntensity(int frame) const{
                 std::vector<int> result;
                 int cols = this->mat.cols;
                 if (this->mat.rows < frame) return result;
                 result.reserve(cols);
-                uint8_t* firstrow = this->mat.ptr(frame);
+                const uint8_t* firstrow = this->mat.ptr(frame);
                 for(int i=0; i<cols; i++){
                         result.push_back(firstrow[i]);
                 }
                 return result;
         }
+
+        inline int size() const{
+            return mat.rows-1;
+        }
+
         // First Row -> describes the action
         // Other rows (row is frame) -> intensity of action
         cv::Mat_<uint8_t> mat;

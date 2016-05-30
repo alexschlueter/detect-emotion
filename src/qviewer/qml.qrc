@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>main.qml</file>
+        <file alias="LandmarkView.qml">landmarkview.qml</file>
+        <file alias="LandmarkPlayer.qml">landmarkplayer.qml</file>
+        <file alias="OpenDialog.qml">opendialog.qml</file>
+    </qresource>
+</RCC>

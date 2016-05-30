@@ -24,3 +24,5 @@ include_directories ("${CMAKE_SOURCE_DIR}/header")
 add_executable(playall ${SOURCE_FILES})
 target_include_directories(playall PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(playall ${OpenCV_LIBS})
+
+add_subdirectory(qviewer)
