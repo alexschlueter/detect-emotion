@@ -48,7 +48,7 @@ cv::Mat normalize(const cv::Mat& src) {
 }
 
 cv::PCA compressPCA(cv::InputArray pcaset, int maxComponents,
-                    const cv::Mat& testset, cv::OutputArray compressed)
+                    const cv::Mat& featureMat, cv::OutputArray compressed)
 {
     cv::PCA pca(pcaset, // pass the data
                 cv::Mat(), // there is no pre-computed mean vector,
@@ -60,19 +60,17 @@ cv::PCA compressPCA(cv::InputArray pcaset, int maxComponents,
             maxComponents // specify how many principal components to retain
             );
     // if there is no test data, just return the computed basis, ready-to-use
-    cout << "ddfl"<<endl;
-    if( !testset.data )
+    if( !featureMat.data )
         return pca;
-    cout << "test"<<endl;
-    auto outmat = compressed.getMat();
-    // CV_Assert( testset.cols == pcaset.cols );
+    // CV_Assert( featureMat.cols == pcaset.cols );
 
-    compressed.create(testset.rows, maxComponents, testset.type());
+    compressed.create(featureMat.rows, maxComponents, featureMat.type());
+    auto outmat = compressed.getMat();
 
     cv::Mat reconstructed;
-    for( int i = 0; i < testset.rows; i++ )
+    for( int i = 0; i < featureMat.rows; i++ )
     {
-        cv::Mat vec = testset.row(i), coeffs = outmat.row(i);
+        cv::Mat vec = featureMat.row(i), coeffs = outmat.row(i);
         // compress the vector, the result will be stored
         // in the i-th row of the output matrix
         pca.project(vec, coeffs);
@@ -128,9 +126,8 @@ int main() {
 
     cout << "loaded!" << endl;
 
-    cv::Mat(compressed);
-    auto pca = compressPCA(featureMat, CV_PCA_DATA_AS_ROW, 10, featureMat, compressed);
-    cout << "derp";
+    cv::Mat compressed;
+    cv::PCA pca = compressPCA(featureMat, 10, featureMat, compressed);
 
     int f = 0;
     int selected = -1;
