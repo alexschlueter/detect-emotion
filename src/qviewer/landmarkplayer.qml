@@ -11,6 +11,8 @@ Item{
     property int fps: 25
     property alias scaleFactor: landmarks.scaleFactor
     property alias showNumber: landmarks.showNumber
+    property alias normalize: landmarks.normalize
+    property alias rectWidth: landmarks.rectWidth
 
     onActionUnitChanged: refreshActionUnit()
 
@@ -67,7 +69,7 @@ Item{
             LandmarkView{
                 id: landmarks
                 scaleFactor: 0.3
-                model: player.landmarkModel[frame]
+                landmarks: player.landmarkModel[frame]
             }
             Rectangle{
                 id: actionunits

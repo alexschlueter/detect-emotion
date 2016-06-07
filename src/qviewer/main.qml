@@ -49,6 +49,19 @@ ApplicationWindow {
                 id: fpsbox
             }
 
+            Text{text: "radius"}
+            SpinBox{
+                stepSize: 1
+                maximumValue: 200
+                value: 5
+                id: radiusbox
+            }
+
+            Text{text: "Norm."}
+            CheckBox{
+                id: normbox
+                checked: false
+            }
             Text{text: "Show Nr."}
             CheckBox{
                 id: nrbox
@@ -62,10 +75,12 @@ ApplicationWindow {
     LandmarkPlayer{
         anchors.fill: parent
         fps: fpsbox.value
+        normalize: normbox.checked
         showNumber: nrbox.checked
         landmarkModel: personidx < win.landmodel.length ? win.landmodel[personidx]: []
         actionUnit: personidx < win.actionunits.length ? win.actionunits[personidx]: null
         //actionUnit: none // win.actionunit
         scaleFactor: scaleSlider.value
+        rectWidth: radiusbox.value
     }
 }

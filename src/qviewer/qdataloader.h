@@ -5,6 +5,7 @@
 #include <QVariantMap>
 #include <QVariantList>
 #include "actionunit.h"
+#include "qlandmark.h"
 #include <QtQml>
 
 class QActionUnit;
@@ -14,12 +15,13 @@ class QDataLoader: public QObject
     Q_OBJECT
 public:
     QDataLoader(QObject* parent = nullptr);
-    Q_INVOKABLE QVariantList loadLandmarks(const QString & filename) const;
+    Q_INVOKABLE QVariantList loadLandmarks(const QString & filename);
     Q_INVOKABLE QActionUnit* loadActionUnit(const QString & filename);
     //Load landmarks from different persons by iterating through a directory
-    Q_INVOKABLE QVariantList loadLandmarksIterateDir(const QString & directory) const;
+    Q_INVOKABLE QVariantList loadLandmarksIterateDir(const QString & directory) ;
     //Load action unit from different persons by iterating through a directory
     Q_INVOKABLE QVariantList loadActionUnitIterateDir(const QString & directory) ;
+
 };
 
 class QActionUnit: public QObject{

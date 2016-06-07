@@ -5,6 +5,7 @@
 #include <QString>
 #include <QVariant>
 #include <QPointF>
+#include "qlandmark.h"
 
 QDataLoader::QDataLoader(QObject* parent): QObject(parent)
 {
@@ -13,7 +14,7 @@ QDataLoader::QDataLoader(QObject* parent): QObject(parent)
 
 QActionUnit::QActionUnit(ActionUnit && _unit,QObject* parent): QObject(parent), unit(_unit){}
 
-QVariantList QDataLoader::loadLandmarksIterateDir(const QString &directory) const{
+QVariantList QDataLoader::loadLandmarksIterateDir(const QString &directory) {
     auto entrylist = QDir(directory).entryInfoList(QStringList()<<"*.bin",QDir::Files);
     QVariantList result;
     for (auto entry: entrylist){
@@ -22,15 +23,11 @@ QVariantList QDataLoader::loadLandmarksIterateDir(const QString &directory) cons
     return result;
 }
 
-QVariantList QDataLoader::loadLandmarks(const QString & filename) const{
+QVariantList QDataLoader::loadLandmarks(const QString & filename) {
     QVariantList result;
     auto res = readBinaryFile(filename.toStdString());
     for (auto array: res){
-        QVariantList tmp;
-        for (auto point :array){
-           tmp.append(QVariant(QPointF(point.x,point.y)));
-        }
-        result.append(QVariant::fromValue(tmp));
+        result.append(QVariant::fromValue(new QLandmark(array, this)));
     }
     return result;
 }
