@@ -48,4 +48,11 @@ T findMinInArray(const std::array<T,N> &array)
     }
     return min;
 }
+
+template<int N>
+cv::Point2i calculateImageSize(std::array<cv::Point2f, N> landmarks)
+{
+    return findMaxInArray<cv::Point2f, N>(landmarks) - findMinInArray<cv::Point2f, N>(landmarks);
+}
+
 #endif

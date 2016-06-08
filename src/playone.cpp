@@ -30,21 +30,19 @@ int main(int argc, char** argv) {
     standardizePointCloudVector<66>(landmarks, 1024);
     cv::namedWindow("Image");
     for (auto frame : landmarks) {
-        auto maxSize = findMaxInArray<cv::Point2f,66>(frame);
-        auto minSize = findMinInArray<cv::Point2f,66>(frame);
-        auto bestSize = maxSize - minSize;
+        auto imageSize = calculateImageSize<66>(landmarks) * 2;
         // cv::Mat img = cv::Mat::zeros(768, 1024, CV_8UC1);
-        cv::Mat img = cv::Mat::zeros(bestSize.y * 2, bestSize.x * 2, CV_8UC1);
+        cv::Mat img = cv::Mat::zeros(imageSize.y, imageSize.x, CV_8UC1);
         for (int i = 0; i < 66; ++i) {
             // img.at<uchar>(frame[i])=255;
 
             if(PRINT_INDICES)
             {
-                cv::putText(img, to_string(i), frame[i] - minSize + bestSize / 2, FONT, 1, {255,255,255});
+                cv::putText(img, to_string(i), frame[i] + imageSize / 4, FONT, 1, {255,255,255});
             }
             else
             {
-                cv::circle(img, frame[i] - minSize + bestSize / 2, 3, 255);
+                cv::circle(img, frame[i] + imageSize / 4, 3, 255);
             }
             // cv::putText(img, to_string((int)frame[i].x) + ", " + to_string((int)frame[i].y), frame[i], cv::FONT_HERSHEY_SIMPLEX, 0.3, {100, 100, 100});
         }
