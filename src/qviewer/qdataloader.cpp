@@ -32,6 +32,7 @@ QVariantList QDataLoader::loadLandmarks(const QString & filename) {
     return result;
 }
 
+
 QVariantList QDataLoader::loadActionUnitIterateDir(const QString &directory) {
     auto persondirs = QDir(directory).entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     QVariantList result;
