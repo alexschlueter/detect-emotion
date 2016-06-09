@@ -21,16 +21,6 @@ cv::Point2f operator/(const cv::Point2f&a, T factor){
     return cv::Point2f(a.x / factor, a.y / factor);
 }
 
-/*template<int N=66>
-cv::Point2f getPointCloudCenter(const std::array<cv::Point2f, N> &pointCloud)
-{
-    cv::Point2f center(0, 0);
-    for(auto p : pointCloud)
-    {
-        center += p;
-    }
-    return center * (1.0 / float(pointCloud.size()));
-}*/
 
 template<int N=66>
 PointCloud<N> centerPointCloud(const PointCloud<N> & points) {
