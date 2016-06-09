@@ -1,6 +1,5 @@
 #ifndef NORMALIZATION_H
 #define NORMALIZATION_H
-
 #include <vector>
 #include <array>
 #include <opencv2/core/core.hpp>
@@ -58,7 +57,7 @@ PointCloud<N> scalePointCloud(const PointCloud<N> & points, float resolution)
 template<int N=66>
 PointCloud<N> scalePointCloud2(const PointCloud<N> & points, float resolution = 1.0f)
 {
-    float ydist = points.greatestYDistance();
+    float ydist = points.greatestXDistance();
     return points.scale(resolution / ydist );
 }
 
@@ -72,11 +71,8 @@ void scalePointCloudVector(std::vector<PointCloud<N>> &pointCloudVector, float r
 }
 
 
-/** Normalizes the point cloud rotation by getting the average angle of the straight line between
-*   eye and forehead landmarks and rotating the point cloud against it.
-**/
 template<int N=66>
-PointCloud<N> rotatePointCloud(const PointCloud<N> &pointCloud)
+PointCloud<N> rotatePointCloudOnEyeAndForehead(const PointCloud<N> &pointCloud)
 {
     cv::Point2f eyeLine = pointCloud[INDEX_EYE_RIGHT] - pointCloud[INDEX_EYE_LEFT];
     cv::Point2f foreheadLine = pointCloud[INDEX_FOREHEAD_RIGHT] - pointCloud[INDEX_FOREHEAD_LEFT];
@@ -85,6 +81,40 @@ PointCloud<N> rotatePointCloud(const PointCloud<N> &pointCloud)
 
     return pointCloud.rotate(rotationNeeded);
 }
+
+template<int N=66>
+PointCloud<N> rotatePointCloudOnNoseBridge(const PointCloud<N> &pointCloud)
+{
+    cv::Point2f nosebridge = pointCloud[30]- pointCloud[27];
+    float distanceBridge = sqrt(nosebridge.x*nosebridge.x + nosebridge.y*nosebridge.y);
+    float distanceOrth = nosebridge.y;
+    float angle = acos(distanceOrth / distanceBridge);
+
+    return pointCloud.rotate(angle);
+}
+
+template<int N=66>
+PointCloud<N> rotatePointCloudOnForeHead(const PointCloud<N> &pointCloud)
+{
+    cv::Point2f forehead = pointCloud[INDEX_FOREHEAD_RIGHT] - pointCloud[INDEX_FOREHEAD_LEFT];
+    float distanceHead = std::sqrt(forehead.x*forehead.x + forehead.y*forehead.y);
+    float distanceOrth = std::abs(forehead.x);
+    float angle = acos(distanceOrth / distanceHead) ;
+    if (forehead.y > 0)
+        angle *= -1;
+
+    return pointCloud.rotate(angle);
+}
+
+/** Normalizes the point cloud rotation by getting the average angle of the straight line between
+*   eye and forehead landmarks and rotating the point cloud against it.
+**/
+template<int N=66>
+PointCloud<N> rotatePointCloud(const PointCloud<N> &pointCloud){
+    return rotatePointCloudOnEyeAndForehead<N>(pointCloud);
+}
+
+
 
 template<int N=66>
 void rotatePointCloudVector(std::vector<PointCloud<N>> &landmarks)

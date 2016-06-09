@@ -17,17 +17,17 @@ Item{
     onActionUnitChanged: refreshActionUnit()
 
     Timer{
-       onTriggered: function(){
-           if (frame >= landmarkModel.length){
-               frame = landmarkModel.length-1;
-               playing = false;
-           }else{
-              frame = frame+1;
-           }
-       }
-       interval: 1000 / fps
-       repeat: true
-       running: player.playing
+        onTriggered: function(){
+            if (frame >= landmarkModel.length){
+                frame = landmarkModel.length-1;
+                playing = false;
+            }else{
+                frame = frame+1;
+            }
+        }
+        interval: 1000 / fps
+        repeat: true
+        running: player.playing
     }
 
     RowLayout{
@@ -44,13 +44,13 @@ Item{
             onClicked: player.playing = !player.playing
         }
         Slider{
-           id: slider
-           height: 30
-           stepSize: 1
-           Layout.fillWidth: true
-           maximumValue: landmarkModel.length
-           value: player.frame
-           onValueChanged: player.frame = value
+            id: slider
+            height: 30
+            stepSize: 1
+            Layout.fillWidth: true
+            maximumValue: landmarkModel.length
+            value: player.frame
+            onValueChanged: player.frame = value
         }
         Text{
             text: player.frame+"/"+ player.landmarkModel.length
@@ -93,9 +93,27 @@ Item{
 
                     Repeater{
                         id: actionUnitView
-                        delegate: Text{
-                           text: modelData
-                           color: "white"
+                        model: []
+                        delegate:
+                            RowLayout{
+                            Text{
+                                text: modelData[0]
+                                //color:  modelData[1] > 0 ? Qt.rgba(modelData[1]*0.2,0.8,1-modelData[1]*0.2,1) : "white"
+                                color:  modelData[1] > 0 ? Qt.tint(Qt.rgba(0,0.8,1,1),Qt.rgba(0.8,1,1,modelData[1]*0.2)) : "white"
+                                font.pixelSize: 14
+                                id: actionname
+                            }
+                            spacing: 1
+                            Item{ width: 9}
+                            Repeater{
+                                model: modelData[1]
+                                delegate:
+                                    Rectangle{
+                                        color:  Qt.tint(Qt.rgba(0,0.8,1,1),Qt.rgba(0.8,1,1,modelData*0.2))
+                                        height:  actionname.height
+                                        width: 4
+                                }
+                            }
                         }
                     }
                 }
@@ -116,7 +134,8 @@ Item{
             var m = player.actionUnit.actionIntensity(player.frame+1)
             var res = []
             for (var prop in m){
-               res.push(prop+ " - "+m[prop])
+                //res.push(prop+ " - "+m[prop])
+                res.push([prop,m[prop]])
             }
             actionUnitView.model = res
         }

@@ -18,9 +18,11 @@ QVariantList QLandmark::points(){
 
 QVariantList QLandmark::normalized(){
     auto points = centerPointCloud(_points);
-    //_points = rotatePointCloud(_points);
+    points = rotatePointCloudOnEyeAndForehead(points);
+    //points = rotatePointCloudOnForeHead(points);
     points = scalePointCloud2(points,1);
-    points = points.translate(cv::Point2f(-0.5,-0.5));
+    // For Visualization -> Translate and Scale
+    points = points.translate(cv::Point2f(-0.55,-0.5));
     points = points.scale(600);
     return pointToVarList(points);
 }

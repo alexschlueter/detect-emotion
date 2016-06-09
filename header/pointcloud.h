@@ -72,7 +72,7 @@ public:
     PointCloud rotate(float angle) const{
         Points newPoints;
         for(int i=0; i<N; i++) {
-            newPoints[i] = rotatePoint(newPoints[i],angle);
+            newPoints[i] = rotatePoint(_points[i],angle);
         }
         return PointCloud(newPoints);
     }

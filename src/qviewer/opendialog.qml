@@ -42,6 +42,7 @@ Dialog{
            TextField{
                id: landmarktext
                Layout.fillWidth: true
+               text: "/Users/uni_versal/Downloads/Landmark_Points_bin"
            }
            Button{
                text: "*"
@@ -56,6 +57,7 @@ Dialog{
            TextField{
                id: actiontext
                Layout.fillWidth: true
+               text: "/Users/uni_versal/Downloads/ActionUnit_Labels"
            }
            Button{
                text: "*"
