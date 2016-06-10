@@ -29,7 +29,7 @@ public:
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
     {
         int numFeatures = N*(N-1)/2; // (N-1)th triangular number
-        cv::Mat features = cv::Mat::zeros(numFeatures, 1, CV_32FC1);
+        cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
 
         int index = 0;
         for(int i=0; i<N; i++)
@@ -38,7 +38,7 @@ public:
             {
                 float radians = getRadiansBetweenPoints(pointCloud[i], pointCloud[j]) + PI;
                 float normalizedOrientation = radians / (2*PI);
-                features.at<float>(index++, 0) = normalizedOrientation;
+                features.at<float>(0, index++) = normalizedOrientation;
             }
         }
         return features;
@@ -57,7 +57,7 @@ public:
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
     {
         int numFeatures = N*(N-1)/2; // (N-1)th triangular number
-        cv::Mat features = cv::Mat::zeros(numFeatures, 1, CV_32FC1);
+        cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
 
         int index = 0;
         for(int i=0; i<N; i++)
@@ -65,7 +65,7 @@ public:
             for(int j=i+1; j<N; j++)
             {
                 float delta = euclideanDistance(pointCloud[i], pointCloud[j], returnSquaredDistance);
-                features.at<float>(index++, 0) = delta;
+                features.at<float>(0, index++) = delta;
             }
         }
         return features;
