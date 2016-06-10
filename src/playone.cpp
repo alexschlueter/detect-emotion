@@ -11,6 +11,8 @@
 #include "opencv2/opencv.hpp"
 #include <opencv2/core/core.hpp>
 
+#include "features.h"
+#include "PointCloud.h"
 using namespace std;
 
 const float RESOLUTION = 2048;
@@ -26,26 +28,50 @@ int main(int argc, char** argv) {
     // lm1.ignore(numeric_limits<streamsize>::max(), '\n');
     std::vector<std::array<cv::Point2f, 66>> landmarks = readBinaryFile(lm1);
     if (landmarks.empty()) cout << "Landmarks could not be loaded.";
+    std::vector<PointCloud<66>> pointClouds(landmarks.size());
+    for(int i=0; i<landmarks.size(); i++)
+    {
+        pointClouds[i] = PointCloud<66>(landmarks[i]);
+    }
+    standardizePointCloudVector<66>(pointClouds, RESOLUTION / 2.f);
 
-    standardizePointCloudVector<66>(landmarks, 1024);
+
+    /* Create Feature Extractors */
+    FeatureExtractionAggregate<66> featureExtractor;
+    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new EuclideanDistanceExtraction<66>()));
+    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new OrientationExtraction<66>()));
+
+    EuclideanDistanceExtraction<66> edExtractor;
+    OrientationExtraction<66> orExtractor;
+
     cv::namedWindow("Image");
-    for (auto frame : landmarks) {
-        auto imageSize = calculateImageSize<66>(landmarks) * 2;
-        // cv::Mat img = cv::Mat::zeros(768, 1024, CV_8UC1);
-        cv::Mat img = cv::Mat::zeros(imageSize.y, imageSize.x, CV_8UC1);
+    for (auto frame : pointClouds) {
+        cv::Point2f imageSize(frame.greatestXDistance() * 2, frame.greatestYDistance() * 2);
+        cv::Point2f quarterImageSize(imageSize.x / 2.f, imageSize.y / 2.f);
+
+        cv::Mat featuresX = edExtractor.extractFeatures(frame);
+        cv::Mat featuresY = orExtractor.extractFeatures(frame);
+
+        cv::Mat img = cv::Mat::zeros(imageSize.y, imageSize.x, CV_8UC3);
+
         for (int i = 0; i < 66; ++i) {
-            // img.at<uchar>(frame[i])=255;
 
             if(PRINT_INDICES)
             {
-                cv::putText(img, to_string(i), frame[i] + imageSize / 4, FONT, 1, {255,255,255});
+                cv::putText(img, to_string(i), frame[i] + quarterImageSize, FONT, 1, cv::Scalar(255,255,255));
             }
             else
             {
-                cv::circle(img, frame[i] + imageSize / 4, 3, 255);
+                cv::circle(img, frame[i] + quarterImageSize, 3, cv::Scalar(255,255,255));
             }
-            // cv::putText(img, to_string((int)frame[i].x) + ", " + to_string((int)frame[i].y), frame[i], cv::FONT_HERSHEY_SIMPLEX, 0.3, {100, 100, 100});
         }
+
+        /* Draw euclidean distance on X- and orientation on Y-Axis */
+        // for(int i = 0; i < featuresX.size().height; i++)
+        // {
+        //     cv::circle(img, cv::Point2f(featuresX.at<float>(i), std::fabs(featuresY.at<float>(i)) * 300), 1, cv::Scalar(255,0,0));
+        // }
+
         cv::imshow("Image", img);
         if (cv::waitKey(50) == 'q') break;
     }
