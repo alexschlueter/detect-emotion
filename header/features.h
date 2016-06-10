@@ -3,6 +3,10 @@
 #include "pointcloud.h"
 #include <opencv2/core/core.hpp>
 #include <vector>
+#include <math.h>
+#include <memory>
+
+const float PI = std::atan(1.0)*4;
 
 /**
  * The FeatureExtraction classes take a PointCloud as input and extract a variable number of features from it.
@@ -13,13 +17,13 @@ class FeatureExtractionBase
 {
 public:
     virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) = 0;
-}
+};
 
 /**
  * Extracts the orientation/angle between all point pairs in the cloud as radians.
  */
 template<int N=66>
-class OrientationExtraction : public FeatureExtractionBase
+class OrientationExtraction : public FeatureExtractionBase<N>
 {
 public:
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
@@ -28,23 +32,24 @@ public:
         cv::Mat features = cv::Mat::zeros(numFeatures, 1, CV_32FC1);
 
         int index = 0;
-        for(int i=0; i<N, i++)
+        for(int i=0; i<N; i++)
         {
             for(int j=i+1; j<N; j++)
             {
-                float radians = getRadiansBetweenPoints(pointCloud[i], pointCloud[j]);
-                features.at<CV_32FC1>(index++, 0) = delta;
+                float radians = getRadiansBetweenPoints(pointCloud[i], pointCloud[j]) + PI;
+                float normalizedOrientation = radians / (2*PI);
+                features.at<float>(index++, 0) = normalizedOrientation;
             }
         }
         return features;
     }
-}
+};
 
 /**
  * Extracts the (squared) euclidean distance between all point pairs in the cloud.
  */
 template<int N=66>
-class EuclideanDistanceExtraction : public FeatureExtractionBase
+class EuclideanDistanceExtraction : public FeatureExtractionBase<N>
 {
 public:
     EuclideanDistanceExtraction(bool squaredDistance = false) : returnSquaredDistance(squaredDistance) {}
@@ -55,12 +60,12 @@ public:
         cv::Mat features = cv::Mat::zeros(numFeatures, 1, CV_32FC1);
 
         int index = 0;
-        for(int i=0; i<N, i++)
+        for(int i=0; i<N; i++)
         {
             for(int j=i+1; j<N; j++)
             {
                 float delta = euclideanDistance(pointCloud[i], pointCloud[j], returnSquaredDistance);
-                features.at<CV_32FC1>(index++, 0) = delta;
+                features.at<float>(index++, 0) = delta;
             }
         }
         return features;
@@ -74,24 +79,29 @@ private:
         float distanceSquared = delta.x * delta.x + delta.y * delta.y;
         return squaredDistance ? distanceSquared : cv::sqrt(distanceSquared);
     }
-}
+};
 
 /**
  * Takes any number of FeatureExtraction objects and extracts a concatenated feature matrix
  * from all features retrieved.
  */
 template<int N=66>
-class FeatureExtractionAggregate : public FeatureExtractionBase
+class FeatureExtractionAggregate : public FeatureExtractionBase<N>
 {
 public:
-    std::vector<FeatureExtractionBase*> extractions;
+    std::vector<std::shared_ptr<FeatureExtractionBase<N>>> extractions;
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
     {
         cv::Mat features = cv::Mat::zeros(0, 0, CV_32FC1);
-        for(auto extraction : extractions)
+
+        if(extractions.size() == 0)
+            return features;
+
+        features = extractions[0]->extractFeatures(pointCloud);
+        for(int i=1; i<extractions.size(); i++)
         {
-            cv::hconcat(features, extraction->extractFeatures(pointCloud), features);
+            cv::hconcat(features, extractions[i]->extractFeatures(pointCloud), features);
         }
         return features;
     }
-}
+};
