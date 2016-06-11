@@ -13,6 +13,8 @@ Item{
     property alias showNumber: landmarks.showNumber
     property alias normalize: landmarks.normalize
     property alias rectWidth: landmarks.rectWidth
+    property alias pca: landmarks.pca
+    property alias pcaDimCount: landmarks.pcaDimCount
 
     onActionUnitChanged: refreshActionUnit()
 
@@ -69,7 +71,7 @@ Item{
             LandmarkView{
                 id: landmarks
                 scaleFactor: 0.3
-                landmarks: player.landmarkModel[frame]
+                landmarks: player.landmarkModel ? player.landmarkModel[frame]: null
             }
             Rectangle{
                 id: actionunits

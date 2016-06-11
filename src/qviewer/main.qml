@@ -2,6 +2,7 @@ import QtQuick 2.4
 import QtQuick.Controls 1.3
 import QtQuick.Dialogs 1.2
 import QtQuick.Layouts 1.3
+import PCAAnalyse 1.0
 
 ApplicationWindow {
     visible: true
@@ -11,11 +12,13 @@ ApplicationWindow {
     id: win
     property var landmodel: []
     property var actionunits: []
+    property PCAAnalyse pca: PCAAnalyse{}
 
     OpenDialog{
         id: dlg
         onAccepted: function(){
             landmodel = loader.loadLandmarksIterateDir(dlg.landmarkdir)
+            win.pca.analyseData(landmodel[0])
             actionunits = loader.loadActionUnitIterateDir(dlg.actiondir)
         }
     }
@@ -67,6 +70,14 @@ ApplicationWindow {
                 id: nrbox
                 checked: false
             }
+            Text{text: "PCA Dimension"}
+            SpinBox{
+                stepSize: 1
+                minimumValue: 1
+                maximumValue: 66
+                value: 66
+                id: pcaDimBox
+            }
         }
     }
 
@@ -79,8 +90,10 @@ ApplicationWindow {
         showNumber: nrbox.checked
         landmarkModel: personidx < win.landmodel.length ? win.landmodel[personidx]: []
         actionUnit: personidx < win.actionunits.length ? win.actionunits[personidx]: null
+        pca: win.pca
         //actionUnit: none // win.actionunit
         scaleFactor: scaleSlider.value
         rectWidth: radiusbox.value
+        pcaDimCount: pcaDimBox.value
     }
 }
