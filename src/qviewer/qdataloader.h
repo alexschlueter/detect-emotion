@@ -7,6 +7,7 @@
 #include "actionunit.h"
 #include "qlandmark.h"
 #include <QtQml>
+#include "pca.h"
 
 class QActionUnit;
 
@@ -21,7 +22,6 @@ public:
     Q_INVOKABLE QVariantList loadLandmarksIterateDir(const QString & directory) ;
     //Load action unit from different persons by iterating through a directory
     Q_INVOKABLE QVariantList loadActionUnitIterateDir(const QString & directory) ;
-
 };
 
 class QActionUnit: public QObject{

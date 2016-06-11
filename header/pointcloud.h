@@ -5,6 +5,9 @@
 #include "math.h"
 #include <limits>
 
+template <unsigned int N>
+using PointArray =  std::array<cv::Point2f, N> ;
+
 inline float getRadiansBetweenPoints(const cv::Point2f &p1, const cv::Point2f &p2)
 {
     return std::atan2(p1.y, p1.x) - std::atan2(p2.y, p2.x);
@@ -19,15 +22,31 @@ inline cv::Point2f rotatePoint(const cv::Point2f &point, float radians)
 }
 
 /**
+* Add every point from other to PointCloud's points
+* elementwise with factor
+* => result = a + factor*b
+* @param a some Points
+* @param b Points to add with some factor
+* @param factor value to multiply on every addition
+* @return  PointCloud with added points
+*/
+template <unsigned int N>
+PointArray<N> addPointArray(const PointArray<N> & a, const PointArray<N> & b, float factor=1){
+    PointArray<N> res;
+    for (int i=0; i< N; i++){
+        res[i] = a[i] + b[i]*factor;
+    }
+    return res;
+}
+
+/**
  * Useful operation on point cloud
  */
-template <int N=66>
+template <unsigned int N=66>
 class PointCloud{
 public:
-    using Points =  std::array<cv::Point2f, N> ;
-
     PointCloud() {}
-    PointCloud(const Points & points): _points(points){}
+    PointCloud(const PointArray<N> & points): _points(points){}
     PointCloud(const PointCloud &other): _points(other._points){}
     PointCloud(PointCloud && other): _points(std::move(other._points)){}
 
@@ -54,7 +73,7 @@ public:
      * @return new point cloud
      */
     PointCloud translate(const cv::Point2f & newZero) const{
-        Points newPoints;
+        PointArray<N> newPoints;
         for(int i=0; i<N; i++) {
             newPoints[i] = _points[i]-newZero;
         }
@@ -62,7 +81,7 @@ public:
     }
 
     PointCloud scale(float factor) const{
-        Points newPoints;
+        PointArray<N> newPoints;
         for(int i=0; i<N; i++) {
             newPoints[i] = _points[i]*factor;
         }
@@ -70,7 +89,7 @@ public:
     }
 
     PointCloud rotate(float angle) const{
-        Points newPoints;
+        PointArray<N> newPoints;
         for(int i=0; i<N; i++) {
             newPoints[i] = rotatePoint(_points[i],angle);
         }
@@ -107,13 +126,28 @@ public:
         return max - min;
     }
 
-    inline const Points& points() const { return _points;}
+    inline const PointArray<N>& points() const { return _points;}
 
     inline const cv::Point2f & operator[](std::size_t i) const{
-            return _points[i];
+        return _points[i];
     }
+
+    /**
+     * Add every point from other to PointCloud's points
+     * elementwise
+     * @param other Points to add
+     * @return  PointCloud with added points
+     */
+    PointCloud<N> operator+(const PointArray<N>& other) const{
+        PointArray<N> res;
+        for (int i=0; i< N; i++){
+            res[i] = _points[i] + other[i];
+        }
+        return PointCloud<N>(res);
+    }
+
 private:
-   Points _points;
+    PointArray<N> _points;
 };
 
 

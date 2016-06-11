@@ -6,6 +6,16 @@
 #include <opencv2/core/core.hpp>
 #include "normalization.h"
 #include "pointcloud.h"
+#include <QPointF>
+
+template <int N>
+QVariantList pointToVarList(const std::array<cv::Point2f,N> &points){
+   QVariantList res;
+   for(auto p: points){
+       res.append(QVariant(QPointF(p.x,p.y)));
+   }
+   return res;
+}
 
 /**
  * Class for using Landmarks in QML
@@ -19,7 +29,7 @@ public:
     QLandmark(PointCloud<66> && points, QObject* parent=nullptr): QObject(parent),_points(points){}
     QLandmark(const QLandmark & l ): _points(l._points){}
     QLandmark(QLandmark && l ): _points(std::move(l._points)){}
-    QLandmark(QObject* parent = nullptr): QObject(parent){}
+    explicit QLandmark(QObject* parent = nullptr): QObject(parent){}
 
     void operator=(const QLandmark & other){
        _points = other._points;
@@ -33,7 +43,9 @@ public:
 
     QVariantList points();
     // Normalize the points
-    Q_INVOKABLE QVariantList normalized();
+    Q_INVOKABLE QLandmark* normalized();
+
+    const PointCloud<66> & pointCloud() const{ return _points; }
 signals:
     void pointsChanged();
 private:

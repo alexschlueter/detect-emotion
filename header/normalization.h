@@ -20,7 +20,7 @@ cv::Point2f operator/(const cv::Point2f&a, T factor){
     return cv::Point2f(a.x / factor, a.y / factor);
 }
 
-/*template<int N=66>
+/*template<unsigned int N=66>
 cv::Point2f getPointCloudCenter(const std::array<cv::Point2f, N> &pointCloud)
 {
     cv::Point2f center(0, 0);
@@ -31,12 +31,12 @@ cv::Point2f getPointCloudCenter(const std::array<cv::Point2f, N> &pointCloud)
     return center * (1.0 / float(pointCloud.size()));
 }*/
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> centerPointCloud(const PointCloud<N> & points) {
     return points.translate(points.midPoint());
 }
 
-template<int N=66>
+template<unsigned int N=66>
 void centerPointCloudVector(std::vector<PointCloud<N>> &landmarks)
 {
     for(auto &pointCloud : landmarks)
@@ -45,7 +45,7 @@ void centerPointCloudVector(std::vector<PointCloud<N>> &landmarks)
     }
 }
 
-template<int N=66>
+template<unsigned int N=66>
 float getPointCloudSquaredSum(const PointCloud<N> & points)
 {
     float squaredSum = 0;
@@ -56,7 +56,7 @@ float getPointCloudSquaredSum(const PointCloud<N> & points)
     return squaredSum;
 }
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> scalePointCloud(const PointCloud<N> & points, float resolution)
 {
     float sqrtSquaredSum = cv::sqrt(getPointCloudSquaredSum<N>(points));
@@ -64,14 +64,21 @@ PointCloud<N> scalePointCloud(const PointCloud<N> & points, float resolution)
     return points.scale(resolution / sqrtSquaredSum );
 }
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> scalePointCloud2(const PointCloud<N> & points, float resolution = 1.0f)
 {
     float ydist = points.greatestXDistance();
     return points.scale(resolution / ydist );
 }
 
-template<int N=66>
+template <unsigned int N, typename F>
+void applyOnNormalizationOnPointCloud(std::vector<PointCloud<N>> & pVec, F f){
+   for (auto & cloud: pVec){
+       cloud = f(cloud);
+   }
+}
+
+template<unsigned int N=66>
 void scalePointCloudVector(std::vector<PointCloud<N>> &pointCloudVector, float resolution = 1)
 {
     for(auto &pointCloud : pointCloudVector)
@@ -81,7 +88,7 @@ void scalePointCloudVector(std::vector<PointCloud<N>> &pointCloudVector, float r
 }
 
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> rotatePointCloudOnEyeAndForehead(const PointCloud<N> &pointCloud)
 {
     cv::Point2f eyeLine = pointCloud[INDEX_EYE_RIGHT] - pointCloud[INDEX_EYE_LEFT];
@@ -92,7 +99,7 @@ PointCloud<N> rotatePointCloudOnEyeAndForehead(const PointCloud<N> &pointCloud)
     return pointCloud.rotate(rotationNeeded);
 }
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> rotatePointCloudOnNoseBridge(const PointCloud<N> &pointCloud)
 {
     cv::Point2f nosebridge = pointCloud[30]- pointCloud[27];
@@ -103,7 +110,7 @@ PointCloud<N> rotatePointCloudOnNoseBridge(const PointCloud<N> &pointCloud)
     return pointCloud.rotate(angle);
 }
 
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> rotatePointCloudOnForeHead(const PointCloud<N> &pointCloud)
 {
     cv::Point2f forehead = pointCloud[INDEX_FOREHEAD_RIGHT] - pointCloud[INDEX_FOREHEAD_LEFT];
@@ -119,14 +126,14 @@ PointCloud<N> rotatePointCloudOnForeHead(const PointCloud<N> &pointCloud)
 /** Normalizes the point cloud rotation by getting the average angle of the straight line between
 *   eye and forehead landmarks and rotating the point cloud against it.
 **/
-template<int N=66>
+template<unsigned int N=66>
 PointCloud<N> rotatePointCloud(const PointCloud<N> &pointCloud){
     return rotatePointCloudOnEyeAndForehead<N>(pointCloud);
 }
 
 
 
-template<int N=66>
+template<unsigned int N=66>
 void rotatePointCloudVector(std::vector<PointCloud<N>> &landmarks)
 {
     for(auto &pointCloud : landmarks)
@@ -135,7 +142,7 @@ void rotatePointCloudVector(std::vector<PointCloud<N>> &landmarks)
     }
 }
 
-template<int N=66>
+template<unsigned int N=66>
 void standardizePointCloudVector(std::vector<PointCloud<N>> &pointCloudVector, float resolution = 1)
 {
     centerPointCloudVector<N>(pointCloudVector);
