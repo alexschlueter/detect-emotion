@@ -57,8 +57,8 @@ PointCloud<N> scalePointCloud(const PointCloud<N> & points, float resolution)
 template<unsigned int N=66>
 PointCloud<N> scalePointCloud2(const PointCloud<N> & points, float resolution = 1.0f)
 {
-    float ydist = points.greatestXDistance();
-    return points.scale(resolution / ydist );
+    float xdist = points.greatestXDistance();
+    return points.scale(resolution / xdist );
 }
 
 template <unsigned int N, typename F>

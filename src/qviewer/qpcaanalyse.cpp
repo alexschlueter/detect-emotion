@@ -43,6 +43,6 @@ QVariantList QPCAAnalyse::rebuildPoints(QLandmark  * landmark, int dim){
         qDebug() << "QPCAAnalyse: dim "<<dim<< " is greater than 66. Set it to 66.";
         dim = 66;
     }
-    return  pointToVarList<66>(pca->rebuild(landmark->pointCloud(),dim).points());
+    return  pointToVarList<66>(pca->rebuild(landmark->pointCloud(),dim).scale(200).points());
 
 }
