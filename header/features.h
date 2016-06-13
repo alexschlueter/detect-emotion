@@ -17,6 +17,7 @@ class FeatureExtractionBase
 {
 public:
     virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const = 0;
+    virtual unsigned int getNumFeatures() const = 0;
 };
 
 /**
@@ -29,7 +30,7 @@ class OrientationExtraction : public FeatureExtractionBase<N>
 public:
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
-        int numFeatures = N*(N-1)/2; // (N-1)th triangular number
+        int numFeatures = getNumFeatures();
         cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
 
         int index = 0;
@@ -43,6 +44,11 @@ public:
             }
         }
         return features;
+    }
+    unsigned int getNumFeatures() const override
+    {
+        // (N-1)th triangular number
+        return N * (N-1)/2;
     }
 };
 
@@ -58,7 +64,7 @@ public:
 
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
-        int numFeatures = N*(N-1)/2; // (N-1)th triangular number
+        int numFeatures = getNumFeatures();
         cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
 
         int index = 0;
@@ -71,6 +77,11 @@ public:
             }
         }
         return features;
+    }
+    unsigned int getNumFeatures() const override
+    {
+        // the n-th triangular number
+        return N*(N-1)/2;
     }
 
     bool returnSquaredDistance;
@@ -107,6 +118,15 @@ public:
         }
         return features;
     }
+    unsigned int getNumFeatures() const override
+    {
+        unsigned int result = 0;
+        for(auto extractor : extractions)
+        {
+            result += extractor->getNumFeatures();
+        }
+        return result;
+    }
 };
 
 template<int N=66>
@@ -115,10 +135,15 @@ cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const Fe
     if(data.size() == 0)
         return cv::Mat();
 
-    cv::Mat result = extractor->extractFeatures(data[0]);
-    for(int i=1; i<data.size(); i++)
+    // calculate required matrix size
+    unsigned int numRows = data.size();
+    unsigned int numCols = extractor->getNumFeatures();
+    cv::Mat result(numRows, numCols, CV_32FC1);
+
+    // extract features for each row
+    for(int i=0; i<data.size(); i++)
     {
-        cv::vconcat(result, extractor->extractFeatures(data[i]));
+        result.row(i) = extractor->extractFeatures(data[i]);
     }
     return result;
 }
