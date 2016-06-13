@@ -16,17 +16,18 @@ template<int N=66>
 class FeatureExtractionBase
 {
 public:
-    virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) = 0;
+    virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const = 0;
 };
 
 /**
  * Extracts the orientation/angle between all point pairs in the cloud as radians.
+ * Returns a 1xM matrix.
  */
 template<int N=66>
 class OrientationExtraction : public FeatureExtractionBase<N>
 {
 public:
-    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
         int numFeatures = N*(N-1)/2; // (N-1)th triangular number
         cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
@@ -47,6 +48,7 @@ public:
 
 /**
  * Extracts the (squared) euclidean distance between all point pairs in the cloud.
+ * Returns a 1xM matrix.
  */
 template<int N=66>
 class EuclideanDistanceExtraction : public FeatureExtractionBase<N>
@@ -54,7 +56,7 @@ class EuclideanDistanceExtraction : public FeatureExtractionBase<N>
 public:
     EuclideanDistanceExtraction(bool squaredDistance = false) : returnSquaredDistance(squaredDistance) {}
 
-    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
         int numFeatures = N*(N-1)/2; // (N-1)th triangular number
         cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
@@ -73,7 +75,7 @@ public:
 
     bool returnSquaredDistance;
 private:
-    float euclideanDistance(const cv::Point2f &a, const cv::Point2f &b, bool squaredDistance = false)
+    float euclideanDistance(const cv::Point2f &a, const cv::Point2f &b, bool squaredDistance = false) const
     {
         cv::Point2f delta = b - a;
         float distanceSquared = delta.x * delta.x + delta.y * delta.y;
@@ -83,14 +85,15 @@ private:
 
 /**
  * Takes any number of FeatureExtraction objects and extracts a concatenated feature matrix
- * from all features retrieved.
+ * from all features retrieved. The matrix 1xM, where M is the total number
+ * of features extracted.
  */
 template<int N=66>
 class FeatureExtractionAggregate : public FeatureExtractionBase<N>
 {
 public:
     std::vector<std::shared_ptr<FeatureExtractionBase<N>>> extractions;
-    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) override
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
         cv::Mat features = cv::Mat::zeros(0, 0, CV_32FC1);
 
@@ -105,3 +108,17 @@ public:
         return features;
     }
 };
+
+template<int N=66>
+cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> *extractor)
+{
+    if(data.size() == 0)
+        return cv::Mat();
+
+    cv::Mat result = extractor->extractFeatures(data[0]);
+    for(int i=1; i<data.size(); i++)
+    {
+        cv::vconcat(result, extractor->extractFeatures(data[i]));
+    }
+    return result;
+}
