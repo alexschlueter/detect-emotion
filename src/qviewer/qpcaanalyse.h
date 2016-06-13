@@ -5,6 +5,7 @@
 #include <pca.h>
 #include <QVariantList>
 #include <qqml.h>
+#include <memory>
 class QLandmark;
 
 class QPCAAnalyse:public QObject
