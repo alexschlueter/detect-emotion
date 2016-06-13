@@ -35,56 +35,57 @@ void printMatrix(const cv::Mat &mat)
     std::cout << std::endl;
 }
 
-void drawAxis(cv::Mat& img, cv::Point2f p, cv::Point2f q, cv::Scalar colour, const float scale = 0.2)
+class PCA
 {
-    double angle;
-    double hypotenuse;
-    angle = std::atan2( (double) p.y - q.y, (double) p.x - q.x ); // angle in radians
-    hypotenuse = cv::sqrt( (double) (p.y - q.y) * (p.y - q.y) + (p.x - q.x) * (p.x - q.x));
-//    double degrees = angle * 180 / CV_PI; // convert radians to degrees (0-180 range)
-//    cout << "Degrees: " << abs(degrees - 180) << endl; // angle in 0-360 degrees range
-    // Here we lengthen the arrow by a factor of scale
-    q.x = (int) (p.x - scale * hypotenuse * std::cos(angle));
-    q.y = (int) (p.y - scale * hypotenuse * std::sin(angle));
-    cv::line(img, p, q, colour, 1, CV_AA);
-    // create the arrow hooks
-    p.x = (int) (q.x + 9 * std::cos(angle + CV_PI / 4));
-    p.y = (int) (q.y + 9 * std::sin(angle + CV_PI / 4));
-    cv::line(img, p, q, colour, 1, CV_AA);
-    p.x = (int) (q.x + 9 * std::cos(angle - CV_PI / 4));
-    p.y = (int) (q.y + 9 * std::sin(angle - CV_PI / 4));
-    cv::line(img, p, q, colour, 1, CV_AA);
-}
-
-void pcaAndDraw(cv::Mat &img, cv::Mat &features)
-{
-    int maxComponents = 5;
-    cv::PCA pca_analysis(features, cv::Mat(), CV_PCA_DATA_AS_ROW, maxComponents);
-
-    printMatrix(pca_analysis.eigenvectors);
-
-
-    for(int i = 0; i < features.rows; i++)
+public:
+    /**
+     * Invokes a principal component analysis on data. As default, it expects
+     * samples in rows and features in cols.
+     */
+    void analyse(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
     {
-        cv::circle(img, cv::Point2f(features.at<float>(i, 0), std::fabs(features.at<float>(i, 1)) * 300), 1, cv::Scalar(255,0,0));
+        _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, numComponents);
+        _numComponents = numComponents;
     }
-
-    cv::Mat compressed;
-    compressed.create(features.rows, maxComponents, features.type());
-    auto outmat = cv::OutputArray(compressed).getMat();
-    printMatrix(outmat);
-
-    cv::Mat reconstructed;
-    for( int i = 0; i < features.rows; i++ )
+    /**
+     * Returns the number of principal components of the analysis.
+     */
+    int getNumComponents()
     {
-        cv::Mat vec = features.row(i);
-        cv::Mat coeffs = outmat.row(i);
-        pca_analysis.project(vec, coeffs);
-        // and then reconstruct it
-        pca_analysis.backProject(coeffs, reconstructed);
-        // and measure the error
-        printf("%d. diff = %g\n", i, cv::norm(vec, reconstructed, cv::NORM_L2));
+        return _numComponents;
     }
+    /** Stores the results of the PCA to a file. */
+    void toFile(const std::string &filepath)
+    {
+        cv::FileStorage filestorage(filepath, cv::FileStorage::WRITE);
+        filestorage << "mean" << _pca.mean;
+        filestorage << "eigenvectors" << _pca.eigenvectors;
+        filestorage << "eigenvalues" << _pca.eigenvalues;
+        filestorage.release();
+    }
+    /** Tries to load the results of a PCA from a file. */
+    bool fromFile(const std::string &filepath)
+    {
+        cv::FileStorage filestorage(filepath, cv::FileStorage::READ);
+        if(!filestorage.isOpened())
+            return false;
+
+        try {
+            filestorage["mean"] >> _pca.mean;
+            filestorage["eigenvectors"] >> _pca.eigenvectors;
+            filestorage["eigenvalues"] >> _pca.eigenvalues;
+            filestorage.release();
+        }
+        catch(...)
+        {
+            filestorage.release();
+            return false;
+        }
+        return true;
+    }
+private:
+    cv::PCA _pca;
+    int _numComponents;
 }
 
 int main(int argc, char** argv) {
@@ -115,9 +116,17 @@ int main(int argc, char** argv) {
     /* Print */
     std::cout << landmarks.size() << " frames" << std::endl;
     std::cout << "Feature set is " << featureSet.rows << "x" << featureSet.cols << std::endl;
-    std::cout << "Starting PCA..." << std::endl;
-    cv::PCA pca(featureSet, cv::Mat(), CV_PCA_DATA_AS_ROW, 6);
-    std::cout << "Finished PCA..." << std::endl;
+    std::cout << "Loading PCA..." << std::endl;
+    cv::PCA pca;
+    if(!loadPCA("pca.xml", pca)) {
+        std::cout << "Starting PCA..." << std::endl;
+        pca = cv::PCA(featureSet, cv::Mat(), CV_PCA_DATA_AS_ROW, 6);
+        std::cout << "Finished PCA..." << std::endl;
+        savePCA("pca.xml", pca);
+    } else {
+        std::cout << "Loaded PCA!" << std::endl;
+    }
+
     cv::Mat pointMat(1, 2*66, CV_32FC1);
 
     cv::namedWindow("Image");
