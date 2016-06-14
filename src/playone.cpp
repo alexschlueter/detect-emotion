@@ -46,17 +46,31 @@ public:
     {
         analyse(data, numComponents, dataAsRow);
     }
+    PCAnalysis(const cv::Mat &data, double variance = 0.9, bool dataAsRow = true)
+    {
+        analyse(data, variance, dataAsRow);
+    }
     PCAnalysis(const std::string &filepath)
     {
         fromFile(filepath);
     }
+
     /**
-     * Invokes a principal component analysis on data. As default, it expects
-     * samples in rows and features in cols.
+     * Invokes a principal component analysis on data, retaining at most the given number of components.
+     * As default, it expects samples in rows and features in cols.
      */
-    void analyse(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
+    void analyseOnComponents(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
     {
         _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, (int)numComponents);
+    }
+
+    /**
+     * Invokes a principal component analysis on data, retaining at least the given variance.
+     * As default, it expects samples in rows and features in cols.
+     */
+    void analyseOnVariance(const cv::Mat &data, double retainedVariance = 0.9, bool dataAsRow = true)
+    {
+        _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, retainedVariance);
     }
 
     /** Projects data into the PCA space. */
