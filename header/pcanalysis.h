@@ -29,7 +29,7 @@ public:
     void analyseOnComponents(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
     {
         _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, (int)numComponents);
-        _variance = calculateVariance(data, dataAsRow);
+        _variance = calculateRetainedVariance(data, dataAsRow);
     }
 
     /**
@@ -39,7 +39,7 @@ public:
     void analyseOnVariance(const cv::Mat &data, double retainedVariance = 0.9, bool dataAsRow = true)
     {
         _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, retainedVariance);
-        _variance = calculateVariance(data, dataAsRow);
+        _variance = calculateRetainedVariance(data, dataAsRow);
     }
 
     /** Projects data into the PCA space. */
@@ -128,7 +128,7 @@ private:
     cv::PCA _pca;
     float _variance = -1;
 
-    float calculateSingleEntryVariance(const cv::Mat &data, float mean)
+    float calculateVectorVariance(const cv::Mat &data, float mean)
     {
         // make sure this is a vector, not a matrix
         assert(data.rows == 1 || data.cols == 1);
@@ -148,15 +148,15 @@ private:
         return variance / float(data.rows * data.cols);
     }
 
-    float calculateVariance(const cv::Mat &data, bool dataAsRow = true)
+    float calculateRetainedVariance(const cv::Mat &data, bool dataAsRow = true)
     {
         // calculate the total variance of the dataset
         float totalVariance = 0;
         int numIterations = dataAsRow ? data.cols : data.rows;
         for(int i = 0; i < numIterations; i++)
         {
-            totalVariance += calculateSingleEntryVariance(dataAsRow ? data.col(i) : data.row(i),
-                                                          dataAsRow ? _pca.mean.at<float>(0, i) : _pca.mean.at<float>(i, 0));
+            totalVariance += calculateVectorVariance(dataAsRow ? data.col(i) : data.row(i),
+                                                     dataAsRow ? _pca.mean.at<float>(0, i) : _pca.mean.at<float>(i, 0));
         }
 
         // calculate the variance the eigenvalues account for
