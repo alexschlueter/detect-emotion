@@ -23,12 +23,12 @@ const bool PRINT_INDICES = false;
 
 void printMatrix(const cv::Mat &mat)
 {
-    std::cout << std::setprecision(3) << std::endl;
+    std::cout << std::setprecision(15) << std::endl;
     for(int i=0; i< mat.rows; i++)
     {
         for(int j=0; j<mat.cols; j++)
         {
-            std::cout << mat.at<float>(i,j) << "\t";
+            std::cout << std::fixed << mat.at<float>(i, j) << "\t";
         }
         std::cout << std::endl;
     }
@@ -42,13 +42,13 @@ public:
     {
         // empty
     }
-    PCAnalysis(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
+    PCAnalysis(const cv::Mat &data, int numComponents = 2, bool dataAsRow = true)
     {
-        analyse(data, numComponents, dataAsRow);
+        analyseOnComponents(data, numComponents, dataAsRow);
     }
     PCAnalysis(const cv::Mat &data, double variance = 0.9, bool dataAsRow = true)
     {
-        analyse(data, variance, dataAsRow);
+        analyseOnVariance(data, variance, dataAsRow);
     }
     PCAnalysis(const std::string &filepath)
     {
@@ -62,6 +62,7 @@ public:
     void analyseOnComponents(const cv::Mat &data, unsigned int numComponents = 2, bool dataAsRow = true)
     {
         _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, (int)numComponents);
+        _variance = calculateVariance(data, dataAsRow);
     }
 
     /**
@@ -71,6 +72,7 @@ public:
     void analyseOnVariance(const cv::Mat &data, double retainedVariance = 0.9, bool dataAsRow = true)
     {
         _pca = cv::PCA(data, cv::Mat(), dataAsRow ? CV_PCA_DATA_AS_ROW : CV_PCA_DATA_AS_COL, retainedVariance);
+        _variance = calculateVariance(data, dataAsRow);
     }
 
     /** Projects data into the PCA space. */
@@ -109,6 +111,22 @@ public:
         return _pca.eigenvectors.cols;
     }
 
+    /** Returns the variance of the PCA. */
+    double getVariance() const
+    {
+        return _variance;
+    }
+
+    void print() const
+    {
+        std::cout << "### PCA ###" << std::endl;
+        std::cout << " Mean is " << _pca.mean.rows << "x" << _pca.mean.cols << std::endl;
+        std::cout << " Eigenvectors are " << _pca.eigenvectors.rows << "x" << _pca.eigenvectors.cols << std::endl;
+        std::cout << " Eigenvalues are " << _pca.eigenvectors.rows << "x" << _pca.eigenvectors.cols << std::endl;
+        std::cout << " Number of components are " << getNumComponents() << std::endl;
+        std::cout << " Variance is " << std::fixed << _variance << std::endl;
+    }
+
     /** Stores the results of the PCA to a file. */
     void toFile(const std::string &filepath) const
     {
@@ -141,6 +159,52 @@ public:
     }
 private:
     cv::PCA _pca;
+    float _variance = -1;
+
+    float calculateSingleEntryVariance(const cv::Mat &data, float mean)
+    {
+        // make sure this is a vector, not a matrix
+        assert(data.rows == 1 || data.cols == 1);
+
+        // sum over all entries with the mean subtracted
+        float variance = 0;
+        for(int i = 0; i < data.rows; i++)
+        {
+            for(int j = 0; j < data.cols; j++)
+            {
+                float delta = data.at<float>(i,j) - mean;
+                variance += delta * delta;
+            }
+        }
+
+        // return the average
+        return variance / float(data.rows * data.cols);
+    }
+
+    float calculateVariance(const cv::Mat &data, bool dataAsRow = true)
+    {
+        // calculate the total variance of the dataset
+        float totalVariance = 0;
+        int numIterations = dataAsRow ? data.cols : data.rows;
+        for(int i = 0; i < numIterations; i++)
+        {
+            totalVariance += calculateSingleEntryVariance(dataAsRow ? data.col(i) : data.row(i),
+                                                          dataAsRow ? _pca.mean.at<float>(0, i) : _pca.mean.at<float>(i, 0));
+        }
+
+        // calculate the variance the eigenvalues account for
+        float eigenVariance = 0;
+        for(int i = 0; i < _pca.eigenvalues.rows; i++)
+        {
+            for(int j = 0; j < _pca.eigenvalues.cols; j++) {
+                eigenVariance += _pca.eigenvalues.at<float>(i, j);
+            }
+        }
+
+        // return the eigenVariance divided by totalVariance
+        return (totalVariance == 0) ? -1 : eigenVariance / totalVariance;
+    }
+
 };
 
 int main(int argc, char** argv) {
@@ -163,8 +227,9 @@ int main(int argc, char** argv) {
     /* Create Feature Extractors */
     cv::Mat img;
     FeatureExtractionAggregate<66> featureExtractor;
-    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new EuclideanDistanceExtraction<66>()));
-    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new OrientationExtraction<66>()));
+    // featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new EuclideanDistanceExtraction<66>()));
+    // featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new OrientationExtraction<66>()));
+    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterDistanceExtraction<66>()));
     cv::Mat featureSet = extractFeaturesFromData<66>(pointClouds, &featureExtractor);
 
 
@@ -173,14 +238,9 @@ int main(int argc, char** argv) {
     std::cout << "Feature set is " << featureSet.rows << "x" << featureSet.cols << std::endl;
 
     std::cout << "Starting PCA..." << std::endl;
-    PCAnalysis pca(featureSet, 6, true);
-    std::cout << "Finished PCA. Dimension: " << pca.getDimension() << std::endl;
-    cv::Mat projected(featureSet.rows, featureSet.cols, CV_32FC1);
-    for(int i=0;i<projected.rows && featureSet.rows; i++)
-    {
-        projected.row(i) = pca.backProject(pca.project(featureSet.row(i)));
-        std::cout << "Error in row " << i << ": " << cv::norm(featureSet.row(i), projected.row(i)) << std::endl;
-    }
+    PCAnalysis pca(featureSet, 0.95, true);
+    pca.print();
+
 
     cv::namedWindow("Image");
     for (auto frame : pointClouds) {
