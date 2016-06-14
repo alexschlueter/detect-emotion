@@ -52,16 +52,33 @@ public:
     }
 };
 
+template<int N=66>
+class EuclideanDistanceExtractionBase : public FeatureExtractionBase<N>
+{
+public:
+    EuclideanDistanceExtractionBase(bool squaredDistance = false) : returnSquaredDistance(squaredDistance) {}
+
+    virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const = 0;
+    virtual unsigned int getNumFeatures() const = 0;
+
+    bool returnSquaredDistance;
+protected:
+    float euclideanDistance(const cv::Point2f &a, const cv::Point2f &b, bool squaredDistance = false) const
+    {
+        cv::Point2f delta = b - a;
+        float distanceSquared = delta.x * delta.x + delta.y * delta.y;
+        return squaredDistance ? distanceSquared : cv::sqrt(distanceSquared);
+    }
+};
+
 /**
  * Extracts the (squared) euclidean distance between all point pairs in the cloud.
  * Returns a 1xM matrix.
  */
 template<int N=66>
-class EuclideanDistanceExtraction : public FeatureExtractionBase<N>
+class EuclideanDistanceExtraction : public EuclideanDistanceExtractionBase<N>
 {
 public:
-    EuclideanDistanceExtraction(bool squaredDistance = false) : returnSquaredDistance(squaredDistance) {}
-
     cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
         int numFeatures = getNumFeatures();
@@ -72,7 +89,7 @@ public:
         {
             for(int j=i+1; j<N; j++)
             {
-                float delta = euclideanDistance(pointCloud[i], pointCloud[j], returnSquaredDistance);
+                float delta = this->euclideanDistance(pointCloud[i], pointCloud[j], this->returnSquaredDistance);
                 features.at<float>(0, index++) = delta;
             }
         }
@@ -83,14 +100,29 @@ public:
         // the n-th triangular number
         return N*(N-1)/2;
     }
+};
 
-    bool returnSquaredDistance;
-private:
-    float euclideanDistance(const cv::Point2f &a, const cv::Point2f &b, bool squaredDistance = false) const
+template<int N=66>
+class CenterDistanceExtraction : public EuclideanDistanceExtractionBase<N>
+{
+public:
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
     {
-        cv::Point2f delta = b - a;
-        float distanceSquared = delta.x * delta.x + delta.y * delta.y;
-        return squaredDistance ? distanceSquared : cv::sqrt(distanceSquared);
+        int numFeatures = getNumFeatures();
+        cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
+
+        cv::Point2f midPoint = pointCloud.midPoint();
+        for(int i=0; i<N; i++)
+        {
+            float delta = this->euclideanDistance(pointCloud[i], midPoint, this->returnSquaredDistance);
+            features.at<float>(0, i) = delta;
+        }
+        return features;
+    }
+    unsigned int getNumFeatures() const override
+    {
+        // the n-th triangular number
+        return N;
     }
 };
 
@@ -114,7 +146,9 @@ public:
         features = extractions[0]->extractFeatures(pointCloud);
         for(int i=1; i<extractions.size(); i++)
         {
+            int numCols = features.cols;
             cv::hconcat(features, extractions[i]->extractFeatures(pointCloud), features);
+            assert(features.cols == numCols + extractions[i]->getNumFeatures());
         }
         return features;
     }
@@ -129,6 +163,7 @@ public:
     }
 };
 
+
 template<int N=66>
 cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> *extractor)
 {
@@ -141,9 +176,9 @@ cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const Fe
     cv::Mat result(numRows, numCols, CV_32FC1);
 
     // extract features for each row
-    for(int i=0; i<data.size(); i++)
+    for(int i=0; i<numRows; i++)
     {
-        result.row(i) = extractor->extractFeatures(data[i]);
+        extractor->extractFeatures(data[i]).copyTo(result.row(i));
     }
     return result;
 }
