@@ -49,8 +49,8 @@ struct PCA_Result{
         cv::Mat_<float> input(1,2*N);
         float * inputRow = input[0];
         for (int i=0; i < N; i++){
-            inputRow[2*i] = normCloud[i].x - _pca.mean.at<float>(0,2*i);
-            inputRow[2*i+1] = normCloud[i].y- _pca.mean.at<float>(0,2*i+1);
+            inputRow[2*i] = normCloud[i].x;//- _pca.mean.at<float>(0,2*i);
+            inputRow[2*i+1] = normCloud[i].y;//- _pca.mean.at<float>(0,2*i+1);
         }
         cv::Mat projection = _pca.project(input);
         assert(projection.type()==CV_32FC1);
@@ -63,8 +63,8 @@ struct PCA_Result{
         float * resultRow = result[0];
         _pca.backProject(projection,result);
         for (int i=0; i< N; i++){
-            res[i].x = resultRow[2*i] + _pca.mean.at<float>(0,2*i);
-            res[i].y = resultRow[2*i+1]+ _pca.mean.at<float>(0,2*i+1);
+            res[i].x = resultRow[2*i] ;//+ _pca.mean.at<float>(0,2*i);
+            res[i].y = resultRow[2*i+1];//+ _pca.mean.at<float>(0,2*i+1);
         }
         return PointCloud<N>(std::move(res));
     }

@@ -18,7 +18,8 @@ ApplicationWindow {
         id: dlg
         onAccepted: function(){
             landmodel = loader.loadLandmarksIterateDir(dlg.landmarkdir)
-            win.pca.analyseData(landmodel[0])
+            win.pca.analyseData(landmodel)
+            //win.pca.analyseData(landmodel[0])
             actionunits = loader.loadActionUnitIterateDir(dlg.actiondir)
         }
     }

@@ -19,15 +19,20 @@ Item{
     onActionUnitChanged: refreshActionUnit()
 
     Timer{
+        property int realfps: 30
+        property real rest: 0
         onTriggered: function(){
             if (frame >= landmarkModel.length){
                 frame = landmarkModel.length-1;
+                rest = 0
                 playing = false;
             }else{
-                frame = frame+1;
+                var tmp = frame+rest+fps / realfps;
+                frame = Math.floor(tmp)
+                rest = tmp - frame
             }
         }
-        interval: 1000 / fps
+        interval: 1000 / 30
         repeat: true
         running: player.playing
     }
