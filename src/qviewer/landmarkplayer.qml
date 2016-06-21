@@ -2,7 +2,7 @@ import QtQuick 2.0
 import QtQuick.Controls 1.3
 import QtQuick.Layouts 1.3
 
-Item{
+FocusScope{
     id: player
     property var landmarkModel: []
     property var actionUnit: null
@@ -17,6 +17,13 @@ Item{
     property alias pcaDimCount: landmarks.pcaDimCount
 
     onActionUnitChanged: refreshActionUnit()
+
+    focus: true
+
+    Keys.onLeftPressed: if (frame > 0) {frame = frame-1}
+    Keys.onRightPressed: if (frame <landmarkModel.length-2) {frame = frame+1}
+    Keys.onDownPressed:  if (frame >10) {frame = frame-10}
+    Keys.onUpPressed: if (frame <landmarkModel.length-12) {frame = frame+10}
 
     Timer{
         property int realfps: 30
@@ -39,7 +46,7 @@ Item{
 
     RowLayout{
         id: controls
-        height: childrenRect.height
+        //height: childrenRect.height
         anchors.left: parent.left
         anchors.right: parent.right
         anchors.top: parent.top
@@ -62,6 +69,12 @@ Item{
         Text{
             text: player.frame+"/"+ player.landmarkModel.length
         }
+    }
+
+    MouseArea{
+        anchors.fill: scrollview
+        onClicked: player.focus=true
+        propagateComposedEvents: true
     }
 
     ScrollView{
@@ -129,7 +142,6 @@ Item{
                     id: mouseArea
                     anchors.fill: parent
                     drag.target: parent
-
                 }
             }
         }
