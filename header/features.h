@@ -6,7 +6,7 @@
 #include <math.h>
 #include <memory>
 
-const float PI = std::atan(1.0)*4;
+const float PI = 3.141592653589793;
 
 /**
  * The FeatureExtraction classes take a PointCloud as input and extract a variable number of features from it.
@@ -163,6 +163,33 @@ public:
     }
 };
 
+#include "pca.h"
+template<int N=66>
+class SimpleNormalizeFeatureExtraction: public FeatureExtractionBase<N>
+{
+public:
+    SimpleNormalizeFeatureExtraction(int pca_dimension=2*N): _pca_dimension(pca_dimension){}
+    virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const{
+        if (_pca != nullptr){
+            return _pca->project(pointCloud,_pca_dimension);
+        }else { // No PCA -> just normalization
+            return standardNormalization(pointCloud).asMat();
+        }
+    }
+    virtual unsigned int getNumFeatures() const {
+       return _pca_dimension;
+    }
+
+    void compute_pca(const std::vector<PointCloud<N>> & points ) {
+        _pca = std::unique_ptr<PCA_Result<N>>(new PCA_Result<N>(computePCA<N>(points)));
+    }
+
+    void set_pca( std::unique_ptr<PCA_Result<N>> &&pca) {_pca = std::move(pca);}
+
+private:
+    int _pca_dimension;
+    std::unique_ptr<PCA_Result<N>> _pca;
+};
 
 template<int N=66>
 cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> *extractor)

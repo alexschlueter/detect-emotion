@@ -13,7 +13,6 @@ PointCloud<N> standardNormalization(const PointCloud<N> & points){
     return  scalePointCloud2<N>(tmp,1);
 }
 
-#include <QDebug>
 template <unsigned int N = 66>
 struct PCA_Result{
     cv::PCA _pca;
@@ -39,19 +38,32 @@ struct PCA_Result{
         _pca = std::move(other._pca);
     }
 
-    template <typename F = decltype(standardNormalization<N>)>
-    PointCloud<N> rebuild(const PointCloud<N> & _cloud, int dimensions, F normFunc = standardNormalization) const{
+    template <typename F=decltype(standardNormalization<N>)>
+    cv::Mat project(const PointCloud<N> & _cloud,int dimensions,  F normFunc = standardNormalization){
         if (dimensions > _pca.eigenvectors.cols){ // Invalid Input TODO: Error message
             dimensions = _pca.eigenvectors.cols;
         }
         auto normCloud = normFunc(_cloud);
-        PointArray<N> res;
-        cv::Mat_<float> input(1,2*N);
-        float * inputRow = input[0];
-        for (int i=0; i < N; i++){
-            inputRow[2*i] = normCloud[i].x;//- _pca.mean.at<float>(0,2*i);
-            inputRow[2*i+1] = normCloud[i].y;//- _pca.mean.at<float>(0,2*i+1);
+        cv::Mat_<float> input = normCloud.asMat();
+        cv::Mat projection = _pca.project(input);
+        assert(projection.type()==CV_32FC1);
+        cv::Mat result(1,dimensions,CV_32FC1);
+        float* resultRow = result.ptr<float>(0);
+        float* projRow = projection.ptr<float>(0);
+        for(int i=0; i <dimensions; i++){
+            resultRow[i] = projRow[i];
         }
+        return result;
+    }
+
+    template <typename F = decltype(standardNormalization<N>)>
+    PointCloud<N> rebuild(const PointCloud<N> & _cloud, int dimensions, F normFunc = standardNormalization) const{
+        if (2*dimensions > _pca.eigenvectors.cols){ // Invalid Input TODO: Error message
+            dimensions = 2*_pca.eigenvectors.cols;
+        }
+        auto normCloud = normFunc(_cloud);
+        PointArray<N> res;
+        cv::Mat_<float> input = normCloud.asMat();
         cv::Mat projection = _pca.project(input);
         assert(projection.type()==CV_32FC1);
         float* projRow = projection.ptr<float>(0);
@@ -67,6 +79,24 @@ struct PCA_Result{
             res[i].y = resultRow[2*i+1];//+ _pca.mean.at<float>(0,2*i+1);
         }
         return PointCloud<N>(std::move(res));
+    }
+
+    void save(const std::string & filename){
+        cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+        storage << "mean" <<_pca.mean;
+        storage << "e_vects" <<_pca.eigenvectors;
+        storage << "e_vals" << _pca.eigenvalues;
+        storage.release();
+    }
+
+    static PCA_Result<N> load(const std::string & filename){
+        cv::PCA pca;
+        cv::FileStorage storage(filename,cv::FileStorage::READ);
+        storage["mean"]>> pca.mean;
+        storage["e_vects"]>> pca.eigenvectors;
+        storage["e_vals"]>> pca.eigenvalues;
+        storage.release();
+        return PCA_Result(pca);
     }
 };
 

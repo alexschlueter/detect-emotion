@@ -63,7 +63,7 @@ SVMConstructor::SVMConstructor(CvSVMParams params):_params(params){
 SVMConstructor::SVMConstructor(){
     _params.svm_type = CvSVM::C_SVC;
     _params.kernel_type = CvSVM::LINEAR;
-    _params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER,100,1e-6);
+    _params.term_crit = cvTermCriteria(CV_TERMCRIT_ITER,1000,1e-6);
 }
 
 std::unique_ptr<Classifier> SVMConstructor::train(const FeatureList & trainingsset, const TruthList& truthset) const{
@@ -94,9 +94,9 @@ ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c,const Fea
             return cm;
             // TODO: Error treatment
         }
-        assert(res <= 2);
+        assert(res < 2);
         auto truth = truthset[i];
-        assert(truth >= 0 && truth <= 2);
+        assert(truth >= 0 && truth < 2);
         cm[truth][res]++;
     }
     return cm;

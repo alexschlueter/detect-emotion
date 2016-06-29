@@ -27,3 +27,13 @@ target_include_directories(playall PUBLIC ${OpenCV_INCLUDE_DIRS})
 target_link_libraries(playall ${OpenCV_LIBS})
 
 add_subdirectory(qviewer)
+
+project(trainer)
+find_package( OpenCV REQUIRED )
+set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+set(SOURCE_FILES trainer.cpp)
+include_directories ("${CMAKE_SOURCE_DIR}/header")
+add_executable(trainer ${SOURCE_FILES})
+target_include_directories(trainer PUBLIC ${OpenCV_INCLUDE_DIRS})
+target_link_libraries(trainer EmoLib ${OpenCV_LIBS})

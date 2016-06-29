@@ -146,6 +146,20 @@ public:
         return PointCloud<N>(res);
     }
 
+    /**
+     * Put every points into a cv::Mat;
+     * The mat has dimension 1x2N;
+     */
+    cv::Mat_<float> asMat(){
+        cv::Mat_<float> res(1,2*N);
+        float * row = res[0];
+        for (int i=0; i < N; i++){
+            row[2*i] = _points[i].x;
+            row[2*i+1] = _points[i].y;
+        }
+        return res;
+    }
+
 private:
     PointArray<N> _points;
 };
