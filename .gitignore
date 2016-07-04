@@ -2,6 +2,10 @@
 *.bin
 SN*.txt
 
+###Configuration###
+*.cfg
+!*.template.cfg
+
 
 ###C++###
 
