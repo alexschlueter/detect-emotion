@@ -39,7 +39,9 @@ Configuration::Configuration(const std::string &filepath) : Configuration()
 {
     load(filepath);
 }
-
+/**
+ * Loads the configuration from a file. Returns true on success, false otherweise.
+ */
 bool Configuration::load(const std::string &filepath)
 {
     std::ifstream file(filepath);
@@ -69,7 +71,9 @@ bool Configuration::load(const std::string &filepath)
     }
     return true;
 }
-
+/**
+ * Helper function to trim strings.
+ */
 std::string Configuration::trim(const std::string &str)
 {
     size_t first = str.find_first_not_of(' ');
@@ -78,7 +82,9 @@ std::string Configuration::trim(const std::string &str)
     size_t last = str.find_last_not_of(' ');
     return str.substr(first, (last-first+1));
 }
-
+/**
+ * Saves the configuration to a file. Returns true on success, false otherwise.
+ */
 bool Configuration::save(const std::string &filepath)
 {
     std::ofstream out(filepath);
@@ -89,7 +95,9 @@ bool Configuration::save(const std::string &filepath)
     out.close();
     return true;
 }
-
+/**
+ * Stores value under key as a string.
+ */
 bool Configuration::store(const std::string &key, const std::string &value)
 {
     std::string keyTrimmed = trim(key);
@@ -100,7 +108,9 @@ bool Configuration::store(const std::string &key, const std::string &value)
     storage[keyTrimmed] = valueTrimmed;
     return true;
 }
-
+/**
+ * Stores value under key. Internally, the value is converted to a string.
+ */
 bool Configuration::store(const std::string &key, const int &value)
 {
     try
@@ -114,7 +124,9 @@ bool Configuration::store(const std::string &key, const int &value)
     }
     return true;
 }
-
+/**
+ * Stores value under key. Internally the value is converted to a string.
+ */
 bool Configuration::store(const std::string &key, const float &value)
 {
     try
@@ -128,7 +140,9 @@ bool Configuration::store(const std::string &key, const float &value)
     }
     return true;
 }
-
+/**
+ * Stores value under key. Internally the value is converted to a string.
+ */
 bool Configuration::store(const std::string &key, const bool &value)
 {
     try
@@ -143,6 +157,10 @@ bool Configuration::store(const std::string &key, const bool &value)
     return true;
 }
 
+/**
+ * Tries to find key in storage and return it's value as a string. If the key is not found,
+ * the default value is returned.
+ */
 std::string Configuration::getStringValue(const std::string &key, const std::string &default /* = "" */)
 {
     auto iterator = storage.find(key);
@@ -151,6 +169,10 @@ std::string Configuration::getStringValue(const std::string &key, const std::str
 
     return iterator->second;
 }
+/**
+ * Tries to find key in storage and return it's value as an integer. If the key is not found,
+ * the default value is returned.
+ */
 int Configuration::getIntValue(const std::string &key, int default /* = 0 */)
 {
     auto iterator = storage.find(key);
@@ -166,6 +188,10 @@ int Configuration::getIntValue(const std::string &key, int default /* = 0 */)
     }
     return default;
 }
+/**
+ * Tries to find key in storage and return it's value as a float. If the key is not found,
+ * the default value is returned.
+ */
 float Configuration::getFloatValue(const std::string &key, float default /* = 0 */)
 {
     auto iterator = storage.find(key);
@@ -181,6 +207,10 @@ float Configuration::getFloatValue(const std::string &key, float default /* = 0 
     }
     return default;
 }
+/**
+ * Tries to find key in storage and return it's value as a boolean. If the key is not found,
+ * the default value is returned.
+ */
 bool Configuration::getBoolValue(const std::string &key, bool default /* = false */)
 {
     auto iterator = storage.find(key);
