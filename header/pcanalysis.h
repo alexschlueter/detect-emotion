@@ -128,6 +128,10 @@ private:
     cv::PCA _pca;
     float _variance = -1;
 
+    /**
+     * Helper method to calculate the retained variance. Calculates variance for a single row/column
+     * of a matrix.
+     */
     float calculateVectorVariance(const cv::Mat &data, float mean)
     {
         // make sure this is a vector, not a matrix
