@@ -11,6 +11,8 @@
 class Configuration
 {
 public:
+    Configuration();
+    Configuration(const std::string &filepath);
     bool load(const std::string &filepath);
     bool save(const std::string &filepath);
     bool store(const std::string &key, const std::string &value);
@@ -21,11 +23,22 @@ public:
     int getIntValue(const std::string &key, int default = 0);
     float getFloatValue(const std::string &key, float default = 0);
     bool getBoolValue(const std::string &key, bool default = false);
+    int size();
 private:
     std::string trim(const std::string &str);
 
     std::map<std::string, std::string> storage;
 };
+
+Configuration::Configuration()
+{
+
+}
+
+Configuration::Configuration(const std::string &filepath) : Configuration()
+{
+    load(filepath);
+}
 
 bool Configuration::load(const std::string &filepath)
 {
@@ -182,4 +195,9 @@ bool Configuration::getBoolValue(const std::string &key, bool default /* = false
     {
     }
     return default;
+}
+
+int Configuration::size()
+{
+    return storage.size();
 }
