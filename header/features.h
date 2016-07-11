@@ -20,6 +20,32 @@ public:
     virtual unsigned int getNumFeatures() const = 0;
 };
 
+
+/**
+ * Simply returns the x and y coordinates as features.
+ */
+template<int N=66>
+class XYFeatureExtraction : public FeatureExtractionBase<N>
+{
+public:
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
+    {
+        int numFeatures = getNumFeatures();
+        cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
+
+        for(int i=0; i<N-1; i+=2)
+        {
+            features.at<float>(0, i) = pointCloud[i].x;
+            features.at<float>(0, i + 1) = pointCloud[i].y;
+        }
+        return features;
+    }
+    unsigned int getNumFeatures() const override
+    {
+        return 2 * N;
+    }
+};
+
 /**
  * Extracts the orientation/angle between all point pairs in the cloud as radians.
  * Returns a 1xM matrix.
@@ -102,6 +128,9 @@ public:
     }
 };
 
+/**
+ * Returns the euclidean distance to the point cloud center as features.
+ */
 template<int N=66>
 class CenterDistanceExtraction : public EuclideanDistanceExtractionBase<N>
 {
@@ -116,6 +145,34 @@ public:
         {
             float delta = this->euclideanDistance(pointCloud[i], midPoint, this->returnSquaredDistance);
             features.at<float>(0, i) = delta;
+        }
+        return features;
+    }
+    unsigned int getNumFeatures() const override
+    {
+        // the n-th triangular number
+        return N;
+    }
+};
+
+/**
+ * Returns the Orientation in relation to the pointCloud center as features.
+ */
+template<int N=66>
+class CenterOrientationExtraction : public FeatureExtractionBase<N>
+{
+public:
+    cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
+    {
+        int numFeatures = getNumFeatures();
+        cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
+
+        cv::Point2f midPoint = pointCloud.midPoint();
+        for(int i=0; i<N; i++)
+        {
+            float radians = getRadiansBetweenPoints(pointCloud[i], midPoint) + PI;
+            float normalizedOrientation = radians / (2*PI);
+            features.at<float>(0, i) = normalizedOrientation;
         }
         return features;
     }
@@ -191,6 +248,9 @@ private:
     std::unique_ptr<PCA_Result<N>> _pca;
 };
 
+/**
+ * Helper function to extract features from a vector of point clouds.
+ */
 template<int N=66>
 cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> *extractor)
 {

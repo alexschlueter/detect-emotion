@@ -54,4 +54,21 @@ std::vector<std::array<cv::Point2f, N>> readBinaryFile(const std::string & filen
     return res;
 }
 
+/**
+ * Reads all binary files from folder.
+ */
+template<int N=66>
+std::vector<std::array<cv::Point2f, N>> readBinaryFolder(const std::string& folderpath)
+{
+    std::vector<std::string> filelist;
+    cv::glob(folderpath + "/*.bin", filelist, false);
+    std::vector<std::array<cv::Point2f, N>> result;
+    for(auto &filename: filelist)
+    {
+        std::vector<std::array<cv::Point2f, N>> buffer = readBinaryFile(filename);
+        result.insert(result.end(), buffer.begin(), buffer.end());
+    }
+    return result;
+}
+
 #endif

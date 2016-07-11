@@ -16,6 +16,8 @@
 #include "features.h"
 #include "pointcloud.h"
 #include "pcanalysis.h"
+#include "actionunit.h"
+#include "configuration.h"
 
 using namespace std;
 
@@ -25,14 +27,10 @@ const bool PRINT_INDICES = false;
 
 
 int main(int argc, char** argv) {
-    if (argc < 2){
-        cout << argv[0] << " path-to-landmark.bin"<<endl;
-        return EXIT_FAILURE;
-    }
-    ifstream lm1(argv[1], ios::binary);
-    // lm1.ignore(numeric_limits<streamsize>::max(), '\n');
-    std::vector<std::array<cv::Point2f, 66>> landmarks = readBinaryFile(lm1);
-    if (landmarks.empty()) cout << "Landmarks could not be loaded.";
+    Configuration config("config.cfg");
+    auto landmarks = readBinaryFolder(config.getStringValue("landmark_folder", "./landmarks"));
+    std::cout << "Total number of frames: " << landmarks.size() << std::endl;
+
     std::vector<PointCloud<66>> pointClouds(landmarks.size());
     for(int i=0; i<landmarks.size(); i++)
     {
@@ -40,15 +38,19 @@ int main(int argc, char** argv) {
     }
     standardizePointCloudVector<66>(pointClouds, RESOLUTION / 2.f);
 
+    ActionUnit actionUnit = readActionUnitFromFolder(config.getStringValue("actionunit_folder", "./actionunits"));
+    // copy selected feature into single col matrix
+    cv::Mat labelSet(actionUnit.mat.rows - 1, 1, CV_32SC1);
+    std::cout << "Label dimensions " << labelSet.rows << "x" << labelSet.cols << std::endl;
 
     /* Create Feature Extractors */
     cv::Mat img;
     FeatureExtractionAggregate<66> featureExtractor;
     // featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new EuclideanDistanceExtraction<66>()));
     // featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new OrientationExtraction<66>()));
+    featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterOrientationExtraction<66>()));
     featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterDistanceExtraction<66>()));
     cv::Mat featureSet = extractFeaturesFromData<66>(pointClouds, &featureExtractor);
-
 
     /* Print */
     std::cout << landmarks.size() << " frames" << std::endl;
@@ -58,11 +60,18 @@ int main(int argc, char** argv) {
     PCAnalysis pca(featureSet, 0.95, true);
     pca.print();
 
+    cv::Mat projected = pca.project(featureSet);
+    std::cout << "Projection set is " << projected.rows << "x" << projected.cols << std::endl;
 
     cv::namedWindow("Image");
-    for (auto frame : pointClouds) {
+    for (int i=0; i<pointClouds.size(); i++) {
+        auto frame = pointClouds[i];
+
         cv::Point2f imageSize(frame.greatestXDistance() * 2, frame.greatestYDistance() * 2);
         cv::Point2f quarterImageSize(imageSize.x / 2.f, imageSize.y / 2.f);
+
+        int label = labelSet.at<int>(i, 0);
+        // std::cout << "LABEL IS " << label << " AND PREDICTION IS " << prediction << std::endl;
 
         img = cv::Mat::zeros(imageSize.y, imageSize.x, CV_8UC3);
 

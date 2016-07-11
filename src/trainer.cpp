@@ -4,6 +4,7 @@
 #include <string>
 #include "reader.h"
 #include "actionunit.h"
+#include <chrono>
 
 using namespace std;
 
@@ -71,7 +72,7 @@ Args defaultArgs(){
     return Args{
         vector<string>(), vector<string>(),
         "SimpleNorm", "SVM",
-        "", "", 2, 0.6, "", 66*2, 10000
+        "", "", 2, 0.6f, "", 66*2, 10000
     };
 }
 

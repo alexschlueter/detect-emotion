@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <stdint.h>
 #include <fstream>
+#include <iostream>
 
 static constexpr std::array<const char*,28> ActionUnitName = {
         "Inner Brow Raiser",
@@ -87,6 +88,22 @@ public:
             return mat.rows-1;
         }
 
+        bool getActionByName(const std::string& name, cv::Mat &output)
+        {
+            int action_idx = -1;
+            for (int i = 0; i < getActionsAsName().size(); i++)
+            {
+                if (getActionsAsName()[i] == name){
+                    action_idx = i;
+                    break;
+                }
+            }
+            if(action_idx == -1)
+                return false;
+            output = this->mat(cv::Rect(action_idx, 1, 1, mat.rows - 1)).clone();
+            return true;
+        }
+
         // First Row -> describes the action
         // Other rows (row is frame) -> intensity of action
         cv::Mat_<uint8_t> mat;
@@ -152,6 +169,29 @@ inline ActionUnit readActionUnitFromFile(const std::string & filename){
         std::ifstream stream(filename);
         auto res = readActionUnitFromFile(stream);
         return res;
+}
+
+inline ActionUnit readActionUnitFromFolder(const std::string& folderpath)
+{
+    std::vector<std::string> filelist;
+    cv::glob(folderpath + "/*AUs.txt", filelist, true);
+    cv::Mat_<uint8_t> actionMatrix;
+
+    for(auto &filename : filelist)
+    {
+        ActionUnit unit = readActionUnitFromFile(filename);
+        if(actionMatrix.rows == 0)
+        {
+            actionMatrix = unit.mat.clone();
+        }
+        else
+        {
+            // concatenate matrices
+            cv::vconcat(actionMatrix, unit.mat(cv::Rect(0, 1, unit.mat.cols, unit.mat.rows - 1)), actionMatrix);
+        }
+    }
+    ActionUnit unit{actionMatrix};
+    return unit;
 }
 
 #endif

@@ -1,5 +1,5 @@
 #ifndef CLASSIFIACTOR_H
-#define CLASSIFIACTOR_H 
+#define CLASSIFIACTOR_H
 
 #include <vector>
 #include <opencv2/core.hpp>
@@ -8,14 +8,11 @@
 #include <array>
 #include <istream>
 
-using FeatureList = std::vector<cv::Mat>;
-using TruthList = std::vector<int>;
-
 /**
  *  Subclasses should be able to classify
  *  if a features belongs into a specific
  *  action unit.
- *  Classifier can be trained/created by 
+ *  Classifier can be trained/created by
  *  ClassifierConstructor
  */
 class Classifier{
@@ -23,12 +20,13 @@ class Classifier{
     /**
      * Classify every feature using the classify-function.
      */
-    inline TruthList classifyList(const FeatureList & features) const {
-      TruthList result;
-      for (const cv::Mat & f : features){
-        result.push_back(this->classify(f));
-      }
-      return result;
+    inline cv::Mat classifyList(const cv::Mat & features) const {
+        cv::Mat result(features.rows, 1, CV_8U);
+        for(int r = 0; r < features.rows; r++)
+        {
+            result.at<uint8_t>(r, 0) = this->classify(features.row(r));
+        }
+        return result;
     }
     /**
      * Serialize the Classifier into a file.
@@ -40,7 +38,7 @@ class Classifier{
     virtual bool serialize(const std::string & filename) const = 0;
 
     /**
-     * Classify a feature into a specific class. 
+     * Classify a feature into a specific class.
      * E.g. if an action happened => 1, else 0
      * On failure -1 should be returned. (E.g. not enough features)
      * @param feature a cv::Mat which represents the features
@@ -60,7 +58,7 @@ public:
    * Trains a Classifier using the trainingsset and truthset.
    * Result can be null on failure
    */
-  virtual std::unique_ptr<Classifier> train(const FeatureList & trainingsset, const TruthList & truthsset) const= 0;
+  virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat & truthsset) const= 0;
   /**
    * Deserialize a classifier from a file
    * (because cv::FileStorage does not support streams)
@@ -70,7 +68,7 @@ public:
 };
 
 using ConfusionMatrix=std::array<std::array<int,2>,2>;
-ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c, const FeatureList& testset, const TruthList & truth);
+ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c, const cv::Mat& testset, const cv::Mat & truth);
 
 inline double computeRecall(const ConfusionMatrix & cm){
     // TP / (TP + FP)
@@ -89,12 +87,12 @@ public:
    /**
    * Initialize using params for training SVM
    */
-  explicit SVMConstructor(CvSVMParams params);
+    explicit SVMConstructor(CvSVMParams params);
   /**
    * Initialize using default parameters for training SVM
    **/
   SVMConstructor();
-  virtual std::unique_ptr<Classifier> train(const FeatureList & trainingsset, const TruthList& truthset) const;
+  virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat& truthset) const;
   virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const;
 private:
     CvSVMParams _params;
