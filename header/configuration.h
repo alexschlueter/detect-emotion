@@ -19,10 +19,10 @@ public:
     bool store(const std::string &key, const int &value);
     bool store(const std::string &key, const float &value);
     bool store(const std::string &key, const bool &value);
-    std::string getStringValue(const std::string &key, const std::string& default = "");
-    int getIntValue(const std::string &key, int default = 0);
-    float getFloatValue(const std::string &key, float default = 0);
-    bool getBoolValue(const std::string &key, bool default = false);
+    std::string getStringValue(const std::string &key, const std::string& defaultVal = "");
+    int getIntValue(const std::string &key, int defaultVal = 0);
+    float getFloatValue(const std::string &key, float defaultVal = 0);
+    bool getBoolValue(const std::string &key, bool defaultVal = false);
     int size();
 private:
     std::string trim(const std::string &str);
@@ -159,25 +159,25 @@ bool Configuration::store(const std::string &key, const bool &value)
 
 /**
  * Tries to find key in storage and return it's value as a string. If the key is not found,
- * the default value is returned.
+ * the defaultVal value is returned.
  */
-std::string Configuration::getStringValue(const std::string &key, const std::string &default /* = "" */)
+std::string Configuration::getStringValue(const std::string &key, const std::string &defaultVal /* = "" */)
 {
     auto iterator = storage.find(key);
     if(iterator == storage.end())
-        return default;
+        return defaultVal;
 
     return iterator->second;
 }
 /**
  * Tries to find key in storage and return it's value as an integer. If the key is not found,
- * the default value is returned.
+ * the defaultVal value is returned.
  */
-int Configuration::getIntValue(const std::string &key, int default /* = 0 */)
+int Configuration::getIntValue(const std::string &key, int defaultVal /* = 0 */)
 {
     auto iterator = storage.find(key);
     if(iterator == storage.end())
-        return default;
+        return defaultVal;
 
     try
     {
@@ -186,17 +186,17 @@ int Configuration::getIntValue(const std::string &key, int default /* = 0 */)
     catch(...)
     {
     }
-    return default;
+    return defaultVal;
 }
 /**
  * Tries to find key in storage and return it's value as a float. If the key is not found,
- * the default value is returned.
+ * the defaultVal value is returned.
  */
-float Configuration::getFloatValue(const std::string &key, float default /* = 0 */)
+float Configuration::getFloatValue(const std::string &key, float defaultVal /* = 0 */)
 {
     auto iterator = storage.find(key);
     if (iterator == storage.end())
-        return default;
+        return defaultVal;
 
     try
     {
@@ -205,17 +205,17 @@ float Configuration::getFloatValue(const std::string &key, float default /* = 0 
     catch (...)
     {
     }
-    return default;
+    return defaultVal;
 }
 /**
  * Tries to find key in storage and return it's value as a boolean. If the key is not found,
- * the default value is returned.
+ * the defaultVal value is returned.
  */
-bool Configuration::getBoolValue(const std::string &key, bool default /* = false */)
+bool Configuration::getBoolValue(const std::string &key, bool defaultVal /* = false */)
 {
     auto iterator = storage.find(key);
     if (iterator == storage.end())
-        return default;
+        return defaultVal;
 
     try
     {
@@ -224,7 +224,7 @@ bool Configuration::getBoolValue(const std::string &key, bool default /* = false
     catch (...)
     {
     }
-    return default;
+    return defaultVal;
 }
 
 int Configuration::size()

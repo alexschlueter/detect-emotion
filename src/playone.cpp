@@ -13,7 +13,7 @@
 #include <opencv2/core/core.hpp>
 #include <cmath>
 
-#include "features.h"
+#include "featureextraction.h"
 #include "pointcloud.h"
 #include "pcanalysis.h"
 #include "actionunit.h"

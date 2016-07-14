@@ -2,7 +2,7 @@
 #define CLASSIFIACTOR_H
 
 #include <vector>
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 #include <ostream>
 #include <memory>
 #include <array>

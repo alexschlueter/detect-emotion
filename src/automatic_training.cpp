@@ -3,7 +3,7 @@
 #include "reader.h"
 #include "actionunit.h"
 #include "pcanalysis.h"
-#include "features.h"
+#include "featureextraction.h"
 #include "classifier.h"
 #include <memory>
 #include <chrono>
