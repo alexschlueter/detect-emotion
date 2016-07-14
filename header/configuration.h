@@ -159,7 +159,7 @@ bool Configuration::store(const std::string &key, const bool &value)
 
 /**
  * Tries to find key in storage and return it's value as a string. If the key is not found,
- * the defaultVal value is returned.
+ * the default  value is returned.
  */
 std::string Configuration::getStringValue(const std::string &key, const std::string &defaultVal /* = "" */)
 {
@@ -171,7 +171,7 @@ std::string Configuration::getStringValue(const std::string &key, const std::str
 }
 /**
  * Tries to find key in storage and return it's value as an integer. If the key is not found,
- * the defaultVal value is returned.
+ * the default value is returned.
  */
 int Configuration::getIntValue(const std::string &key, int defaultVal /* = 0 */)
 {
@@ -190,7 +190,7 @@ int Configuration::getIntValue(const std::string &key, int defaultVal /* = 0 */)
 }
 /**
  * Tries to find key in storage and return it's value as a float. If the key is not found,
- * the defaultVal value is returned.
+ * the default value is returned.
  */
 float Configuration::getFloatValue(const std::string &key, float defaultVal /* = 0 */)
 {
@@ -209,7 +209,7 @@ float Configuration::getFloatValue(const std::string &key, float defaultVal /* =
 }
 /**
  * Tries to find key in storage and return it's value as a boolean. If the key is not found,
- * the defaultVal value is returned.
+ * the default value is returned.
  */
 bool Configuration::getBoolValue(const std::string &key, bool defaultVal /* = false */)
 {
