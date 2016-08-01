@@ -8,6 +8,10 @@
 #include <array>
 #include <istream>
 
+enum ClassifierResult{
+    noaction = 0, action = 1, failure = -1
+};
+
 /**
  *  Subclasses should be able to classify
  *  if a features belongs into a specific
@@ -21,10 +25,10 @@ class Classifier{
      * Classify every feature using the classify-function.
      */
     inline cv::Mat classifyList(const cv::Mat & features) const {
-        cv::Mat result(features.rows, 1, CV_8U);
+        cv::Mat result(features.rows, 1, CV_8S);
         for(int r = 0; r < features.rows; r++)
         {
-            result.at<uint8_t>(r, 0) = this->classify(features.row(r));
+            result.at<int8_t>(r, 0) = this->classify(features.row(r));
         }
         return result;
     }
@@ -44,7 +48,7 @@ class Classifier{
      * @param feature a cv::Mat which represents the features
      * @return the class, -1 on failure
      */
-    virtual int classify(const cv::Mat & feature) const = 0;
+    virtual ClassifierResult classify(const cv::Mat & feature) const = 0;
 };
 
 

@@ -6,7 +6,7 @@ public:
     explicit SVMClassifier(std::unique_ptr<CvSVM> && svm): _svm(std::move(svm)){}
 
     virtual int classify(const cv::Mat & feature) const{
-        return _svm->predict(feature, true) < 0 ? 0 : 1;
+        return _svm->predict(feature, true) < 0 ? noaction : action;
     }
     virtual bool serialize(const std::string & filename) const {
         _svm->save(filename.c_str());
@@ -29,8 +29,17 @@ SVMConstructor::SVMConstructor(){
 std::unique_ptr<Classifier> SVMConstructor::train(const cv::Mat & trainingsset, const cv::Mat& truthset) const{
     auto res = std::unique_ptr<CvSVM>(new CvSVM());
     assert(trainingsset.rows == truthset.rows);
+    assert(truthset.cols == 1);
+    //Transform Matrix for SVM
     cv::Mat truthAsFloat;
     truthset.convertTo(truthAsFloat, CV_32F);
+    for(int i=0; i< truthset.rows; i++){
+      if (truthset.as<float>(i,0)==noaction){
+          truthset.as<float>(i,0)=-1;
+      }else{
+          truthset.as<float>(i,0) = 1;
+      }
+    }
     res->train(trainingsset, truthAsFloat, cv::Mat(), cv::Mat(), _params);
     return std::unique_ptr<Classifier>(new SVMClassifier(std::move(res)));
 }
@@ -46,19 +55,19 @@ ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c,const cv:
     cm[0] = {0,0};
     cm[1] = {0,0};
     assert(testset.rows == truthset.rows);
+    cv::Mat truthset_s8;
+    truthset.convertTo(truthset_s8,CV_8SC1);
 
     for (int i = 0; i < testset.rows; i++){
         auto res = c.classify(testset.row(i));
-        if (res < 0) {
+        if (res == failure) {
             cm[0] = {0,0};
             cm[1] = {0,0};
             return cm;
             // TODO: Error treatment
         }
-        assert(res < 2);
-        auto truth = truthset.at<uint8_t>(i, 0);
-        assert(truth >= 0 && truth < 2);
-        cm[truth][res]++;
+        auto truth = truthset_s8.at<int8_t>(i, 0);
+        cm[truth==action?1:0][res==action?1:0]++;
     }
     return cm;
 }
