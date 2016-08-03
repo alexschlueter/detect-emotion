@@ -248,6 +248,12 @@ private:
     std::unique_ptr<PCA_Result<N>> _pca;
 };
 
+class InterpolationFeatureExtraction: public FeatureExtractionBase<66>{
+public:
+    virtual cv::Mat extractFeatures(const PointCloud<66> &pointCloud) const;
+     virtual unsigned int getNumFeatures() const ;
+};
+
 /**
  * Helper function to extract features from a vector of point clouds.
  */
