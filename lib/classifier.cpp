@@ -5,7 +5,7 @@ class SVMClassifier: public Classifier{
 public:
     explicit SVMClassifier(std::unique_ptr<CvSVM> && svm): _svm(std::move(svm)){}
 
-    virtual int classify(const cv::Mat & feature) const{
+    virtual ClassifierResult classify(const cv::Mat & feature) const{
         return _svm->predict(feature, true) < 0 ? noaction : action;
     }
     virtual bool serialize(const std::string & filename) const {
@@ -34,10 +34,10 @@ std::unique_ptr<Classifier> SVMConstructor::train(const cv::Mat & trainingsset, 
     cv::Mat truthAsFloat;
     truthset.convertTo(truthAsFloat, CV_32F);
     for(int i=0; i< truthset.rows; i++){
-      if (truthset.as<float>(i,0)==noaction){
-          truthset.as<float>(i,0)=-1;
+      if (truthAsFloat.at<float>(i,0)==noaction){
+          truthAsFloat.at<float>(i,0)=-1;
       }else{
-          truthset.as<float>(i,0) = 1;
+          truthAsFloat.at<float>(i,0) = 1;
       }
     }
     res->train(trainingsset, truthAsFloat, cv::Mat(), cv::Mat(), _params);
@@ -67,7 +67,7 @@ ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c,const cv:
             // TODO: Error treatment
         }
         auto truth = truthset_s8.at<int8_t>(i, 0);
-        cm[truth==action?1:0][res==action?1:0]++;
+        cm[truth==action? 0 : 1][res==action? 0 : 1]++;
     }
     return cm;
 }
