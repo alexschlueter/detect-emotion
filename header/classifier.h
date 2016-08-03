@@ -106,4 +106,15 @@ private:
     CvSVMParams _params;
 };
 
+class KNearestNeighborsConstructor: public ClassifierConstructor{
+public:
+   /**
+   * Initialize using k neighbors
+   */
+  explicit KNearestNeighborsConstructor(int k = 1);
+  virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat& truthset) const;
+  virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const;
+private:
+    int _k;
+};
 #endif /* ifndef CLASSIFIACTOR_H */
