@@ -12,6 +12,7 @@ public:
         else {return noaction;}
     }
     virtual bool serialize(const std::string & filename) const {
+        //TODO: Not implemented in opencv2
         _kn->save(filename.c_str());
         return true;
     }
@@ -43,6 +44,7 @@ std::unique_ptr<Classifier> KNearestNeighborsConstructor::train(const cv::Mat & 
 
 std::unique_ptr<Classifier> SVMConstructor::deserialize(const std::string & filename) const{
     CvKNearest * res = new CvKNearest();
+    //TODO: Not implemented in opencv2
     res->load(filename.c_str());
     int k = res->get_max_k();
     return std::unique_ptr<Classifier>(new KNearestNeighborClassifier(std::unique_ptr<CvKNearest>(res),k));
