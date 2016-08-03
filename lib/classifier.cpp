@@ -6,7 +6,7 @@ public:
     explicit SVMClassifier(std::unique_ptr<CvSVM> && svm): _svm(std::move(svm)){}
 
     virtual ClassifierResult classify(const cv::Mat & feature) const{
-        return _svm->predict(feature, true) < 0 ? noaction : action;
+        return _svm->predict(feature) < 0 ? noaction : action;
     }
     virtual bool serialize(const std::string & filename) const {
         _svm->save(filename.c_str());

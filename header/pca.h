@@ -2,6 +2,7 @@
 #define PCA_H
 #include "pointcloud.h"
 #include <opencv2/core/core.hpp>
+#include <opencv2/core/core_c.h>
 #include <vector>
 #include <opencv/cv.hpp>
 #include "normalization.h"

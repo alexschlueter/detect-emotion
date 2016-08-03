@@ -103,7 +103,7 @@ public:
      */
     float greatestXDistance() const{
         float min = std::numeric_limits<float>::infinity();
-        float max = 0;
+        float max = -std::numeric_limits<float>::infinity();
         for (auto & p: _points){
             min = std::min(min,p.x);
             max = std::max(max,p.x);
@@ -118,7 +118,7 @@ public:
      */
     float greatestYDistance() const{
         float min = std::numeric_limits<float>::infinity();
-        float max = 0;
+        float max = -std::numeric_limits<float>::infinity();
         for (auto & p: _points){
             min = std::min(min,p.y);
             max = std::max(max,p.y);
