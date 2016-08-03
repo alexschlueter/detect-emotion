@@ -10,7 +10,7 @@ const float PI = 3.141592653589793;
 
 /**
  * The FeatureExtraction classes take a PointCloud as input and extract a variable number of features from it.
- * Features are returned in a nx1-Matrix, as required by opencv SVM.
+ * Features are returned in a nx1-Matrix (data-type 1-dim float), as required by opencv SVM.
  */
 template<int N=66>
 class FeatureExtractionBase

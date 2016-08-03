@@ -7,6 +7,27 @@
 #include <chrono>
 
 using namespace std;
+using TruthList = std::vector<int8_t>;
+using FeatureList = std::vector<cv::Mat>;
+
+cv::Mat featureListToMat(const FeatureList & l){
+    if (l.size() == 0) return cv::Mat();
+    int cols =  l[0].cols;
+    int rows = l.size();
+    cv::Mat res(rows,cols,CV_32FC1);
+    for(int i=0; i< rows; i++){
+        l[i].copyTo(res.row(i));
+    }
+    return res;
+}
+
+cv::Mat truthListToMat(const TruthList& l){
+    cv::Mat res(l.size(), 1,CV_32FC1);
+    for (int i=0; i< l.size(); i++){
+        res.at<float>(i,0) = l[i];
+    }
+    return res;
+}
 
 struct Args{
   vector<string> landmark_file;
@@ -212,7 +233,7 @@ bool train_evaluate_and_save(const Args &arg) {
     cout << "* Start training"<< endl;
     std::chrono::time_point<std::chrono::system_clock> start, end; // Time Measure
     start = std::chrono::system_clock::now();
-    auto classifier = classifier_constructor->train(training_set, training_truth);
+    auto classifier = classifier_constructor->train(featureListToMat(training_set), truthListToMat(training_truth));
     end = std::chrono::system_clock::now();
     if (classifier == nullptr){
        cout << "FATAL: Training failed!" << endl;
@@ -220,7 +241,7 @@ bool train_evaluate_and_save(const Args &arg) {
     }
     cout << "-> Traing finished ["<<chrono::duration_cast<chrono::milliseconds>((end-start)).count()<<"ms]" << endl;
     cout << "* Training Confusion-Matrix"<< endl;
-    cout << computeConfusionMatrixFromTestSet(*classifier, training_set, training_truth) << endl;
+    cout << computeConfusionMatrixFromTestSet(*classifier, featureListToMat(training_set), truthListToMat(training_truth)) << endl;
     if (!arg.output_classifier_filename.empty()){
         cout << "* Save classifier to "<<arg.output_classifier_filename;
         if (!classifier->serialize(arg.output_classifier_filename)){
@@ -231,7 +252,7 @@ bool train_evaluate_and_save(const Args &arg) {
     }
     cout << "* Evaluate classifier" << endl;
     cout << "** Confusion-Matrix" << endl;
-    auto conf_matrix = computeConfusionMatrixFromTestSet(*classifier, eval_set, eval_truth);
+    auto conf_matrix = computeConfusionMatrixFromTestSet(*classifier, featureListToMat(eval_set), truthListToMat(eval_truth));
     cout << conf_matrix << endl;
     cout << "** Recall: " <<computeRecall(conf_matrix)<<endl;
     cout << "** Precision: " <<computePrecision(conf_matrix)<<endl;

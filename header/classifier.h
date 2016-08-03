@@ -60,6 +60,10 @@ class ClassifierConstructor{
 public:
   /**
    * Trains a Classifier using the trainingsset and truthset.
+   * The rows in trainingsset describes a trainingssample,
+   * the rows in truthsset the results.
+   * Therefore truthset should have 1 column.
+   * Trainingsset should be a 1-dim float  cv::Mat;
    * Result can be null on failure
    */
   virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat & truthsset) const= 0;
