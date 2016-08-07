@@ -26,8 +26,7 @@ class Classifier{
      */
     inline cv::Mat classifyList(const cv::Mat & features) const {
         cv::Mat result(features.rows, 1, CV_8S);
-        for(int r = 0; r < features.rows; r++)
-        {
+        for(int r = 0; r < features.rows; r++) {
             result.at<int8_t>(r, 0) = this->classify(features.row(r));
         }
         return result;
@@ -116,5 +115,14 @@ public:
   virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const;
 private:
     int _k;
+};
+
+class RandomForestConstructor: public ClassifierConstructor{
+public:
+   explicit RandomForestConstructor(CvRTParams params);
+   virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat& truthset) const;
+   virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const;
+private:
+    CvRTParams _params;
 };
 #endif /* ifndef CLASSIFIACTOR_H */
