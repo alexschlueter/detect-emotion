@@ -184,7 +184,7 @@ bool train_evaluate_and_save(const Args &arg) {
        auto action_unit = readActionUnitFromFile(arg.action_unit_file[i]);
        // Get Index of desired action unit
        int action_idx = -1;
-       for (int j=0; i< action_unit.getActionsAsName().size(); i++){
+       for (int j=0; j< action_unit.getActionsAsName().size(); j++){
            if (action_unit.getActionsAsName()[j] == arg.action_unit_name){
                action_idx = j; break;
            }
