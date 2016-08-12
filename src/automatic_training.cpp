@@ -80,7 +80,7 @@ int main(int argc, char** argv)
         /** Extract features */
         std::cout << "*** STARTING LOOP #" << loopCount << " ***" << std::endl;
         std::cout << "Extracting features..." << std::endl;
-        cv::Mat features = extractFeaturesFromData<66>(pointClouds, extraction.get());
+        cv::Mat features = extractFeaturesFromData<66>(pointClouds, *extraction);
         std::cout << "Feature dimensions " << features.rows << "x" << features.cols << std::endl;
 
         /** Split Training, Test, Validation data. */

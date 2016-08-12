@@ -18,6 +18,45 @@ class FeatureExtractionBase
 public:
     virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const = 0;
     virtual unsigned int getNumFeatures() const = 0;
+    virtual ~FeatureExtractionBase(){}
+};
+
+/**
+ * Extract time based features using a sequence of point clouds.
+ */
+template <int N=66>
+class TimeFeatureExtractionBase{
+public:
+    /**
+     * Extract features based on the passed sequence of point.
+     * The sequence should be the contiguous frames from the
+     * source video.
+     * This function needs two iterators, which corresponds
+     * to the slice of the video.
+     * This slice must have a length that is at least as great
+     * as getNumInputFrames() returns.
+     * If getNumFeatures() == 0 any length is allowed.
+     * @param beg iterator which points to the first relevant element of the array
+     * @param end iterator which points to the end of the relevant array part.
+     *            The entry iterator points to will not be used.
+     * @return cv::Mat containing one row with extracted features. cv::Mat may be empty if failures occurs (e.g. not enough frames).
+     */
+    virtual cv::Mat extractFeatures(typename std::vector<PointCloud<N>>::const_iterator beg, typename std::vector<PointCloud<N>>::const_iterator  end) const = 0;
+
+    /**
+     * Returns the number of features extractFeatures returns.
+     * This value equals the of columns which cv::Mat contains.
+     */
+    virtual unsigned int getNumFeatures() const = 0;
+
+    /**
+     * Returns the number of frames/pointclouds that extractFeatures expect as input.
+     * If this number is not limited, 0 should be returned.
+     * @return number of frames, 0 if not limited
+     */
+    virtual unsigned int getNumInputFrames() const = 0;
+
+    virtual ~TimeFeatureExtractionBase(){}
 };
 
 
@@ -255,23 +294,76 @@ public:
 };
 
 /**
+ * Extract time based feature using numerical differentation
+ * on features which a normal FeatureExtraction-Implementation produces.
+ */
+template <int N=66>
+class SimpleTimeDifferentialExtraction: public TimeFeatureExtractionBase<N>{
+public:
+    SimpleTimeDifferentialExtraction(std::shared_ptr<FeatureExtractionBase<N>> base_feature): _base_feature(base_feature){  }
+
+    virtual cv::Mat extractFeatures(typename std::vector<PointCloud<N>>::const_iterator beg, typename std::vector<PointCloud<N>>::const_iterator  end) const{
+        //cv::Mat res = cv::Mat::zeros(1,getNumFeatures(),CV_32FC1);
+        cv::Mat t0 = _base_feature->extractFeatures(*beg);
+        beg++;
+        if (beg == end) return cv::Mat();
+        beg++;
+        if (beg == end) return cv::Mat();
+        cv::Mat t2 = _base_feature->extractFeatures(*beg);
+        return (t2-t0)/2;
+    }
+    virtual unsigned int getNumFeatures() const{
+        return _base_feature->getNumFeatures();
+    }
+    virtual unsigned int getNumInputFrames() const{
+        return 3;
+    }
+private:
+    std::shared_ptr<FeatureExtractionBase<N>> _base_feature;
+};
+
+/**
  * Helper function to extract features from a vector of point clouds.
  */
 template<int N=66>
-cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> *extractor)
+cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const FeatureExtractionBase<N> &extractor)
 {
     if(data.size() == 0)
         return cv::Mat();
 
     // calculate required matrix size
     unsigned int numRows = data.size();
-    unsigned int numCols = extractor->getNumFeatures();
+    unsigned int numCols = extractor.getNumFeatures();
     cv::Mat result(numRows, numCols, CV_32FC1);
 
     // extract features for each row
     for(int i=0; i<numRows; i++)
     {
-        extractor->extractFeatures(data[i]).copyTo(result.row(i));
+        extractor.extractFeatures(data[i]).copyTo(result.row(i));
+    }
+    return result;
+}
+
+/**
+ * Helper function to extract time based features from a vector of point clouds.
+ */
+template<int N=66>
+cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const TimeFeatureExtractionBase<N> &extractor)
+{
+    if(data.size() == 0)
+        return cv::Mat();
+
+    // calculate required matrix size
+    unsigned int numRows = data.size();
+    unsigned int numCols = extractor.getNumFeatures();
+    unsigned int numSeq = extractor.getNumInputFrames();
+    cv::Mat result(numRows, numCols, CV_32FC1);
+    typename std::vector<PointCloud<N>>::const_iterator beg = data.begin();
+
+    // extract features for each row
+    for(int i=0; i<numRows-numSeq; i++)
+    {
+        extractor.extractFeatures(beg+i,data.end()).copyTo(result.row(i));
     }
     return result;
 }

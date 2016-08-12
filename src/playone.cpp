@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
     // featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new OrientationExtraction<66>()));
     featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterOrientationExtraction<66>()));
     featureExtractor.extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterDistanceExtraction<66>()));
-    cv::Mat featureSet = extractFeaturesFromData<66>(pointClouds, &featureExtractor);
+    cv::Mat featureSet = extractFeaturesFromData<66>(pointClouds, featureExtractor);
 
     /* Print */
     std::cout << landmarks.size() << " frames" << std::endl;
