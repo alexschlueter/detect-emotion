@@ -361,7 +361,7 @@ cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const Ti
     typename std::vector<PointCloud<N>>::const_iterator beg = data.begin();
 
     // extract features for each row
-    for(int i=0; i<numRows-numSeq; i++)
+    for(int i=0; i<numRows-numSeq+1; i++)
     {
         extractor.extractFeatures(beg+i,data.end()).copyTo(result.row(i));
     }

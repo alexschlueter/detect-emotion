@@ -78,13 +78,13 @@ using ConfusionMatrix=std::array<std::array<int,2>,2>;
 ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c, const cv::Mat& testset, const cv::Mat & truth);
 
 inline double computeRecall(const ConfusionMatrix & cm){
-    // TP / (TP + FP)
-    return static_cast<double>(cm[0][0])/static_cast<double>(cm[0][0]+cm[1][0]);
+    // TP / (TP + FN)
+    return static_cast<double>(cm[0][0])/static_cast<double>(cm[0][0]+cm[0][1]);
 }
 
 inline double computePrecision(const ConfusionMatrix & cm){
-    // TP / (TP + FN)
-    return static_cast<double>(cm[0][0])/static_cast<double>(cm[0][0]+cm[0][1]);
+    // TP / (TP + FP)
+    return static_cast<double>(cm[0][0])/static_cast<double>(cm[0][0]+cm[1][0]);
 }
 
 
