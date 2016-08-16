@@ -58,6 +58,13 @@ public:
                 return result;
         }
 
+        static int getActionNumberFromName(std::string name) {
+                for (int i = 0; i < 28; ++i) {
+                        if (ActionUnitName[i] == name) return i + 1;
+                }
+                return -1;
+        }
+
         /**
          * Returns the numbers of the actions.
          */

@@ -22,6 +22,11 @@ std::vector<std::shared_ptr<FeatureExtractionBase<66>>> getFeatureExtractionSet(
     centerRelationExtraction->extractions.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new CenterDistanceExtraction<66>()));
     result.push_back(centerRelationExtraction);
 
+    /** 3) Create feature extraction that only keeps meaningful landmarks for the action unit */
+    // TODO: masks path from config file, au number from action_name config
+    std::ifstream maskFile("../../masks/au25.txt");
+    result.push_back(std::shared_ptr<FeatureExtractionBase<66>>(new MaskFeatureExtraction<66>(maskFile)));
+
     return result;
 }
 
@@ -49,11 +54,11 @@ int main(int argc, char** argv)
     Configuration config("configuration.cfg");
 
     /** Load all Landmarks from landmark dir */
-    auto landmarks = readBinaryFolder(config.getStringValue("landmark_folder", "./landmarks"));
-    std::cout << "Loaded " << landmarks.size() << "frames." << std::endl;
+    auto landmarks = readBinaryFolder(config.getStringValue("landmark_dir", "./landmarks"));
+    std::cout << "Loaded " << landmarks.size() << " frames." << std::endl;
 
     /** Load all Action-Units from action unit dir */
-    ActionUnit actionUnit = readActionUnitFromFolder(config.getStringValue("actionunit_folder", "./actionunits"));
+    ActionUnit actionUnit = readActionUnitFromFolder(config.getStringValue("action_unit_dir", "./actionunits"));
     cv::Mat labels;
     if(!actionUnit.getActionByName(config.getStringValue("action_name", "Chin Raiser"), labels))
     {
@@ -87,6 +92,7 @@ int main(int argc, char** argv)
         std::cout << "Creating Trainings-, Test- and Validation-Set." << std::endl;
         TrainingSet ttvSet(features, labels, config.getFloatValue("training_percent", 0.5), config.getFloatValue("test_percent", 0.25), config.getFloatValue("validation_percent", 0.25));
         std::cout << "Training set has " << ttvSet.trainingSize() << " + " << ttvSet.testSize() << " + " << ttvSet.validationSize() << " entries." << std::endl;
+        ttvSet.shuffle();
         cv::Mat trainingFeatures = ttvSet.trainingFeatures();
         cv::Mat trainingLabels = ttvSet.trainingLabels(true);
 

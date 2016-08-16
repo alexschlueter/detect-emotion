@@ -35,7 +35,7 @@ Configuration::Configuration()
 
 }
 
-Configuration::Configuration(const std::string &filepath) : Configuration()
+Configuration::Configuration(const std::string &filepath)
 {
     load(filepath);
 }

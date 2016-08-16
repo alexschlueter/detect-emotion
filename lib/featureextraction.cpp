@@ -1,5 +1,6 @@
 #include "featureextraction.h"
 using namespace std;
+
 cv::Mat_<float> polynomInterpolation(vector<cv::Point2f> points, unsigned int degree){
     double meanx = 0;
     double meany = 0;
