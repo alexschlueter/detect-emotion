@@ -115,7 +115,6 @@ public:
  * @return ActionUnit. On Fail an uninitialized ActionUnit.
  */
 inline ActionUnit readActionUnitFromFile(std::istream & stream){
-        //TODO: Better result than a random initialized matrix
         if (!stream.good()) return ActionUnit{};
 
         // Reading file line by line
