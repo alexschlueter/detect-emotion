@@ -48,6 +48,8 @@ class Classifier{
      * @return the class, -1 on failure
      */
     virtual ClassifierResult classify(const cv::Mat & feature) const = 0;
+    
+    virtual ~Classifier(){}
 };
 
 
@@ -72,6 +74,8 @@ public:
    * Result can be null on failure
    */
   virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const = 0;
+
+  virtual ~ClassifierConstructor(){}
 };
 
 using ConfusionMatrix=std::array<std::array<int,2>,2>;

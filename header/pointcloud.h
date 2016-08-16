@@ -80,7 +80,7 @@ private:
 
     inline void deref(){
         if (_d != nullptr){
-            if (_d->_refcounter == 1) {delete _d;}
+            if (_d->_refcounter == 1) {delete _d; _d=nullptr;}
             else {_d->_refcounter--;}
         }
     }
