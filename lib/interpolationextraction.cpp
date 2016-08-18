@@ -90,3 +90,7 @@ unsigned int InterpolationFeatureExtraction::getNumFeatures() const{
     }
     return res;
 }
+
+std::string InterpolationFeatureExtraction::name() const{
+    return "InterpolationFeatureExtraction";
+}

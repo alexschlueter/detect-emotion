@@ -88,7 +88,7 @@ public:
             return mat.rows-1;
         }
 
-        bool getActionByName(const std::string& name, cv::Mat &output)
+        bool getActionByName(const std::string& name, cv::Mat &output) const
         {
             int action_idx = -1;
             for (int i = 0; i < getActionsAsName().size(); i++)

@@ -1,7 +1,8 @@
 #include "classifier.h"
+#include <sstream>
 class RandomForestClassifier: public Classifier{
 public:
-    explicit RandomForestClassifier(std::unique_ptr<CvRTrees> && rtree): _rtree(std::move(rtree)){}
+    explicit RandomForestClassifier(std::unique_ptr<CvRTrees> && rtree, CvRTParams param): _rtree(std::move(rtree)),_param(param){}
 
     virtual ClassifierResult classify(const cv::Mat & feature) const{
         int label = static_cast<int>(_rtree->predict(feature));
@@ -13,8 +14,21 @@ public:
         _rtree->save(filename.c_str());
         return true;
     }
+
+    virtual  std::string name() const{
+     auto params = _param;
+     std::stringstream str;
+     str << "random_forest";
+     str << "_maxCategories="<<params.max_categories;
+     str << "_maxDepth="<<params.max_depth;
+     str << "_min_sample_count="<<params.min_sample_count;
+     str << "_regression_accuracy="<<params.regression_accuracy;
+     str << "_truncate_pruned_tree="<<params.truncate_pruned_tree;
+     return str.str();
+    }
 private:
     std::unique_ptr<CvRTrees> _rtree;
+    CvRTParams _param;
 };
 RandomForestConstructor::RandomForestConstructor(CvRTParams params):_params(params){}
 
@@ -33,12 +47,12 @@ std::unique_ptr<Classifier> RandomForestConstructor::train(const cv::Mat & train
       }
     }
     res->train(trainingsset, CV_ROW_SAMPLE, truthAsFloat, cv::Mat(),cv::Mat(),cv::Mat(),cv::Mat(),_params);
-    return std::unique_ptr<Classifier>(new RandomForestClassifier(std::move(res)));
+    return std::unique_ptr<Classifier>(new RandomForestClassifier(std::move(res),_params));
 
 }
 
 std::unique_ptr<Classifier> RandomForestConstructor::deserialize(const std::string & filename) const{
     auto res = std::unique_ptr<CvRTrees>(new CvRTrees());
     res->load(filename.c_str());
-    return std::unique_ptr<Classifier>(new RandomForestClassifier(std::move(res)));
+    return std::unique_ptr<Classifier>(new RandomForestClassifier(std::move(res),CvRTParams()));
 }

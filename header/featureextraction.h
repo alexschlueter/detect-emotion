@@ -18,6 +18,7 @@ class FeatureExtractionBase
 public:
     virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const = 0;
     virtual unsigned int getNumFeatures() const = 0;
+    virtual std::string name() const = 0;
     virtual ~FeatureExtractionBase(){}
 };
 
@@ -56,6 +57,8 @@ public:
      */
     virtual unsigned int getNumInputFrames() const = 0;
 
+    virtual std::string name() const = 0;
+
     virtual ~TimeFeatureExtractionBase(){}
 };
 
@@ -82,6 +85,10 @@ public:
     unsigned int getNumFeatures() const override
     {
         return 2 * N;
+    }
+
+    std::string name() const override{
+        return "XYFeatureExtraction";
     }
 };
 
@@ -114,6 +121,9 @@ public:
     {
         // (N-1)th triangular number
         return N * (N-1)/2;
+    }
+    std::string name() const{
+        return "OrientationFeatureExtraction";
     }
 };
 
@@ -165,6 +175,9 @@ public:
         // the n-th triangular number
         return N*(N-1)/2;
     }
+    std::string name() const{
+        return "EuclideanDistanceExtraction";
+    }
 };
 
 /**
@@ -191,6 +204,9 @@ public:
     {
         // the n-th triangular number
         return N;
+    }
+    std::string name() const override{
+        return "CenterDistanceExtraction";
     }
 };
 
@@ -219,6 +235,9 @@ public:
     {
         // the n-th triangular number
         return N;
+    }
+    std::string name() const override{
+        return "CenterOrientationExtraction";
     }
 };
 
@@ -257,6 +276,14 @@ public:
         }
         return result;
     }
+
+    std::string name() const override{
+        std::string res = "FeatureExtractionAggregate";
+        for (auto&& sub : extractions){
+            res+="_"+sub->name();
+        }
+        return res;
+    }
 };
 
 #include "pca.h"
@@ -282,6 +309,9 @@ public:
 
     void set_pca( std::unique_ptr<PCA_Result<N>> &&pca) {_pca = std::move(pca);}
 
+    std::string name() const{
+        return "SimpleNormalizeFeatureExtraction";
+    }
 private:
     int _pca_dimension;
     std::unique_ptr<PCA_Result<N>> _pca;
@@ -291,6 +321,7 @@ class InterpolationFeatureExtraction: public FeatureExtractionBase<66>{
 public:
     virtual cv::Mat extractFeatures(const PointCloud<66> &pointCloud) const;
      virtual unsigned int getNumFeatures() const ;
+     virtual std::string name() const;
 };
 
 /**
@@ -317,6 +348,10 @@ public:
     }
     virtual unsigned int getNumInputFrames() const{
         return 3;
+    }
+
+    std::string name() const{
+        return "SimpleTimeDifferentialExtraction_"+_base_feature->name();
     }
 private:
     std::shared_ptr<FeatureExtractionBase<N>> _base_feature;

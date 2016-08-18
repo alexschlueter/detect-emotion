@@ -67,3 +67,7 @@ if (${WITH_AUTO_TRAINER})
         target_link_libraries(automatic_training EmoLib ${OpenCV_LIBS})
 endif()
 
+option(WITH_AUTO_TRAINER2 "Compile Auto-Trainer2 Program" ON)
+if (${WITH_AUTO_TRAINER2})
+add_subdirectory(auto_trainer)
+endif()

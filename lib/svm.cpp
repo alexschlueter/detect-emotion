@@ -1,6 +1,8 @@
 #include "classifier.h"
 #include <opencv2/ml/ml.hpp>
 
+#include <sstream>
+
 class SVMClassifier: public Classifier{
 public:
     explicit SVMClassifier(std::unique_ptr<CvSVM> && svm): _svm(std::move(svm)){}
@@ -11,6 +13,28 @@ public:
     virtual bool serialize(const std::string & filename) const {
         _svm->save(filename.c_str());
         return true;
+    }
+
+    virtual std::string name() const{
+        CvSVMParams param = _svm->get_params();
+        std::stringstream str;
+        str << "svm_";
+        if (param.kernel_type == CvSVM::LINEAR){
+           str << "linear" ;
+        }else if (param.kernel_type == CvSVM::POLY){
+            str << "polynom";
+            str << "_coef0="<<param.coef0;
+            str << "_gamma="<<param.gamma;
+            str << "_degree"<<param.degree;
+        }else if (param.kernel_type == CvSVM::RBF){
+            str << "rbf";
+            str << "_gamma="<<param.gamma;
+        }else if (param.kernel_type == CvSVM::SIGMOID){
+            str << "sigmoid";
+            str << "_coef0="<<param.coef0;
+            str << "_gamma="<<param.gamma;
+        }
+        return str.str();
     }
 private:
     std::unique_ptr<CvSVM> _svm;

@@ -5,16 +5,20 @@ class KNearestNeighborClassifier: public Classifier{
 public:
     explicit KNearestNeighborClassifier(std::unique_ptr<CvKNearest> kn,int  k): _kn(std::move(kn)),_k(k){}
 
-    virtual ClassifierResult classify(const cv::Mat & feature) const{
+    virtual ClassifierResult classify(const cv::Mat & feature) const override{
         //return _svm->predict(feature) < 0 ? noaction : action;
         float res = _kn->find_nearest(feature,_k);
         if (res == 1) { return action; }
         else {return noaction;}
     }
-    virtual bool serialize(const std::string & filename) const {
+    virtual bool serialize(const std::string & filename) const override{
         //TODO: Not implemented in opencv2
         _kn->save(filename.c_str());
         return true;
+    }
+
+    virtual std::string name() const override{
+        return "KNearestNeighbor_k="+std::to_string(_k);
     }
 private:
     std::unique_ptr<CvKNearest> _kn;

@@ -1,0 +1,52 @@
+{
+  "landmark_dir": "path/to/landmark",
+  "action_dir": "/path/to/actiondir",
+  "action_threshold": 3,
+  "action_names": [
+    "Inner Brow Raiser",
+    "Outer Brow Raiser",
+    "Brow Lowerer",
+    "Upper Lid Raiser",
+    "Cheek Raiser",
+    "Lid Tightener",
+    "Nose Wrinkler",
+    "Upper Lid Raiser",
+    "Nasolabial Fold Deepener",
+    "Lip Corner Puller",
+    "Cheeck Puffer",
+    "Dimpler",
+    "Lip Corner Depressor",
+    "Lower Lip Depressor",
+    "Chin Raiser",
+    "Lip Puckerer",
+    "Lip Stretcher",
+    "Lip Funneler",
+    "Lip Tightner",
+    "Lip Pressor",
+    "Lips Part",
+    "Jaw Drop",
+    "Mouth Stretch",
+    "Lip Suck"
+  ],
+  "training_percent": 0.7,
+  "classifier": [
+    {"name": "svm", "type": "linear"},
+    {"name": "svm", "type": "rbf","gamma": 1 },
+    {"name": "svm", "type": "sigmoid","gamma": 1, "coef0": 0},
+    {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 2 }
+  ],
+  "cloud_processor": [
+    {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
+    {"name": "PointCloudNormalization"}
+  ],
+  "feature_processor": [
+    {"name": "pcaReducer", "retain_variance": 0.95},
+    {"name": "shuffle"}
+  ],
+  "frame_features": [
+    {"name": "xy"}
+  ],
+  "time_features": [
+    {"name": "differential", "base": {"name": "xy"}}
+  ]
+}

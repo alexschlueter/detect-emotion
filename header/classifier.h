@@ -48,6 +48,8 @@ class Classifier{
      * @return the class, -1 on failure
      */
     virtual ClassifierResult classify(const cv::Mat & feature) const = 0;
+
+    virtual std::string name() const = 0;
     
     virtual ~Classifier(){}
 };
@@ -80,6 +82,12 @@ public:
 
 using ConfusionMatrix=std::array<std::array<int,2>,2>;
 ConfusionMatrix computeConfusionMatrixFromTestSet(const Classifier & c, const cv::Mat& testset, const cv::Mat & truth);
+
+inline std::ostream& operator <<(std::ostream& stream, const ConfusionMatrix& matrix) {
+   stream << "[ "<<  matrix[0][0]<<", "<<matrix[0][1]<<"]" << std::endl;
+   stream << "[ "<<  matrix[1][0]<<", "<<matrix[1][1]<<"]" << std::endl;
+   return stream;
+}
 
 inline double computeRecall(const ConfusionMatrix & cm){
     // TP / (TP + FN)
