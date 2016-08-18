@@ -128,6 +128,13 @@ public:
     {
       return 2 * landmarksToKeep.size();
     }
+  std::string name() const override{
+      std::string res = "MaskFeatureExtraction";
+      for (int i: landmarksToKeep){
+          res += "_"+std::to_string(i);
+      }
+      return res;
+  }
 };
 
 /**

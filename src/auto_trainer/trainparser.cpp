@@ -17,35 +17,46 @@ template <typename T>
 using ParseMap = std::map<string,std::function<T*(const QJsonObject&)>>;
 
 static ParseMap<FeatureProcessor> featureProcessor_parser = {
-    {"pcareducer", [](const QJsonObject & obj){
-        double var = obj["retain_variance"].toDouble();
-        return new PCAFeatureReducer(var);
-     }},
-    {"shuffle", [](const QJsonObject&){ return new FeatureShuffler();}}
+        {"pcareducer", [](const QJsonObject & obj){
+                 double var = obj["retain_variance"].toDouble();
+                 return new PCAFeatureReducer(var);
+         }},
+        {"shuffle", [](const QJsonObject&){ return new FeatureShuffler();}},
+        {"minmaxnormalize", [](const QJsonObject&){ return new FeatureMinMaxNormalizer();}},
+        {"reducenegatives", [](const QJsonObject& obj){
+                 double negToPos = obj["negativeToPositives"].toDouble();
+                 return new ReduceNegatives(negToPos);
+         }}
 };
 
 static ParseMap<CloudProcessor> cloudProcessor_parser = {
-    {"randomjitterexpander", [](const QJsonObject& obj){
-        double meanx = obj["meanx"].toDouble();
-        double meany = obj["meany"].toDouble();
-        double stdx = obj["stdx"].toDouble();
-        double stdy = obj["stdy"].toDouble();
-        return new RandomJitterExpander(meanx,stdx,meany,stdy);
-    }},
-    {"pointcloudnormalization", [](const QJsonObject){return new CloudNormalizer;}}
+        {"randomjitterexpander", [](const QJsonObject& obj){
+                 double meanx = obj["meanx"].toDouble();
+                 double meany = obj["meany"].toDouble();
+                 double stdx = obj["stdx"].toDouble();
+                 double stdy = obj["stdy"].toDouble();
+                 return new RandomJitterExpander(meanx,stdx,meany,stdy);
+         }},
+        {"pointcloudnormalization", [](const QJsonObject){return new CloudNormalizer;}},
+        {"mask", [](const QJsonObject & obj){
+                 auto filename = obj["filename"].toString().toStdString();
+                 std::ifstream stream(filename);
+                 return new CloudMask(stream);
+         }}
 };
 
 
 static ParseMap<TimeFeatureExtractionBase<66>> timeFeature_parser = {
         {"differential",
          [](const QJsonObject & obj){
-            auto baseFeature = std::shared_ptr<FeatureExtractionBase<66>>(parseFrameFeature(obj["base"].toObject()));
-            return new SimpleTimeDifferentialExtraction<66>(baseFeature);
-          } }
+                 auto baseFeature = std::shared_ptr<FeatureExtractionBase<66>>(parseFrameFeature(obj["base"].toObject()));
+                 return new SimpleTimeDifferentialExtraction<66>(baseFeature);
+         } }
 };
 
 static ParseMap<FeatureExtractionBase<66>> frameFeature_parser = {
-        {"xy", [](const QJsonObject & obj){return new XYFeatureExtraction<66>(); }}
+        {"xy", [](const QJsonObject & obj){return new XYFeatureExtraction<66>(); }},
+        {"interpolation", [](const QJsonObject & obj){return new InterpolationFeatureExtraction();}}
 };
 
 ClassifierConstructor* parseSVM (const QJsonObject & data);
@@ -105,12 +116,12 @@ ClassifierConstrP parseClassifier(const QJsonObject & obj){
 
 template <typename F>
 auto parseArray(const QJsonArray & arr, F func) ->  std::vector<decltype(func(arr))> {
-  std::vector<decltype(func(arr))> res;
-  res.reserve(arr.size());
-  for (auto val: arr){
-     res.emplace_back(func(val));
-  }
-  return res;
+    std::vector<decltype(func(arr))> res;
+    res.reserve(arr.size());
+    for (auto val: arr){
+        res.emplace_back(func(val));
+    }
+    return res;
 }
 
 #define arrayf(f) [](const QJsonValue & a){return f(a.toObject());}

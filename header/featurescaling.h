@@ -9,11 +9,17 @@ private:
     cv::Mat colMin, colMax;
 
 public:
+    FeatureScaling(){}
     FeatureScaling(cv::Mat & trainingFeatures)
     {
         cv::reduce(trainingFeatures, colMin, 0, CV_REDUCE_MIN);
         cv::reduce(trainingFeatures, colMax, 0, CV_REDUCE_MAX);
         scale(trainingFeatures);
+    }
+    FeatureScaling(const cv::Mat & trainingFeatures)
+    {
+        cv::reduce(trainingFeatures, colMin, 0, CV_REDUCE_MIN);
+        cv::reduce(trainingFeatures, colMax, 0, CV_REDUCE_MAX);
     }
 
     void scale(cv::Mat & features) const

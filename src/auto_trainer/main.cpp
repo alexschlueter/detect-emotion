@@ -41,7 +41,8 @@ void Trainer::loop(){
        cout << " - Applying "<< proc->name()<< endl;
        proc->analyse(train_set);
        train_set = proc->apply(train_set);
-       test_set = proc->apply(test_set);
+       if (!proc->onlyOnTrainingSet())
+         test_set = proc->apply(test_set);
     }
 
     // Save processors
@@ -75,7 +76,8 @@ void Trainer::loop_action_feature(const CloudAction & train, const CloudAction &
         cout << "\t\t - Applying "<< proc->name()<< endl;
         proc->analyse(trainset);
         trainset = proc->apply(trainset);
-        testset = proc->apply(testset);
+        if (!proc->onlyOnTrainingSet())
+          testset = proc->apply(testset);
     }
 
     // Save processors
@@ -90,13 +92,18 @@ void Trainer::loop_action_feature(const CloudAction & train, const CloudAction &
     for(auto && classifier_constr: r.classifier){
         cout << "\t\t\t - Train Classificator"<< endl;
         auto classifier = classifier_constr->train(trainset._features,trainset._truth);
-        auto conf = computeConfusionMatrixFromTestSet(*classifier,testset._features,testset._truth);
         classifier->serialize(savepath+"/classifier_"+classifier->name()+".dat");
-        ofstream stream(curdir+"/"+classifier->name()+"_result.txt");
-        stream << conf << endl;
-        stream << "-------" << endl;
-        stream << "Recall: "<<computeRecall(conf)<<endl;
-        stream << "Precision: "<<computePrecision(conf)<<endl;
-        stream.close();
+        auto conf_train = computeConfusionMatrixFromTestSet(*classifier,trainset._features,trainset._truth);
+        auto conf_test = computeConfusionMatrixFromTestSet(*classifier,testset._features,testset._truth);
+        auto writeConfusion = [&classifier](const ConfusionMatrix& conf, const string & filename){
+          ofstream stream(filename);
+          stream << conf << endl;
+          stream << "-------" << endl;
+          stream << "Recall: "<<computeRecall(conf)<<endl;
+          stream << "Precision: "<<computePrecision(conf)<<endl;
+          stream.close();
+        };
+        writeConfusion(conf_train,curdir+"/"+classifier->name()+"train_result.txt");
+        writeConfusion(conf_test,curdir+"/"+classifier->name()+"test_result.txt");
     }
 }

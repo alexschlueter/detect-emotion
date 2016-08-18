@@ -10,6 +10,7 @@ public:
     virtual CloudAction apply(const CloudAction &) const = 0;
     virtual std::string name() const= 0;
     virtual void save(const std::string & filename) const = 0;
+    virtual bool onlyOnTrainingSet() const{ return false;}
 };
 
 
@@ -21,6 +22,7 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const = 0;
     virtual std::string name() const = 0;
     virtual void save(const std::string& filename ) const = 0;
+    virtual bool onlyOnTrainingSet() const{ return false;}
 };
 
 class RandomJitterExpander:public CloudProcessor{
@@ -40,6 +42,17 @@ public:
     virtual CloudAction apply(const CloudAction &) const ;
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
+};
+
+class CloudMask: public CloudProcessor{
+public:
+    CloudMask(std::ifstream & file);
+    virtual void analyse(const CloudAction & ) ;
+    virtual CloudAction apply(const CloudAction &) const ;
+    virtual std::string name() const;
+    virtual void save(const std::string & filename) const;
+private:
+    std::vector<int> _toKeep;
 };
 
 #include "pcanalysis.h"
@@ -62,6 +75,30 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const;
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
+};
+
+
+class ReduceNegatives: public FeatureProcessor{
+public:
+    ReduceNegatives(double negativesToPositives);
+    virtual void analyse(const FeatureTruth&);
+    virtual FeatureTruth apply(const FeatureTruth&) const;
+    virtual std::string name() const ;
+    virtual void save(const std::string& filename ) const;
+    virtual bool onlyOnTrainingSet() const{ return true;}
+private:
+    double _negativesToPostives;
+};
+
+#include "featurescaling.h"
+class FeatureMinMaxNormalizer: public FeatureProcessor{
+public:
+    virtual void analyse(const FeatureTruth&);
+    virtual FeatureTruth apply(const FeatureTruth&) const;
+    virtual std::string name() const ;
+    virtual void save(const std::string& filename ) const;
+private:
+    FeatureScaling _scaler;
 };
 
 #endif // PROCESSORS_H

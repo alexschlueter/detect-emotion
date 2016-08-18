@@ -95,3 +95,72 @@ void FeatureShuffler::save(const string &filename) const{}
 FeatureTruth FeatureShuffler::apply(const FeatureTruth & ft) const{
     return ft.shuffled();
 }
+
+void FeatureMinMaxNormalizer::analyse(const FeatureTruth & features){
+    _scaler = FeatureScaling(features._features);
+}
+
+std::string FeatureMinMaxNormalizer::name() const{
+    return "FeatureNormalizer";
+}
+
+FeatureTruth FeatureMinMaxNormalizer::apply(const FeatureTruth & f) const{
+    cv::Mat newFeatures = f._features.clone();
+    _scaler.scale(newFeatures);
+    return FeatureTruth(newFeatures,f._truth);
+}
+
+void FeatureMinMaxNormalizer::save(const string &filename) const{
+    //TODO: Implement
+}
+
+ReduceNegatives::ReduceNegatives(double negativesToPositives): _negativesToPostives(negativesToPositives){}
+
+std::string ReduceNegatives::name() const{
+    return std::string("ReduceNegatives_negToPos=")+std::to_string(_negativesToPostives);
+}
+
+void ReduceNegatives::analyse(const FeatureTruth &){}
+
+FeatureTruth ReduceNegatives::apply(const FeatureTruth &f ) const{
+    auto negatives = f.negativeSamples();
+    auto positives = f.positiveSamples();
+    if (negatives.size() < positives.size()*_negativesToPostives){
+       return f;
+    }
+    return positives.added(negatives.subset(0,positives.size()*_negativesToPostives));
+}
+
+void ReduceNegatives::save(const string &filename) const{}
+
+
+CloudMask::CloudMask(ifstream &file){
+      int lm;
+      while (file >> lm) {
+        _toKeep.push_back(lm);
+      }
+}
+
+void CloudMask::analyse(const CloudAction &){}
+CloudAction CloudMask::apply(const CloudAction & cloud) const{
+    VideoList newVideos;
+    for (const Video & v: cloud._landmarks){
+        Video newVideo = v;
+        for (auto && cloud: newVideo){
+            for (auto v: _toKeep){
+               cloud[v] = cv::Point2f(0,0);
+            }
+        }
+        newVideos.push_back(newVideo);
+    }
+    return CloudAction(std::move(newVideos), cloud._actionUnits);
+}
+void CloudMask::save(const string &filename) const{}
+std::string CloudMask::name() const{
+    std::stringstream str;
+    str << "MaskFeatureExtraction";
+    for (int i: _toKeep){
+        str << "_" << std::to_string(i);
+    }
+    return str.str();
+}

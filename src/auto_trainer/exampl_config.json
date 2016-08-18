@@ -36,15 +36,19 @@
     {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 2 }
   ],
   "cloud_processor": [
+    {"name": "mask", "filename": "path/to/mask.txt"},
     {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
     {"name": "PointCloudNormalization"}
   ],
   "feature_processor": [
+    {"name": "minmaxnormalize"},
     {"name": "pcaReducer", "retain_variance": 0.95},
-    {"name": "shuffle"}
+    {"name": "shuffle"},
+    {"name": "reducenegatives", "negativeToPositives": 3}
   ],
   "frame_features": [
-    {"name": "xy"}
+    {"name": "xy"},
+    {"name": "interpolation"}
   ],
   "time_features": [
     {"name": "differential", "base": {"name": "xy"}}
