@@ -5,6 +5,7 @@
 #include <vector>
 #include <math.h>
 #include <memory>
+#include <fstream>
 
 const float PI = 3.141592653589793;
 
@@ -75,10 +76,10 @@ public:
         int numFeatures = getNumFeatures();
         cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
 
-        for(int i=0; i<N-1; i+=2)
+        for(int i=0; i<N; i++)
         {
-            features.at<float>(0, i) = pointCloud[i].x;
-            features.at<float>(0, i + 1) = pointCloud[i].y;
+            features.at<float>(0, 2 * i) = pointCloud[i].x;
+            features.at<float>(0, 2 * i + 1) = pointCloud[i].y;
         }
         return features;
     }
@@ -89,6 +90,43 @@ public:
 
     std::string name() const override{
         return "XYFeatureExtraction";
+    }
+};
+
+/**
+ * Use the files in /masks to throw away features that are unhelpful in
+ * classifying the given action unit
+ */
+template<int N=66>
+class MaskFeatureExtraction : public FeatureExtractionBase<N>
+{
+private:
+  std::vector<int> landmarksToKeep;
+
+public:
+  MaskFeatureExtraction(std::ifstream & maskFile)
+    {
+      int lm;
+      while (maskFile >> lm) {
+        landmarksToKeep.push_back(lm);
+      }
+    }
+  cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const override
+    {
+      int numFeatures = getNumFeatures();
+      cv::Mat features = cv::Mat::zeros(1, numFeatures, CV_32FC1);
+
+      for (int i = 0; i < landmarksToKeep.size(); ++i)
+      {
+        features.at<float>(0, 2 * i) = pointCloud[landmarksToKeep[i]].x;
+        features.at<float>(0, 2 * i + 1) = pointCloud[landmarksToKeep[i]].y;
+      }
+
+      return features;
+    }
+  unsigned int getNumFeatures() const override
+    {
+      return 2 * landmarksToKeep.size();
     }
 };
 
