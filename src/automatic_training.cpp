@@ -5,6 +5,7 @@
 #include "pcanalysis.h"
 #include "featureextraction.h"
 #include "classifier.h"
+#include "featurescaling.h"
 #include <memory>
 #include <chrono>
 
@@ -39,12 +40,12 @@ std::vector<CvSVMParams> getSVMParamSet(int trainingIterations = 1000)
     defaultParams.term_crit.max_iter = trainingIterations;
     result.push_back(defaultParams);
 
-    /** 2) Linear parameter set. */
-    CvSVMParams linearParams;
-    linearParams.svm_type = CvSVM::C_SVC;
-    linearParams.kernel_type = CvSVM::LINEAR;
-    linearParams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, trainingIterations, 1e-6);
-    result.push_back(linearParams);
+    // /** 2) Linear parameter set. */
+    // CvSVMParams linearParams;
+    // linearParams.svm_type = CvSVM::C_SVC;
+    // linearParams.kernel_type = CvSVM::LINEAR;
+    // linearParams.term_crit = cvTermCriteria(CV_TERMCRIT_ITER, trainingIterations, 1e-6);
+    // result.push_back(linearParams);
 
     return result;
 }
@@ -97,14 +98,17 @@ int main(int argc, char** argv)
         cv::Mat trainingLabels = ttvSet.trainingLabels(true);
 
         /** Create PCA only from training set */
-        float retainedVariance = config.getFloatValue("retained_variance", 0.95);
-        std::cout << "Creating PCA from training set with " << retainedVariance << " retained variance..." << std::endl;
-        PCAnalysis pca(trainingFeatures, retainedVariance, true);
-        std::cout << "Finished PCA. Retained " << pca.getNumComponents() << " principal components." << std::endl;
+        // float retainedVariance = config.getFloatValue("retained_variance", 0.95);
+        // std::cout << "Creating PCA from training set with " << retainedVariance << " retained variance..." << std::endl;
+        // PCAnalysis pca(trainingFeatures, retainedVariance, true);
+        // std::cout << "Finished PCA. Retained " << pca.getNumComponents() << " principal components." << std::endl;
 
         /** Invoke PCA on training set */
-        std::cout << "Invoking PCA projection on training set..." << std::endl;
-        trainingFeatures= pca.project(trainingFeatures);
+        // std::cout << "Invoking PCA projection on training set..." << std::endl;
+        // trainingFeatures = pca.project(trainingFeatures);
+
+        /** Memorize min, max values in training set and scale features to [0, 1] */
+        FeatureScaling featScale(trainingFeatures);
 
         /** Create and train SVM with different parameter sets. */
         auto parameterSets = getSVMParamSet(config.getIntValue("training_iterations", 10000));
@@ -117,8 +121,12 @@ int main(int argc, char** argv)
             auto classifier = classifierConstructor->train(trainingFeatures, trainingLabels);
 
             std::cout << "\tEvaluating on test set..." << std::endl;
-            cv::Mat testFeatures = pca.project(ttvSet.testFeatures());
+            // cv::Mat testFeatures = pca.project(ttvSet.testFeatures());
+            cv::Mat testFeatures = ttvSet.testFeatures();
             cv::Mat testLabels = ttvSet.testLabels(true);
+
+            /** Scale test features using the memorized min / max values from training set */
+            featScale.scale(testFeatures);
 
             /** Calculate precision manually... */
             int error = 0, success = 0;
