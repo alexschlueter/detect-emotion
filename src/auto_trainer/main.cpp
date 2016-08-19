@@ -74,8 +74,13 @@ void Trainer::loop(){
 void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname, const vector<FeatureProcessorP> & processors){
     FeatureTruth trainset = train;
     FeatureTruth testset = test;
-    cout << "\t\tTrainset contains "<<trainset.positiveSamples().size()<<" positives of "<<trainset.size()<<" features"<<endl;
+    auto pos_train_size = trainset.positiveSamples().size();
+    cout << "\t\tTrainset contains "<<pos_train_size<<" positives of "<<trainset.size()<<" features"<<endl;
     cout << "\t\tTestset contains "<<testset.positiveSamples().size()<<" positives of "<<testset.size()<<" features"<<endl;
+    if (pos_train_size == 0 || pos_train_size == trainset.size()) {
+        cout << "Train-Set has a invalid number of positives... skip"<<endl;
+        return;
+    }
 
     // Apply functions to features
     cout <<endl<<"\t\tTransform fetaures..."<< endl;
