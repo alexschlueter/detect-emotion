@@ -114,12 +114,22 @@ FeatureTruth CloudAction::extractTimeFeature(const TimeFeatureExtractionBase<66>
     cv::Mat resFeatures;
     for(auto && video: this->_landmarks){
         if (resFeatures.empty()){
-            resFeatures = extractFeaturesFromData<66>(video,extractor);
+            resFeatures = extractTimeFeaturesFromData<66>(video,extractor);
         }else{
-            cv::vconcat(resFeatures,extractFeaturesFromData<66>(video,extractor),resFeatures);
+            cv::vconcat(resFeatures,extractTimeFeaturesFromData<66>(video,extractor),resFeatures);
         }
     }
-    //TODO: Diff of ActionUnits
-    cv::Mat resAction = extractAction(_actionUnits,actionname,threshold);
-    return FeatureTruth(resFeatures,resAction);
+
+    cv::Mat resActions;
+    for(auto && unit: _actionUnits){
+        std::vector<ActionUnit> unitV{unit};
+        cv::Mat curVideoTruth = extractAction(unitV, actionname, threshold);
+        cv::Mat timeTruth = extractTimeTruth<66>(curVideoTruth,extractor);
+        if (resActions.empty()){
+            resActions = timeTruth;
+        }else{
+            cv::vconcat(resActions,timeTruth,resActions);
+        }
+    }
+    return FeatureTruth(resFeatures,resActions);
 }

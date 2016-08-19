@@ -6,6 +6,7 @@
 #include <math.h>
 #include <memory>
 #include <fstream>
+#include "classifier.h"
 
 const float PI = 3.141592653589793;
 
@@ -41,9 +42,22 @@ public:
      * @param beg iterator which points to the first relevant element of the array
      * @param end iterator which points to the end of the relevant array part.
      *            The entry iterator points to will not be used.
-     * @return cv::Mat containing one row with extracted features. cv::Mat may be empty if failures occurs (e.g. not enough frames).
+     * @return cv::Mat (type = 32fc1) containing one row with extracted features. cv::Mat may be empty if failures occurs (e.g. not enough frames).
      */
     virtual cv::Mat extractFeatures(typename std::vector<PointCloud<N>>::const_iterator beg, typename std::vector<PointCloud<N>>::const_iterator  end) const = 0;
+
+    /**
+     * Compute new truth which works well with the extracted features.
+     * This function needs the truth mat, which corresponds
+     * to the slice of the video.
+     * This mat must have one column and a number of rows that is at least as great
+     * as getNumInputFrames() returns.
+     * If getNumFeatures() == 0 any length is allowed.
+     * Mat's type have to be 32fc1;
+     * @param submat cv::Mat containing relevant truth
+     * @return new truth
+     */
+    virtual ClassifierResult modifyTruth(cv::Mat submat) const = 0;
 
     /**
      * Returns the number of features extractFeatures returns.
@@ -376,7 +390,7 @@ public:
 template <int N=66>
 class SimpleTimeDifferentialExtraction: public TimeFeatureExtractionBase<N>{
 public:
-    SimpleTimeDifferentialExtraction(std::shared_ptr<FeatureExtractionBase<N>> base_feature): _base_feature(base_feature){  }
+    SimpleTimeDifferentialExtraction(std::shared_ptr<FeatureExtractionBase<N>> base_feature, float truth_diff_threshold): _base_feature(base_feature), _truth_diff_threshold(truth_diff_threshold){  }
 
     virtual cv::Mat extractFeatures(typename std::vector<PointCloud<N>>::const_iterator beg, typename std::vector<PointCloud<N>>::const_iterator  end) const{
         //cv::Mat res = cv::Mat::zeros(1,getNumFeatures(),CV_32FC1);
@@ -394,12 +408,20 @@ public:
     virtual unsigned int getNumInputFrames() const{
         return 3;
     }
+    virtual ClassifierResult modifyTruth(cv::Mat submat) const{
+        assert(submat.cols == 1);
+        assert(submat.rows >= getNumInputFrames());
+        auto diff = std::abs((submat.at<float>(2,0)-submat.at<float>(1,0)));
+        if (diff >= _truth_diff_threshold) return action;
+        return noaction;
+    }
 
     std::string name() const{
         return "SimpleTimeDifferentialExtraction_"+_base_feature->name();
     }
 private:
     std::shared_ptr<FeatureExtractionBase<N>> _base_feature;
+    float _truth_diff_threshold;
 };
 
 /**
@@ -428,22 +450,43 @@ cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const Fe
  * Helper function to extract time based features from a vector of point clouds.
  */
 template<int N=66>
-cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const TimeFeatureExtractionBase<N> &extractor)
+cv::Mat extractTimeFeaturesFromData(const std::vector<PointCloud<N>> &data, const TimeFeatureExtractionBase<N> &extractor)
 {
     if(data.size() == 0)
         return cv::Mat();
 
     // calculate required matrix size
-    unsigned int numRows = data.size();
     unsigned int numCols = extractor.getNumFeatures();
     unsigned int numSeq = extractor.getNumInputFrames();
+    unsigned int numRows = data.size() - numSeq+1;
     cv::Mat result(numRows, numCols, CV_32FC1);
     typename std::vector<PointCloud<N>>::const_iterator beg = data.begin();
 
     // extract features for each row
-    for(int i=0; i<numRows-numSeq+1; i++)
+    for(int i=0; i<numRows; i++)
     {
         extractor.extractFeatures(beg+i,data.end()).copyTo(result.row(i));
+    }
+    return result;
+}
+
+
+template<int N=66>
+cv::Mat extractTimeTruth(const cv::Mat &video, const TimeFeatureExtractionBase<N> &extractor)
+{
+    if(video.empty())
+        return cv::Mat();
+
+    // calculate required matrix size
+    unsigned int numSeq = extractor.getNumInputFrames();
+    unsigned int numRows = video.rows - numSeq+1;
+    cv::Mat result(numRows, 1, CV_32FC1);
+
+    // extract features for each row
+    for(int i=0; i<numRows; i++)
+    {
+        cv::Mat subm = video(cv::Rect(0,i,1,3));
+        result.at<float>(i,0) =  extractor.modifyTruth(subm);
     }
     return result;
 }

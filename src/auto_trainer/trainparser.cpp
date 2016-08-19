@@ -12,6 +12,11 @@ inline void lookupkeys(const QJsonObject & obj, std::initializer_list<string> ke
     for (auto && key: keys){
        if (!obj.contains(QString::fromStdString(key))){
            cerr << "[ERROR] Key not set in config: "<<key<<endl;
+           cerr << "[Info] Available keys: ";
+           for (auto && key: keys){
+               cerr << key << ",";
+           }
+           cerr << endl;
            exit(EXIT_FAILURE);
        }
     }
@@ -72,9 +77,10 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
 static ParseMap<TimeFeatureExtractionBase<66>> timeFeature_parser = {
         {"differential",
          [](const QJsonObject & obj){
-                 lookupkeys(obj,{"base"});
+                 lookupkeys(obj,{"base", "truth_threshold"});
                  auto baseFeature = std::shared_ptr<FeatureExtractionBase<66>>(parseFrameFeature(obj["base"].toObject()));
-                 return new SimpleTimeDifferentialExtraction<66>(baseFeature);
+                 auto truth_threshold = obj["truth_threshold"].toDouble();
+                 return new SimpleTimeDifferentialExtraction<66>(baseFeature, truth_threshold);
          } }
 };
 

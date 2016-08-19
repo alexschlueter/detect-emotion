@@ -1,5 +1,6 @@
 #include "classifier.h"
 #include <opencv2/ml/ml.hpp>
+#include <iostream>
 
 class KNearestNeighborClassifier: public Classifier{
 public:
@@ -38,8 +39,10 @@ std::unique_ptr<Classifier> KNearestNeighborsConstructor::train(const cv::Mat & 
     for(int i=0; i< truthset.rows; i++){
       if (truthAsFloat.at<float>(i,0)==noaction){
           truthAsFloat.at<float>(i,0) = 0;
-      }else{
+      }else if(truthAsFloat.at<float>(i,0) == action){
           truthAsFloat.at<float>(i,0) = 1;
+      }else{
+          std::cerr << "[WARNING] Invalid truth value given to classifier"<<std::endl;
       }
     }
     res->train(trainingsset, truthAsFloat, cv::Mat(), false, _k);

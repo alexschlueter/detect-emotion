@@ -51,6 +51,6 @@
     {"name": "interpolation"}
   ],
   "time_features": [
-    {"name": "differential", "base": {"name": "xy"}}
+    {"name": "differential", "base": {"name": "xy"}, "truth_threshold": 2}
   ]
 }

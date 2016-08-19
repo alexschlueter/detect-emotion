@@ -12,7 +12,7 @@ public:
     string outpath;
     void loop();
 private:
-    void loop_action_feature(const CloudAction & train, const CloudAction & test, const string & actionname, const FeatureExtractionBase<66> & extractor);
+    void loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string& actionname, const string & extractorname);
 };
 
 
@@ -56,17 +56,22 @@ void Trainer::loop(){
     for (auto && action: r.actionnames){
         cout << endl << "Train for Action "<< action<<endl;
         for (auto && feature: r.frame_features){
-            cout << "\tUsing feature "<<feature->name()<<endl;
-          loop_action_feature(train_set, test_set, action, *feature);
+            cout << "\tUsing frame-feature "<<feature->name()<<endl;
+          loop_action_feature(train_set.extractFrameFeature(*feature,action,r.action_threshold),
+                              test_set.extractFrameFeature(*feature,action,r.action_threshold), action, feature->name());
         }
-        //TODO: Time-Features with diff-ActionUnit
+
+        for (auto && feature: r.time_features){
+            cout << "\tUsing time-feature "<<feature->name()<<endl;
+            loop_action_feature(train_set.extractTimeFeature(*feature,action,r.action_threshold),
+                                     test_set.extractTimeFeature(*feature,action,r.action_threshold), action, feature->name());
+        }
     }
 }
 
-void Trainer::loop_action_feature(const CloudAction & train, const CloudAction & test, const string & actionname, const FeatureExtractionBase<66> & extractor){
-    // Extract Features from trainset and testset
-    FeatureTruth trainset = train.extractFrameFeature(extractor,actionname,r.action_threshold);
-    FeatureTruth testset = test.extractFrameFeature(extractor,actionname, r.action_threshold);
+void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname){
+    FeatureTruth trainset = train;
+    FeatureTruth testset = test;
     cout << "\t\tTrainset contains "<<trainset.positiveSamples().size()<<" positives from "<<trainset.size()<<" features"<<endl;
     cout << "\t\tTestset contains "<<testset.positiveSamples().size()<<" positives from "<<testset.size()<<" features"<<endl;
 
@@ -81,7 +86,7 @@ void Trainer::loop_action_feature(const CloudAction & train, const CloudAction &
     }
 
     // Save processors
-    string curdir = outpath+"/"+actionname+"/"+extractor.name();
+    string curdir = outpath+"/"+actionname+"/"+extractorname;
     string savepath = curdir+"/data/";
     mkdirs(savepath);
     for(auto && proc: r.feature_processor){

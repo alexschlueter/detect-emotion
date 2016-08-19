@@ -1,5 +1,7 @@
 #include "classifier.h"
 #include <sstream>
+#include <iostream>
+
 class RandomForestClassifier: public Classifier{
 public:
     explicit RandomForestClassifier(std::unique_ptr<CvRTrees> && rtree, CvRTParams param): _rtree(std::move(rtree)),_param(param){}
@@ -42,8 +44,10 @@ std::unique_ptr<Classifier> RandomForestConstructor::train(const cv::Mat & train
     for(int i=0; i< truthset.rows; i++){
       if (truthAsFloat.at<float>(i,0)==noaction){
           truthAsFloat.at<float>(i,0)= 0;
-      }else{
+      }else if(truthAsFloat.at<float>(i,0) == action){
           truthAsFloat.at<float>(i,0) = 1;
+      }else{
+          std::cerr << "[WARNING] Invalid truth value given to classifier"<<std::endl;
       }
     }
     res->train(trainingsset, CV_ROW_SAMPLE, truthAsFloat, cv::Mat(),cv::Mat(),cv::Mat(),cv::Mat(),_params);
