@@ -12,7 +12,7 @@ public:
     string outpath;
     void loop();
 private:
-    void loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string& actionname, const string & extractorname);
+    void loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string& actionname, const string & extractorname, const vector<FeatureProcessorP>& processors);
 };
 
 
@@ -55,29 +55,31 @@ void Trainer::loop(){
     // Train with Action / Features
     for (auto && action: r.actionnames){
         cout << endl << "Train for Action "<< action<<endl;
-        for (auto && feature: r.frame_features){
+        for (auto && feature_proc: r.frame_features_processors){
+            const FeatureExtractionBase<66>*  feature = &*feature_proc.extractor;
             cout << "\tUsing frame-feature "<<feature->name()<<endl;
           loop_action_feature(train_set.extractFrameFeature(*feature,action,r.action_threshold),
-                              test_set.extractFrameFeature(*feature,action,r.action_threshold), action, feature->name());
+                              test_set.extractFrameFeature(*feature,action,r.action_threshold), action, feature->name(), feature_proc.processors);
         }
 
-        for (auto && feature: r.time_features){
+        for (auto && feature_proc: r.time_features_processors){
+            const TimeFeatureExtractionBase<66>*  feature = &*feature_proc.extractor;
             cout << "\tUsing time-feature "<<feature->name()<<endl;
             loop_action_feature(train_set.extractTimeFeature(*feature,action,r.action_threshold),
-                                     test_set.extractTimeFeature(*feature,action,r.action_threshold), action, feature->name());
+                                     test_set.extractTimeFeature(*feature,action,r.action_threshold), action, feature->name(),feature_proc.processors);
         }
     }
 }
 
-void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname){
+void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname, const vector<FeatureProcessorP> & processors){
     FeatureTruth trainset = train;
     FeatureTruth testset = test;
-    cout << "\t\tTrainset contains "<<trainset.positiveSamples().size()<<" positives from "<<trainset.size()<<" features"<<endl;
-    cout << "\t\tTestset contains "<<testset.positiveSamples().size()<<" positives from "<<testset.size()<<" features"<<endl;
+    cout << "\t\tTrainset contains "<<trainset.positiveSamples().size()<<" positives of "<<trainset.size()<<" features"<<endl;
+    cout << "\t\tTestset contains "<<testset.positiveSamples().size()<<" positives of "<<testset.size()<<" features"<<endl;
 
     // Apply functions to features
     cout <<endl<<"\t\tTransform fetaures..."<< endl;
-    for (auto && proc: r.feature_processor){
+    for (auto && proc: processors){
         cout << "\t\t - Applying "<< proc->name()<< endl;
         proc->analyse(trainset);
         trainset = proc->apply(trainset);
@@ -89,7 +91,7 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
     string curdir = outpath+"/"+actionname+"/"+extractorname;
     string savepath = curdir+"/data/";
     mkdirs(savepath);
-    for(auto && proc: r.feature_processor){
+    for(auto && proc: processors){
         proc->save(savepath+proc->name());
     }
 

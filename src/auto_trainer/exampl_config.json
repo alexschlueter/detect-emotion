@@ -33,24 +33,39 @@
     {"name": "svm", "type": "linear"},
     {"name": "svm", "type": "rbf","gamma": 1 },
     {"name": "svm", "type": "sigmoid","gamma": 1, "coef0": 0},
-    {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 2 }
+    {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 2 },
+    {"name": "randomforest", "max_depth": 4, "rand_subset_size": 0, "number_of_trees": 10}
   ],
   "cloud_processor": [
     {"name": "mask", "filename": "path/to/mask.txt"},
     {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
     {"name": "PointCloudNormalization"}
   ],
-  "feature_processor": [
-    {"name": "minmaxnormalize"},
-    {"name": "pcaReducer", "retain_variance": 0.95},
-    {"name": "shuffle"},
-    {"name": "reducenegatives", "negativeToPositives": 3}
-  ],
   "frame_features": [
-    {"name": "xy"},
-    {"name": "interpolation"}
+    {
+      "name": "xy",
+      "processors":[
+        {"name": "minmaxnormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.95},
+        {"name": "shuffle"},
+        {"name": "reducenegatives", "negativeToPositives": 3}
+      ]
+    },
+    {
+      "name": "interpolation",
+      "processors":[
+        {"name": "minmaxnormalize"},
+        {"name": "shuffle"},
+        {"name": "reducenegatives", "negativeToPositives": 3}
+      ]
+    }
   ],
   "time_features": [
-    {"name": "differential", "base": {"name": "xy"}, "truth_threshold": 2}
+    {
+      "name": "differential", 
+      "base": {"name": "xy"}, 
+      "truth_threshold": 2,
+      "processors": []
+    }
   ]
 }

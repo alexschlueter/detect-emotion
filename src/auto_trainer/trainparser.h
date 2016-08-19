@@ -16,6 +16,15 @@ using FeatureProcessorP = _Ptr<FeatureProcessor>;
 using ClassifierConstrP = _Ptr<ClassifierConstructor>;
 using FrameFeatureExtractionP = _Ptr<FeatureExtractionBase<66>>;
 using TimeFeatureExtractionP = _Ptr<TimeFeatureExtractionBase<66>>;
+struct TimeFeatureProcessor{
+    TimeFeatureExtractionP extractor;
+    vector<FeatureProcessorP> processors;
+};
+struct FrameFeatureProcessor{
+    FrameFeatureExtractionP extractor;
+    vector<FeatureProcessorP> processors;
+};
+
 using namespace std;
 struct ParseResult{
     string landmarkdir;
@@ -23,10 +32,9 @@ struct ParseResult{
     vector<string> actionnames;
     float training_percent;
     vector<CloudProcessorP> cloud_processor;
-    vector<FeatureProcessorP> feature_processor;
     vector<ClassifierConstrP> classifier;
-    vector<FrameFeatureExtractionP> frame_features;
-    vector<TimeFeatureExtractionP> time_features;
+    vector<FrameFeatureProcessor> frame_features_processors;
+    vector<TimeFeatureProcessor> time_features_processors;
     int action_threshold;
 };
 

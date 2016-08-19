@@ -1,11 +1,25 @@
 #include "trainparser.h"
 #include "classifier.h"
 #include <QtCore/QJsonObject>
+#include <QJsonArray>
+
 template<typename T, typename... Args>
 std::unique_ptr<T> make_unique(Args&&... args) {
     return std::unique_ptr<T>(new T(std::forward<Args>(args)...));
 }
 using namespace std;
+
+template <typename F>
+auto parseArray(const QJsonArray & arr, F func) ->  std::vector<decltype(func(arr))> {
+    std::vector<decltype(func(arr))> res;
+    res.reserve(arr.size());
+    for (auto val: arr){
+        res.emplace_back(func(val));
+    }
+    return res;
+}
+
+#define arrayf(f) [](const QJsonValue & a){return f(a.toObject());}
 
 #include  <initializer_list>
 inline void lookupkeys(const QJsonObject & obj, std::initializer_list<string> keys){
@@ -92,7 +106,26 @@ static ParseMap<FeatureExtractionBase<66>> frameFeature_parser = {
 ClassifierConstructor* parseSVM (const QJsonObject & data);
 
 static ParseMap<ClassifierConstructor> classifier_parser = {
-        {"svm", &parseSVM}
+        {"svm", &parseSVM},
+        {"randomforest", [](const QJsonObject & obj){
+             lookupkeys(obj,{"max_depth","rand_subset_size","number_of_trees"});
+             int max_depth = obj["max_depth"].toInt();
+             int rand_subset_size = obj["rand_subset_size"].toInt();
+             int number_of_trees = obj["number_of_trees"].toInt();
+             CvRTParams params(max_depth,
+                      2, // min_sample_count
+                      0.0f, // regression_accuracy
+                      false, // use_surrogates
+                      2, //  max_categories - not used for 2 class problem
+                      nullptr, // priors
+                      false, //calc_var_importance (not needed)
+                      rand_subset_size, // nactive_vars
+                      number_of_trees, //max_num_of_trees_in_the_fores
+                      0, //forest_accuracy, 0 since not used, because terminate if all trees created
+                      CV_TERMCRIT_ITER //termcrit_type
+                      );
+             return new RandomForestConstructor(params);
+         }}
 };
 
 
@@ -102,12 +135,28 @@ TimeFeatureExtractionP parseTimeFeature(const QJsonObject & obj ){
     lookupname(timeFeature_parser,name);
     return  TimeFeatureExtractionP(timeFeature_parser[name](obj));
 }
+TimeFeatureProcessor parseTimeFeatureProcessor(const QJsonObject & obj){
+    lookupkeys(obj,{"processors"});
+    return TimeFeatureProcessor{
+        parseTimeFeature(obj),
+        parseArray(obj["processors"].toArray(),arrayf(parseFeatureProcessor))
+    };
+}
+
 
 FrameFeatureExtractionP parseFrameFeature(const QJsonObject & obj ){
     lookupkeys(obj,{"name"});
     auto name = obj["name"].toString().toLower().toStdString();
     lookupname(frameFeature_parser,name);
     return  FrameFeatureExtractionP(frameFeature_parser[name](obj));
+}
+
+FrameFeatureProcessor parseFrameFeatureProcessor(const QJsonObject & obj){
+    lookupkeys(obj,{"processors"});
+    return FrameFeatureProcessor{
+        parseFrameFeature(obj),
+        parseArray(obj["processors"].toArray(),arrayf(parseFeatureProcessor))
+    };
 }
 
 FeatureProcessorP parseFeatureProcessor(const QJsonObject &obj ){
@@ -160,20 +209,7 @@ ClassifierConstrP parseClassifier(const QJsonObject & obj){
 
 
 #include <QJsonDocument>
-#include <QJsonArray>
 #include <QFile>
-
-template <typename F>
-auto parseArray(const QJsonArray & arr, F func) ->  std::vector<decltype(func(arr))> {
-    std::vector<decltype(func(arr))> res;
-    res.reserve(arr.size());
-    for (auto val: arr){
-        res.emplace_back(func(val));
-    }
-    return res;
-}
-
-#define arrayf(f) [](const QJsonValue & a){return f(a.toObject());}
 
 
 ParseResult parseConfig(const string &filename){
@@ -190,7 +226,7 @@ ParseResult parseConfig(const string &filename){
     }
     lookupkeys(json,{"landmark_dir","action_dir","action_names",
                     "action_threshold","training_percent","classifier",
-                    "cloud_processor","feature_processor","frame_features",
+                    "cloud_processor","frame_features",
                     "time_features"
                });
     ParseResult res;
@@ -201,9 +237,8 @@ ParseResult parseConfig(const string &filename){
     res.training_percent = json["training_percent"].toDouble();
     res.classifier =  parseArray(json["classifier"].toArray(),arrayf(parseClassifier));
     res.cloud_processor =  parseArray(json["cloud_processor"].toArray(),arrayf(parseCloudProcessor));
-    res.feature_processor =  parseArray(json["feature_processor"].toArray(),arrayf(parseFeatureProcessor));
-    res.frame_features =  parseArray(json["frame_features"].toArray(),arrayf(parseFrameFeature));
-    res.time_features =  parseArray(json["time_features"].toArray(),arrayf(parseTimeFeature));
+    res.frame_features_processors = parseArray(json["frame_features"].toArray(), arrayf(parseFrameFeatureProcessor));
+    res.time_features_processors = parseArray(json["time_features"].toArray(), arrayf(parseTimeFeatureProcessor));
     return res;
 }
 
