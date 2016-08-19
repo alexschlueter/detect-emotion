@@ -50,6 +50,11 @@ template <typename T>
 inline void lookupname(const ParseMap<T> &map, const std::string & name){
     if (map.find(name) == map.end()){
            cerr << "[ERROR] Unknow name: "<<name<<endl;
+           cerr << "[INFO] Available names: ";
+           for(auto it = map.begin(); it != map.end(); it++){
+               cerr << it->first<<",";
+           }
+           cerr << endl;
            exit(EXIT_FAILURE);
     }
 }
@@ -84,7 +89,10 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
                  auto filename = obj["filename"].toString().toStdString();
                  std::ifstream stream(filename);
                  return new CloudMask(stream);
-         }}
+         }},
+       {"personshuffler", [](const QJsonObject & obj){
+            return new PersonShuffler();
+        }}
 };
 
 

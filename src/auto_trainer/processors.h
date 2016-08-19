@@ -77,6 +77,14 @@ public:
     virtual void save(const std::string& filename ) const;
 };
 
+class PersonShuffler: public CloudProcessor{
+public:
+    virtual void analyse(const CloudAction & ) ;
+    virtual CloudAction apply(const CloudAction &) const ;
+    virtual std::string name() const;
+    virtual void save(const std::string & filename) const;
+};
+
 
 class ReduceNegatives: public FeatureProcessor{
 public:

@@ -164,3 +164,28 @@ std::string CloudMask::name() const{
     }
     return str.str();
 }
+
+void PersonShuffler::analyse(const CloudAction &){}
+std::string PersonShuffler::name() const{
+    return "PersonShuffler";
+}
+void PersonShuffler::save(const string &filename) const{}
+CloudAction PersonShuffler::apply(const CloudAction & cloud) const{
+    std::vector<size_t> permutation;
+    permutation.reserve(cloud._landmarks.size());
+    for (size_t i=0; i< cloud._landmarks.size(); i++){
+        permutation.push_back(i);
+    }
+    std::random_device rd;
+    std::mt19937 generator(rd());
+    std::shuffle(permutation.begin(),permutation.end(),generator);
+    VideoList newVideos;
+    newVideos.reserve(cloud._landmarks.size());
+    vector<ActionUnit> newActionUnits;
+    newActionUnits.reserve(cloud._actionUnits.size());
+    for(size_t i : permutation){
+        newActionUnits.push_back(cloud._actionUnits[i]);
+        newVideos.push_back(cloud._landmarks[i]);
+    }
+    return CloudAction(std::move(newVideos),std::move(newActionUnits));
+}
