@@ -149,11 +149,6 @@ void printHelp(char* progName){
           << " -tit     -  Trainings iterations" << endl;
 }
 
-std::ostream& operator <<(std::ostream& stream, const ConfusionMatrix& matrix) {
-   stream << "[ "<<  matrix[0][0]<<", "<<matrix[0][1]<<"]" << endl;
-   stream << "[ "<<  matrix[1][0]<<", "<<matrix[1][1]<<"]" << endl;
-   return stream;
-}
 
 #include <random>
 std::vector<std::size_t> randomPermutation(std::size_t size){

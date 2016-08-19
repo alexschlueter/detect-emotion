@@ -7,6 +7,17 @@ std::unique_ptr<T> make_unique(Args&&... args) {
 }
 using namespace std;
 
+#include  <initializer_list>
+inline void lookupkeys(const QJsonObject & obj, std::initializer_list<string> keys){
+    for (auto && key: keys){
+       if (!obj.contains(QString::fromStdString(key))){
+           cerr << "[ERROR] Key not set in config: "<<key<<endl;
+           exit(EXIT_FAILURE);
+       }
+    }
+}
+
+
 FrameFeatureExtractionP parseFrameFeature(const QJsonObject & );
 TimeFeatureExtractionP parseTimeFeature(const QJsonObject & );
 ClassifierConstrP parseClassifier(const QJsonObject & );
@@ -16,14 +27,24 @@ CloudProcessorP parseCloudProcessor(const QJsonObject & );
 template <typename T>
 using ParseMap = std::map<string,std::function<T*(const QJsonObject&)>>;
 
+template <typename T>
+inline void lookupname(const ParseMap<T> &map, const std::string & name){
+    if (map.find(name) == map.end()){
+           cerr << "[ERROR] Unknow name: "<<name<<endl;
+           exit(EXIT_FAILURE);
+    }
+}
+
 static ParseMap<FeatureProcessor> featureProcessor_parser = {
         {"pcareducer", [](const QJsonObject & obj){
+                 lookupkeys(obj,{"retain_variance"});
                  double var = obj["retain_variance"].toDouble();
                  return new PCAFeatureReducer(var);
          }},
         {"shuffle", [](const QJsonObject&){ return new FeatureShuffler();}},
         {"minmaxnormalize", [](const QJsonObject&){ return new FeatureMinMaxNormalizer();}},
         {"reducenegatives", [](const QJsonObject& obj){
+                 lookupkeys(obj,{"negativeToPositives"});
                  double negToPos = obj["negativeToPositives"].toDouble();
                  return new ReduceNegatives(negToPos);
          }}
@@ -31,6 +52,7 @@ static ParseMap<FeatureProcessor> featureProcessor_parser = {
 
 static ParseMap<CloudProcessor> cloudProcessor_parser = {
         {"randomjitterexpander", [](const QJsonObject& obj){
+                 lookupkeys(obj,{"meanx","meany","stdx","stdy"});
                  double meanx = obj["meanx"].toDouble();
                  double meany = obj["meany"].toDouble();
                  double stdx = obj["stdx"].toDouble();
@@ -39,6 +61,7 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
          }},
         {"pointcloudnormalization", [](const QJsonObject){return new CloudNormalizer;}},
         {"mask", [](const QJsonObject & obj){
+                 lookupkeys(obj,{"filename"});
                  auto filename = obj["filename"].toString().toStdString();
                  std::ifstream stream(filename);
                  return new CloudMask(stream);
@@ -49,6 +72,7 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
 static ParseMap<TimeFeatureExtractionBase<66>> timeFeature_parser = {
         {"differential",
          [](const QJsonObject & obj){
+                 lookupkeys(obj,{"base"});
                  auto baseFeature = std::shared_ptr<FeatureExtractionBase<66>>(parseFrameFeature(obj["base"].toObject()));
                  return new SimpleTimeDifferentialExtraction<66>(baseFeature);
          } }
@@ -67,35 +91,51 @@ static ParseMap<ClassifierConstructor> classifier_parser = {
 
 
 TimeFeatureExtractionP parseTimeFeature(const QJsonObject & obj ){
-    return  TimeFeatureExtractionP(timeFeature_parser[obj["name"].toString().toLower().toStdString()](obj));
+    lookupkeys(obj,{"name"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(timeFeature_parser,name);
+    return  TimeFeatureExtractionP(timeFeature_parser[name](obj));
 }
 
 FrameFeatureExtractionP parseFrameFeature(const QJsonObject & obj ){
-    return  FrameFeatureExtractionP(frameFeature_parser[obj["name"].toString().toLower().toStdString()](obj));
+    lookupkeys(obj,{"name"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(frameFeature_parser,name);
+    return  FrameFeatureExtractionP(frameFeature_parser[name](obj));
 }
 
 FeatureProcessorP parseFeatureProcessor(const QJsonObject &obj ){
-    return FeatureProcessorP(featureProcessor_parser[obj["name"].toString().toLower().toStdString()](obj));
+    lookupkeys(obj,{"name"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(featureProcessor_parser,name);
+    return FeatureProcessorP(featureProcessor_parser[name](obj));
 }
 CloudProcessorP parseCloudProcessor(const QJsonObject &obj ){
-    return CloudProcessorP(cloudProcessor_parser[obj["name"].toString().toLower().toStdString()](obj));
+    lookupkeys(obj,{"name"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(cloudProcessor_parser,name);
+    return CloudProcessorP(cloudProcessor_parser[name](obj));
 }
 
 ClassifierConstructor* parseSVM (const QJsonObject & data){
     CvSVMParams params;
     params.term_crit.max_iter = data.contains("iterations") ? data["iterations"].toInt() : 1000;
     params.svm_type = CvSVM::C_SVC;
+    lookupkeys(data,{"type"});
     auto type = data["type"].toString().toLower();
     if (type == "linear" ){
         params.kernel_type = CvSVM::LINEAR;
     }else if (type == "rbf"){
+        lookupkeys(data,{"gamma"});
         params.kernel_type = CvSVM::RBF;
         params.gamma = data["gamma"].toDouble();
     }else if (type == "sigmoid"){
+        lookupkeys(data,{"gamma","coef0"});
         params.kernel_type = CvSVM::SIGMOID;
         params.gamma = data["gamma"].toDouble();
         params.coef0 = data["coef0"].toDouble();
     }else if (type == "polynom"){
+        lookupkeys(data,{"gamma","coef0","degree"});
         params.kernel_type = CvSVM::POLY;
         params.gamma = data["gamma"].toDouble();
         params.coef0 = data["coef0"].toDouble();
@@ -106,7 +146,10 @@ ClassifierConstructor* parseSVM (const QJsonObject & data){
 
 
 ClassifierConstrP parseClassifier(const QJsonObject & obj){
-    return ClassifierConstrP(classifier_parser[obj["name"].toString().toLower().toStdString().c_str()](obj));
+    lookupkeys(obj,{"name"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(classifier_parser,name);
+    return ClassifierConstrP(classifier_parser[name](obj));
 }
 
 
@@ -136,9 +179,14 @@ ParseResult parseConfig(const string &filename){
     QJsonParseError err;
     auto json = QJsonDocument::fromJson(data, & err).object();
     if (err.error != QJsonParseError::NoError){
-        cout << "[FATAL] Error while parsing json: "<<err.errorString().toStdString() << endl;
+        cerr << "[FATAL] Error while parsing json: "<<err.errorString().toStdString() << endl;
         exit(EXIT_FAILURE);
     }
+    lookupkeys(json,{"landmark_dir","action_dir","action_names",
+                    "action_threshold","training_percent","classifier",
+                    "cloud_processor","feature_processor","frame_features",
+                    "time_features"
+               });
     ParseResult res;
     res.landmarkdir = json["landmark_dir"].toString().toStdString();
     res.actiondir = json["action_dir"].toString().toStdString();
