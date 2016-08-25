@@ -39,7 +39,7 @@
   "cloud_processor": [
     {"name": "mask", "filename": "path/to/mask.txt"},
     {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
-    {"name": "PointCloudNormalization"}
+    {"name": "PointCloudNormalization"},
     {"name": "PersonShuffler"}
   ],
   "frame_features": [
@@ -63,8 +63,8 @@
   ],
   "time_features": [
     {
-      "name": "differential", 
-      "base": {"name": "xy"}, 
+      "name": "differential",
+      "base": {"name": "xy"},
       "truth_threshold": 2,
       "processors": []
     }

@@ -109,7 +109,7 @@ void sign_handler(int _){
 
 int main(int argc, char** argv){
     if (argc < 2){
-        cout << argv[0] << "configfile"<<endl;
+        cout << "[ERROR] " << argv[0] << ": path to configfile required"<<endl;
         return EXIT_FAILURE;
     }
     string filename(argv[1]);
