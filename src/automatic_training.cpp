@@ -8,6 +8,7 @@
 #include "featurescaling.h"
 #include <memory>
 #include <chrono>
+#include "pca.h"
 
 /** Returns a vector of feature extractor combinations. */
 std::vector<std::shared_ptr<FeatureExtractionBase<66>>> getFeatureExtractionSet()

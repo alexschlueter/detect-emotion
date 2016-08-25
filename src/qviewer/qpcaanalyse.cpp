@@ -22,7 +22,7 @@ void QPCAAnalyse::analyseData(const QVariantList &clouds){
     }else {
         if (!extractCloudList(clouds)) return;
     }
-    this->pca = std::unique_ptr<PCA_Result<66>>(new PCA_Result<66>(computePCA(pointcloud)));
+    this->pca = std::unique_ptr<PCA_Result<66>>(new PCA_Result<66>(computePCAWithNorm(pointcloud)));
 }
 
 QPCAAnalyse::QPCAAnalyse(const QVariantList & clouds, QObject* parent): QObject(parent) {
@@ -43,6 +43,6 @@ QVariantList QPCAAnalyse::rebuildPoints(QLandmark  * landmark, int dim){
         qDebug() << "QPCAAnalyse: dim "<<dim<< " is greater than 66. Set it to 66.";
         dim = 66;
     }
-    return  pointToVarList<66>(pca->rebuild(landmark->pointCloud(),dim).scale(500).points());
+    return  pointToVarList<66>(pca->rebuildWithNorm(landmark->pointCloud(),dim).scale(500).points());
 
 }

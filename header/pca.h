@@ -56,15 +56,12 @@ struct PCA_Result{
         }
         return result;
     }
-
-    template <typename F = decltype(standardNormalization<N>)>
-    PointCloud<N> rebuild(const PointCloud<N> & _cloud, int dimensions, F normFunc = standardNormalization) const{
+    PointCloud<N> rebuild(const PointCloud<N> & cloud, int dimensions) const{
         if (2*dimensions > _pca.eigenvectors.cols){ // Invalid Input TODO: Error message
             dimensions = 2*_pca.eigenvectors.cols;
         }
-        auto normCloud = normFunc(_cloud);
         PointArray<N> res;
-        cv::Mat_<float> input = normCloud.asMat();
+        cv::Mat_<float> input = cloud.asMat();
         cv::Mat projection = _pca.project(input);
         assert(projection.type()==CV_32FC1);
         float* projRow = projection.ptr<float>(0);
@@ -82,11 +79,24 @@ struct PCA_Result{
         return PointCloud<N>(std::move(res));
     }
 
-    void save(const std::string & filename){
-        cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+    template <typename F = decltype(standardNormalization<N>)>
+    PointCloud<N> rebuildWithNorm(const PointCloud<N> & _cloud, int dimensions, F normFunc = standardNormalization) const{
+        if (2*dimensions > _pca.eigenvectors.cols){ // Invalid Input TODO: Error message
+            dimensions = 2*_pca.eigenvectors.cols;
+        }
+        auto normCloud = normFunc(_cloud);
+        return rebuild(normCloud, dimensions);
+    }
+
+    void save(cv::FileStorage & storage){
         storage << "mean" <<_pca.mean;
         storage << "e_vects" <<_pca.eigenvectors;
         storage << "e_vals" << _pca.eigenvalues;
+    }
+
+    void save(const std::string & filename){
+        cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+        save(storage);
         storage.release();
     }
 
@@ -101,13 +111,10 @@ struct PCA_Result{
     }
 };
 
-
-template <unsigned int N, typename F = decltype(standardNormalization<N>)>
-PCA_Result<N> computePCA(const std::vector<PointCloud<N>>& _pointcloud, F normFunc = standardNormalization<N>){
+template <unsigned int N>
+PCA_Result<N> computePCA(const std::vector<PointCloud<N>>& _pointcloud){
     //Normalize PointCloudstatic_cast<float>(
     std::vector<PointCloud<N>> pointcloud(_pointcloud);
-    applyOnNormalizationOnPointCloud(pointcloud, normFunc);
-
     //
     cv::Mat_<float> pca_mat(pointcloud.size(),2*N);
     for (int y = 0; y < pointcloud.size(); y++){
@@ -120,6 +127,17 @@ PCA_Result<N> computePCA(const std::vector<PointCloud<N>>& _pointcloud, F normFu
     assert(pca.eigenvectors.type() == CV_32FC1);
     return PCA_Result<N>(pca);
 }
+
+
+template <unsigned int N, typename F = decltype(standardNormalization<N>)>
+PCA_Result<N> computePCAWithNorm(const std::vector<PointCloud<N>>& _pointcloud, F normFunc = standardNormalization<N>){
+    //Normalize PointCloudstatic_cast<float>(
+    std::vector<PointCloud<N>> pointcloud(_pointcloud);
+    applyOnNormalizationOnPointCloud(pointcloud, normFunc);
+
+    return computePCA(pointcloud);
+}
+
 
 
 #endif

@@ -93,7 +93,16 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
          }},
        {"personshuffler", [](const QJsonObject & obj){
             return new PersonShuffler();
-        }}
+        }},
+        {"pcareducer", [](const QJsonObject & obj){
+             lookupkeys(obj,{"reducing_dimension"});
+             auto dim = obj["reducing_dimension"].toInt();
+             if (dim < 1 || dim > 66){
+                 cerr << "[ERROR] Invalid reducing dimension: "<<dim<<endl;
+                 cerr << "[INFO] Valid are values between 1-66"<<endl;
+             }
+             return new PCACloudReducer(dim);
+         }}
 };
 
 

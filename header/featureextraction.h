@@ -345,37 +345,6 @@ public:
     }
 };
 
-#include "pca.h"
-template<int N=66>
-class SimpleNormalizeFeatureExtraction: public FeatureExtractionBase<N>
-{
-public:
-    SimpleNormalizeFeatureExtraction(int pca_dimension=2*N): _pca_dimension(pca_dimension){}
-    virtual cv::Mat extractFeatures(const PointCloud<N> &pointCloud) const{
-        if (_pca != nullptr){
-            return _pca->project(pointCloud,_pca_dimension);
-        }else { // No PCA -> just normalization
-            return standardNormalization(pointCloud).asMat();
-        }
-    }
-    virtual unsigned int getNumFeatures() const {
-       return _pca_dimension;
-    }
-
-    void compute_pca(const std::vector<PointCloud<N>> & points ) {
-        _pca = std::unique_ptr<PCA_Result<N>>(new PCA_Result<N>(computePCA<N>(points)));
-    }
-
-    void set_pca( std::unique_ptr<PCA_Result<N>> &&pca) {_pca = std::move(pca);}
-
-    std::string name() const{
-        return "SimpleNormalizeFeatureExtraction";
-    }
-private:
-    int _pca_dimension;
-    std::unique_ptr<PCA_Result<N>> _pca;
-};
-
 class InterpolationFeatureExtraction: public FeatureExtractionBase<66>{
 public:
     virtual cv::Mat extractFeatures(const PointCloud<66> &pointCloud) const;

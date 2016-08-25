@@ -54,6 +54,19 @@ private:
     std::vector<int> _toKeep;
 };
 
+#include "pca.h"
+class PCACloudReducer: public CloudProcessor{
+public:
+    PCACloudReducer(unsigned int dimension);
+    virtual void analyse(const CloudAction & ) ;
+    virtual CloudAction apply(const CloudAction &) const ;
+    virtual std::string name() const;
+    virtual void save(const std::string & filename) const;
+private:
+    unsigned int _dimension;
+    std::unique_ptr<PCA_Result<66>> _pca;
+};
+
 #include "pcanalysis.h"
 class PCAFeatureReducer: public FeatureProcessor{
 public:

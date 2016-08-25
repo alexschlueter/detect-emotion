@@ -260,3 +260,40 @@ CloudAction PersonShuffler::apply(const CloudAction & cloud) const{
     }
     return CloudAction(std::move(newVideos),std::move(newActionUnits));
 }
+
+/*======================================
+=           PCACloudReducer            =
+======================================*/
+
+PCACloudReducer::PCACloudReducer(unsigned int dimension):_dimension(dimension){}
+
+void PCACloudReducer::analyse(const CloudAction & c){
+    Video flatten;
+    for (const Video & v: c._landmarks){
+        flatten.insert(flatten.end(),v.begin(),v.end());
+    }
+    _pca = std::unique_ptr<PCA_Result<66>>(new PCA_Result<66>(std::move(computePCA<66>(flatten))));
+}
+
+std::string PCACloudReducer::name() const{
+    return std::string("PCA-Cloud-Reducer_outdim=")+std::to_string(_dimension);
+}
+
+CloudAction PCACloudReducer::apply(const CloudAction & cloud) const{
+    VideoList newVideos;
+    for (const Video & v: cloud._landmarks){
+        Video newVideo = v;
+        for (auto && points: newVideo){
+          points = _pca->rebuild(points,_dimension);
+        }
+        newVideos.push_back(newVideo);
+    }
+    return CloudAction(std::move(newVideos), cloud._actionUnits);
+}
+
+void PCACloudReducer::save(const string &filename) const{
+    cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+    storage << "outdim" << static_cast<int>(_dimension);
+    _pca->save(storage);
+    storage.release();
+}

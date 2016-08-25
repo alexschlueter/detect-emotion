@@ -40,7 +40,8 @@
     {"name": "mask", "filename": "path/to/mask.txt"},
     {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
     {"name": "PointCloudNormalization"},
-    {"name": "PersonShuffler"}
+    {"name": "PersonShuffler"},
+    {"name": "PCAReducer", "reducing_dimension": 50}
   ],
   "frame_features": [
     {
