@@ -2,10 +2,18 @@
 #include <sstream>
 #include <random>
 
-RandomJitterExpander::RandomJitterExpander(double meanx, double stdx, double meany, double stdy)
-    :_meanx(meanx),_meany(meany),_stdx(stdx),_stdy(stdy){}
+/*============================================
+=            RandomJitterExpander            =
+============================================*/
 
-void RandomJitterExpander::analyse(const CloudAction &){}
+RandomJitterExpander::RandomJitterExpander(double meanx, double stdx, double meany, double stdy)
+:_meanx(meanx),_meany(meany),_stdx(stdx),_stdy(stdy){
+    // empty
+}
+
+void RandomJitterExpander::analyse(const CloudAction &){
+    // empty
+}
 
 std::string  RandomJitterExpander::name() const{
     stringstream str;
@@ -17,7 +25,13 @@ std::string  RandomJitterExpander::name() const{
     return str.str();
 }
 
-void RandomJitterExpander::save(const string &) const{}
+void RandomJitterExpander::save(const string &) const{
+    // empty
+}
+
+/*===========================================
+=            RandomGaussJittered            =
+===========================================*/
 
 Video randomGaussJittered(const Video & set, double meanx, double stdx, double meany, double stdy){
     std::random_device rd;
@@ -48,7 +62,13 @@ CloudAction RandomJitterExpander::apply(const CloudAction & cloud) const{
     return cloud.appened(CloudAction(std::move(videos),std::move(actions)));
 }
 
-void CloudNormalizer::analyse(const CloudAction &){}
+/*=======================================
+=            CloudNormalizer            =
+=======================================*/
+
+void CloudNormalizer::analyse(const CloudAction &){
+    // empty
+}
 
 CloudAction CloudNormalizer::apply(const CloudAction & cloud) const{
     VideoList videos = cloud._landmarks;
@@ -66,9 +86,17 @@ std::string CloudNormalizer::name() const{
     return "PointCloudNormalization";
 }
 
-void CloudNormalizer::save(const std::string & filename) const{}
+void CloudNormalizer::save(const std::string & filename) const{
+    // empty
+}
 
-PCAFeatureReducer::PCAFeatureReducer(double retain_variance):_retain_variance(retain_variance){}
+/*=========================================
+=            PCAFeatureReducer            =
+=========================================*/
+
+PCAFeatureReducer::PCAFeatureReducer(double retain_variance):_retain_variance(retain_variance){
+    // empty
+}
 
 std::string PCAFeatureReducer::name() const {
     return "PCAFeatureReducer_retainVariance="+std::to_string(_retain_variance);
@@ -87,14 +115,26 @@ FeatureTruth PCAFeatureReducer::apply(const FeatureTruth & feature) const{
     return FeatureTruth(new_features,feature._truth);
 }
 
-void FeatureShuffler::analyse(const FeatureTruth &){}
+/*=======================================
+=            FeatureShuffler            =
+=======================================*/
+
+void FeatureShuffler::analyse(const FeatureTruth &){
+    // empty
+}
 std::string FeatureShuffler::name() const{
     return "FeatureShuffler";
 }
-void FeatureShuffler::save(const string &filename) const{}
+void FeatureShuffler::save(const string &filename) const{
+    // empty
+}
 FeatureTruth FeatureShuffler::apply(const FeatureTruth & ft) const{
     return ft.shuffled();
 }
+
+/*===============================================
+=            FeatureMinMaxNormalizer            =
+===============================================*/
 
 void FeatureMinMaxNormalizer::analyse(const FeatureTruth & features){
     _scaler = FeatureScaling(features._features);
@@ -114,13 +154,21 @@ void FeatureMinMaxNormalizer::save(const string &filename) const{
     //TODO: Implement
 }
 
-ReduceNegatives::ReduceNegatives(double negativesToPositives): _negativesToPostives(negativesToPositives){}
+/*=======================================
+=            ReduceNegatives            =
+=======================================*/
+
+ReduceNegatives::ReduceNegatives(double negativesToPositives): _negativesToPostives(negativesToPositives){
+    // empty
+}
 
 std::string ReduceNegatives::name() const{
     return std::string("ReduceNegatives_negToPos=")+std::to_string(_negativesToPostives);
 }
 
-void ReduceNegatives::analyse(const FeatureTruth &){}
+void ReduceNegatives::analyse(const FeatureTruth &){
+    // empty
+}
 
 FeatureTruth ReduceNegatives::apply(const FeatureTruth &f ) const{
     auto negatives = f.negativeSamples();
@@ -131,8 +179,13 @@ FeatureTruth ReduceNegatives::apply(const FeatureTruth &f ) const{
     return positives.added(negatives.subset(0,positives.size()*_negativesToPostives));
 }
 
-void ReduceNegatives::save(const string &filename) const{}
+void ReduceNegatives::save(const string &filename) const{
+    // empty
+}
 
+/*=================================
+=            CloudMask            =
+=================================*/
 
 CloudMask::CloudMask(ifstream &file){
       int lm;
@@ -141,7 +194,10 @@ CloudMask::CloudMask(ifstream &file){
       }
 }
 
-void CloudMask::analyse(const CloudAction &){}
+void CloudMask::analyse(const CloudAction &){
+    // empty
+}
+
 CloudAction CloudMask::apply(const CloudAction & cloud) const{
     VideoList newVideos;
     for (const Video & v: cloud._landmarks){
@@ -155,7 +211,11 @@ CloudAction CloudMask::apply(const CloudAction & cloud) const{
     }
     return CloudAction(std::move(newVideos), cloud._actionUnits);
 }
-void CloudMask::save(const string &filename) const{}
+
+void CloudMask::save(const string &filename) const{
+    // empty
+}
+
 std::string CloudMask::name() const{
     std::stringstream str;
     str << "MaskFeatureExtraction";
@@ -165,11 +225,22 @@ std::string CloudMask::name() const{
     return str.str();
 }
 
-void PersonShuffler::analyse(const CloudAction &){}
+/*======================================
+=            PersonShuffler            =
+======================================*/
+
+void PersonShuffler::analyse(const CloudAction &){
+    // empty
+}
+
 std::string PersonShuffler::name() const{
     return "PersonShuffler";
 }
-void PersonShuffler::save(const string &filename) const{}
+
+void PersonShuffler::save(const string &filename) const{
+    // empty
+}
+
 CloudAction PersonShuffler::apply(const CloudAction & cloud) const{
     std::vector<size_t> permutation;
     permutation.reserve(cloud._landmarks.size());

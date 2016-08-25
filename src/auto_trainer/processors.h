@@ -13,7 +13,6 @@ public:
     virtual bool onlyOnTrainingSet() const{ return false;}
 };
 
-
 using MatList = std::vector<cv::Mat>;
 class FeatureProcessor{
 public:
@@ -63,7 +62,6 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const;
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
-
 private:
     double _retain_variance;
     PCAnalysis _pca;
@@ -84,7 +82,6 @@ public:
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
 };
-
 
 class ReduceNegatives: public FeatureProcessor{
 public:
