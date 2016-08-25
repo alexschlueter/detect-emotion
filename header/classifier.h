@@ -132,6 +132,7 @@ private:
 class RandomForestConstructor: public ClassifierConstructor{
 public:
    explicit RandomForestConstructor(CvRTParams params);
+   RandomForestConstructor();
    virtual std::unique_ptr<Classifier> train(const cv::Mat & trainingsset, const cv::Mat& truthset) const;
    virtual std::unique_ptr<Classifier> deserialize(const std::string & filename) const;
 private:

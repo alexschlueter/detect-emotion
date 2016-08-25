@@ -33,6 +33,7 @@ private:
     CvRTParams _param;
 };
 RandomForestConstructor::RandomForestConstructor(CvRTParams params):_params(params){}
+RandomForestConstructor::RandomForestConstructor(){}
 
 std::unique_ptr<Classifier> RandomForestConstructor::train(const cv::Mat & trainingsset, const cv::Mat& truthset) const{
     auto res = std::unique_ptr<CvRTrees>(new CvRTrees());

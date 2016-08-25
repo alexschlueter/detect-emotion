@@ -5,10 +5,9 @@
 
 class FeatureScaling
 {
-private:
+public:
     cv::Mat colMin, colMax;
 
-public:
     FeatureScaling(){}
     FeatureScaling(cv::Mat & trainingFeatures)
     {

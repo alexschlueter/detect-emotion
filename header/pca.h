@@ -101,8 +101,11 @@ struct PCA_Result{
     }
 
     static PCA_Result<N> load(const std::string & filename){
-        cv::PCA pca;
         cv::FileStorage storage(filename,cv::FileStorage::READ);
+        return PCA_Result<N>::load(storage);
+    }
+    static PCA_Result<N> load(cv::FileStorage & storage){
+        cv::PCA pca;
         storage["mean"]>> pca.mean;
         storage["e_vects"]>> pca.eigenvectors;
         storage["e_vals"]>> pca.eigenvalues;

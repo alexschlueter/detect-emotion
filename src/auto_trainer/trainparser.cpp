@@ -36,19 +36,28 @@ inline void lookupkeys(const QJsonObject & obj, std::initializer_list<string> ke
        }
     }
 }
+inline void lookupfile(const string & filename){
+    if (!exists(filename)){
+        cerr << "[ERROR] "<<filename << "does not exists"<<endl;
+        exit(EXIT_FAILURE);
+    }
+}
 
 
 FrameFeatureExtractionP parseFrameFeature(const QJsonObject & );
 TimeFeatureExtractionP parseTimeFeature(const QJsonObject & );
-ClassifierConstrP parseClassifier(const QJsonObject & );
+ClassifierConstrP parseClassifierConstructor(const QJsonObject & );
+ClassifierP parseClassifier(const QJsonObject & );
 FeatureProcessorP parseFeatureProcessor(const QJsonObject &);
 CloudProcessorP parseCloudProcessor(const QJsonObject & );
 
 template <typename T>
-using ParseMap = std::map<string,std::function<T*(const QJsonObject&)>>;
-
+using ParseMap = std::map<string,std::function<T(const QJsonObject&)>>;
 template <typename T>
-inline void lookupname(const ParseMap<T> &map, const std::string & name){
+using LoaderMap = std::map<string,std::function<T(const string &,const QJsonObject&)>>;
+
+template <typename K, typename T>
+inline void lookupname(const std::map<K,T> &map, const std::string & name){
     if (map.find(name) == map.end()){
            cerr << "[ERROR] Unknow name: "<<name<<endl;
            cerr << "[INFO] Available names: ";
@@ -60,7 +69,26 @@ inline void lookupname(const ParseMap<T> &map, const std::string & name){
     }
 }
 
-static ParseMap<FeatureProcessor> featureProcessor_parser = {
+static LoaderMap<FeatureProcessor*> featureProcessor_loader = {
+   {"pcareducer", [](const string & filename, const QJsonObject &){
+        auto res =  PCAFeatureReducer::load(filename).release();
+        if (res == nullptr){
+            cerr << "[ERROR] Unable to load pca-feature-processor "<<filename<<endl;
+            exit(EXIT_FAILURE);
+        }
+        return res;
+    }},
+   {"minmaxnormalize", [](const string & filename,const QJsonObject&){
+        auto res = FeatureMinMaxNormalizer::load(filename).release();
+        if (res == nullptr){
+            cerr << "[ERROR] Unable to load minmaxnormalize-feature-processor "<<filename<<endl;
+            exit(EXIT_FAILURE);
+        }
+        return res;
+    }},
+};
+
+static ParseMap<FeatureProcessor*> featureProcessor_parser = {
         {"pcareducer", [](const QJsonObject & obj){
                  lookupkeys(obj,{"retain_variance"});
                  double var = obj["retain_variance"].toDouble();
@@ -75,7 +103,18 @@ static ParseMap<FeatureProcessor> featureProcessor_parser = {
          }}
 };
 
-static ParseMap<CloudProcessor> cloudProcessor_parser = {
+static LoaderMap<CloudProcessor*> cloudProcessor_loader = {
+   {"pcareducer", [](const string & filename, const QJsonObject &){
+        auto res = PCACloudReducer::load(filename).release();
+        if (res == nullptr){
+            cerr << "[ERROR] Unable to load pca-cloud-processor "<<filename<<endl;
+            exit(EXIT_FAILURE);
+        }
+        return res;
+    }}
+};
+
+static ParseMap<CloudProcessor*> cloudProcessor_parser = {
         {"randomjitterexpander", [](const QJsonObject& obj){
                  lookupkeys(obj,{"meanx","meany","stdx","stdy"});
                  double meanx = obj["meanx"].toDouble();
@@ -106,7 +145,7 @@ static ParseMap<CloudProcessor> cloudProcessor_parser = {
 };
 
 
-static ParseMap<TimeFeatureExtractionBase<66>> timeFeature_parser = {
+static ParseMap<TimeFeatureExtractionBase<66>*> timeFeature_parser = {
         {"differential",
          [](const QJsonObject & obj){
                  lookupkeys(obj,{"base", "truth_threshold"});
@@ -116,14 +155,20 @@ static ParseMap<TimeFeatureExtractionBase<66>> timeFeature_parser = {
          } }
 };
 
-static ParseMap<FeatureExtractionBase<66>> frameFeature_parser = {
+static ParseMap<FeatureExtractionBase<66>*> frameFeature_parser = {
         {"xy", [](const QJsonObject & obj){return new XYFeatureExtraction<66>(); }},
         {"interpolation", [](const QJsonObject & obj){return new InterpolationFeatureExtraction();}}
 };
 
 ClassifierConstructor* parseSVM (const QJsonObject & data);
 
-static ParseMap<ClassifierConstructor> classifier_parser = {
+#define classifier_loader_entry(name, classname) {#name, [](const string & filename,const QJsonObject &){return classname().deserialize(filename);}}
+static LoaderMap<unique_ptr<Classifier>> classifier_loader = {
+classifier_loader_entry(svm,SVMConstructor),
+classifier_loader_entry(randomforest,RandomForestConstructor)
+};
+
+static ParseMap<ClassifierConstructor*> classifier_parser = {
         {"svm", &parseSVM},
         {"randomforest", [](const QJsonObject & obj){
              lookupkeys(obj,{"max_depth","rand_subset_size","number_of_trees"});
@@ -153,6 +198,7 @@ TimeFeatureExtractionP parseTimeFeature(const QJsonObject & obj ){
     lookupname(timeFeature_parser,name);
     return  TimeFeatureExtractionP(timeFeature_parser[name](obj));
 }
+
 TimeFeatureProcessor parseTimeFeatureProcessor(const QJsonObject & obj){
     lookupkeys(obj,{"processors"});
     return TimeFeatureProcessor{
@@ -180,14 +226,26 @@ FrameFeatureProcessor parseFrameFeatureProcessor(const QJsonObject & obj){
 FeatureProcessorP parseFeatureProcessor(const QJsonObject &obj ){
     lookupkeys(obj,{"name"});
     auto name = obj["name"].toString().toLower().toStdString();
-    lookupname(featureProcessor_parser,name);
-    return FeatureProcessorP(featureProcessor_parser[name](obj));
+    if (obj.contains("load")){
+       lookupname(featureProcessor_parser,name);
+       auto filename = obj["load"].toString().toStdString();
+       return FeatureProcessorP(featureProcessor_loader[name](filename,obj));
+    }else{
+        lookupname(featureProcessor_parser,name);
+        return FeatureProcessorP(featureProcessor_parser[name](obj));
+    }
 }
 CloudProcessorP parseCloudProcessor(const QJsonObject &obj ){
     lookupkeys(obj,{"name"});
     auto name = obj["name"].toString().toLower().toStdString();
-    lookupname(cloudProcessor_parser,name);
-    return CloudProcessorP(cloudProcessor_parser[name](obj));
+    if (obj.contains("load")){
+       lookupname(cloudProcessor_loader,name);
+       auto filename = obj["load"].toString().toStdString();
+       return CloudProcessorP(cloudProcessor_loader[name](filename,obj));
+    }else{
+        lookupname(cloudProcessor_parser,name);
+        return CloudProcessorP(cloudProcessor_parser[name](obj));
+    }
 }
 
 ClassifierConstructor* parseSVM (const QJsonObject & data){
@@ -218,11 +276,20 @@ ClassifierConstructor* parseSVM (const QJsonObject & data){
 }
 
 
-ClassifierConstrP parseClassifier(const QJsonObject & obj){
+ClassifierConstrP parseClassifierConstructor(const QJsonObject & obj){
     lookupkeys(obj,{"name"});
     auto name = obj["name"].toString().toLower().toStdString();
     lookupname(classifier_parser,name);
     return ClassifierConstrP(classifier_parser[name](obj));
+}
+
+ClassifierP parseClassifier(const QJsonObject & obj){
+    lookupkeys(obj,{"name","load"});
+    auto name = obj["name"].toString().toLower().toStdString();
+    lookupname(classifier_loader,name);
+    auto filename = obj["load"].toString().toLower().toStdString();
+    lookupfile(filename);
+    return ClassifierP(classifier_loader[name](filename,obj));
 }
 
 
@@ -230,7 +297,7 @@ ClassifierConstrP parseClassifier(const QJsonObject & obj){
 #include <QFile>
 
 
-ParseResult parseConfig(const string &filename){
+TrainParseResult parseTrainConfig(const string &filename){
     auto f = QString::fromStdString(filename);
     QFile file(f);
     file.open(QIODevice::ReadOnly);
@@ -247,13 +314,13 @@ ParseResult parseConfig(const string &filename){
                     "cloud_processor","frame_features",
                     "time_features", "time_frame_step"
                });
-    ParseResult res;
+    TrainParseResult res;
     res.landmarkdir = json["landmark_dir"].toString().toStdString();
     res.actiondir = json["action_dir"].toString().toStdString();
     res.actionnames = parseArray(json["action_names"].toArray(),[](const QJsonValue & a){return a.toString().toStdString();});
     res.action_threshold = json["action_threshold"].toInt();
     res.training_percent = json["training_percent"].toDouble();
-    res.classifier =  parseArray(json["classifier"].toArray(),arrayf(parseClassifier));
+    res.classifier =  parseArray(json["classifier"].toArray(),arrayf(parseClassifierConstructor));
     res.cloud_processor =  parseArray(json["cloud_processor"].toArray(),arrayf(parseCloudProcessor));
     res.frame_features_processors = parseArray(json["frame_features"].toArray(), arrayf(parseFrameFeatureProcessor));
     res.time_features_processors = parseArray(json["time_features"].toArray(), arrayf(parseTimeFeatureProcessor));
@@ -265,4 +332,52 @@ ParseResult parseConfig(const string &filename){
     return res;
 }
 
+EvalParseResult parseEvalConfig(const string &filename){
+    auto f = QString::fromStdString(filename);
+    QFile file(f);
+    file.open(QIODevice::ReadOnly);
+    auto data = file.readAll();
+    file.close();
+    QJsonParseError err;
+    auto json = QJsonDocument::fromJson(data, & err).object();
+    if (err.error != QJsonParseError::NoError){
+        cerr << "[FATAL] Error while parsing json: "<<err.errorString().toStdString() << endl;
+        exit(EXIT_FAILURE);
+    }
+    lookupkeys(json,{"landmark_dir","action_dir","action_names","action_threshold","classifier", "cloud_processor"});
+    if ((json.contains("time_feature") || json.contains("time_frame_step"))&& json.contains("frame_feature")){
+       cerr << "[ERROR] json contains time-based config and frame-based config. Please decide for one." << endl;
+       exit(EXIT_FAILURE);
+    }
+    EvalParseResult res;
+    if (json.contains("time_feature")){
+        res.kind = EvalParseResult::Kind::time;
+    }else if (json.contains("frame_feature")){
+        res.kind = EvalParseResult::Kind::frame;
+    }else{
+        cerr << "[ERROR] time_feature or frame_feature config is missing" << endl;
+        exit(EXIT_FAILURE);
+    }
+    res.landmarkdir = json["landmark_dir"].toString().toStdString();
+    res.actiondir = json["action_dir"].toString().toStdString();
+    res.actionnames = parseArray(json["action_names"].toArray(),[](const QJsonValue & a){return a.toString().toStdString();});
+    res.action_threshold = json["action_threshold"].toInt();
+    res.classifier =  parseClassifier(json["classifier"].toObject());
+    res.cloud_processor =  parseArray(json["cloud_processor"].toArray(),arrayf(parseCloudProcessor));
+    switch (res.kind){
+    case EvalParseResult::Kind::time:
+        lookupkeys(json,{"time_frame_step"});
+        res.frameFeature = parseFrameFeatureProcessor(json["time_feature"].toObject());
+        res.time_frame_step = json["time_frame_step"].toInt();
+        if (res.time_frame_step < 1 ){
+            cerr << "[ERROR] time_frame_step is lower than 1"<<endl;
+            exit(EXIT_FAILURE);
+        }
+        break;
+    case EvalParseResult::Kind::frame:
+        res.frameFeature = parseFrameFeatureProcessor(json["frame_feature"].toObject());
+        break;
+    }
+    return res;
+}
 

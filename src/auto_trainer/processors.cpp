@@ -7,7 +7,7 @@
 ============================================*/
 
 RandomJitterExpander::RandomJitterExpander(double meanx, double stdx, double meany, double stdy)
-:_meanx(meanx),_meany(meany),_stdx(stdx),_stdy(stdy){
+    :_meanx(meanx),_meany(meany),_stdx(stdx),_stdy(stdy){
     // empty
 }
 
@@ -29,10 +29,6 @@ void RandomJitterExpander::save(const string &) const{
     // empty
 }
 
-/*===========================================
-=            RandomGaussJittered            =
-===========================================*/
-
 Video randomGaussJittered(const Video & set, double meanx, double stdx, double meany, double stdy){
     std::random_device rd;
     std::mt19937 gen(rd());
@@ -41,13 +37,13 @@ Video randomGaussJittered(const Video & set, double meanx, double stdx, double m
     Video res;
     res.reserve(set.size());
     for(auto && cloud: set){
-       PointCloud<66> newCloud(cloud);
-       PointArray<66> & points = newCloud.points();
-       for (cv::Point2f & p: points){
-           p.x += dx(gen);
-           p.y += dy(gen);
-       }
-       res.emplace_back(std::move(newCloud));
+        PointCloud<66> newCloud(cloud);
+        PointArray<66> & points = newCloud.points();
+        for (cv::Point2f & p: points){
+            p.x += dx(gen);
+            p.y += dy(gen);
+        }
+        res.emplace_back(std::move(newCloud));
     }
     return res;
 }
@@ -90,6 +86,7 @@ void CloudNormalizer::save(const std::string & filename) const{
     // empty
 }
 
+
 /*=========================================
 =            PCAFeatureReducer            =
 =========================================*/
@@ -113,6 +110,12 @@ void PCAFeatureReducer::save(const string &filename) const{
 FeatureTruth PCAFeatureReducer::apply(const FeatureTruth & feature) const{
     auto new_features = _pca.project(feature._features);
     return FeatureTruth(new_features,feature._truth);
+}
+
+std::unique_ptr<PCAFeatureReducer> PCAFeatureReducer::load(const string &filename){
+    std::unique_ptr<PCAFeatureReducer> res(new PCAFeatureReducer(0));
+    res->_pca.fromFile(filename);
+    return res;
 }
 
 /*=======================================
@@ -151,7 +154,25 @@ FeatureTruth FeatureMinMaxNormalizer::apply(const FeatureTruth & f) const{
 }
 
 void FeatureMinMaxNormalizer::save(const string &filename) const{
-    //TODO: Implement
+    cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+    storage << "max"<<_scaler.colMax;
+    storage << "min"<<_scaler.colMax;
+    storage.release();
+}
+
+std::unique_ptr<FeatureMinMaxNormalizer> FeatureMinMaxNormalizer::load(const string &filename) {
+    cv::FileStorage storage(filename,cv::FileStorage::READ);
+    if (!storage.isOpened()) return nullptr;
+    auto res =  std::unique_ptr<FeatureMinMaxNormalizer>(new FeatureMinMaxNormalizer());
+    try{
+        storage["max"] >> res->_scaler.colMax;
+        storage["min"] >> res->_scaler.colMax;
+    }catch (...){
+        storage.release();
+        return nullptr;
+    }
+    storage.release();
+    return res;
 }
 
 /*=======================================
@@ -174,7 +195,7 @@ FeatureTruth ReduceNegatives::apply(const FeatureTruth &f ) const{
     auto negatives = f.negativeSamples();
     auto positives = f.positiveSamples();
     if (negatives.size() < positives.size()*_negativesToPostives){
-       return f;
+        return f;
     }
     return positives.added(negatives.subset(0,positives.size()*_negativesToPostives));
 }
@@ -183,15 +204,16 @@ void ReduceNegatives::save(const string &filename) const{
     // empty
 }
 
+
 /*=================================
 =            CloudMask            =
 =================================*/
 
 CloudMask::CloudMask(ifstream &file){
-      int lm;
-      while (file >> lm) {
+    int lm;
+    while (file >> lm) {
         _toKeep.push_back(lm);
-      }
+    }
 }
 
 void CloudMask::analyse(const CloudAction &){
@@ -204,7 +226,7 @@ CloudAction CloudMask::apply(const CloudAction & cloud) const{
         Video newVideo = v;
         for (auto && cloud: newVideo){
             for (auto v: _toKeep){
-               cloud[v] = cv::Point2f(0,0);
+                cloud[v] = cv::Point2f(0,0);
             }
         }
         newVideos.push_back(newVideo);
@@ -240,6 +262,7 @@ std::string PersonShuffler::name() const{
 void PersonShuffler::save(const string &filename) const{
     // empty
 }
+
 
 CloudAction PersonShuffler::apply(const CloudAction & cloud) const{
     std::vector<size_t> permutation;
@@ -284,7 +307,7 @@ CloudAction PCACloudReducer::apply(const CloudAction & cloud) const{
     for (const Video & v: cloud._landmarks){
         Video newVideo = v;
         for (auto && points: newVideo){
-          points = _pca->rebuild(points,_dimension);
+            points = _pca->rebuild(points,_dimension);
         }
         newVideos.push_back(newVideo);
     }
@@ -296,4 +319,21 @@ void PCACloudReducer::save(const string &filename) const{
     storage << "outdim" << static_cast<int>(_dimension);
     _pca->save(storage);
     storage.release();
+}
+
+std::unique_ptr<PCACloudReducer> PCACloudReducer::load(const string &filename) {
+    cv::FileStorage storage(filename,cv::FileStorage::READ);
+    if (!storage.isOpened()) return nullptr;
+    try{
+        int dim;
+        storage["outdim"] >> dim;
+        if (dim < 1 || dim > 66) return nullptr;
+        auto res =  std::unique_ptr<PCACloudReducer>(new PCACloudReducer(dim));
+        res->_pca = std::unique_ptr<PCA_Result<66>>(new PCA_Result<66>(PCA_Result<66>::load(storage)));
+        storage.release();
+        return res;
+    }catch(...){
+        storage.release();
+        return nullptr;
+    }
 }

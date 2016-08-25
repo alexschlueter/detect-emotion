@@ -84,3 +84,8 @@ vector<ActionUnit> loadActionUnitFormFolder(const string & dir){
     }
     return res;
 }
+
+bool exists(const string &filename){
+    QFileInfo info(QString::fromStdString(filename));
+    return info.exists();
+}

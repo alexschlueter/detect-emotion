@@ -21,6 +21,6 @@ vector<ActionUnit> loadActionUnitFormFolder(const string & dir);
 
 void mkdirs(const string & filename);
 string dirOfFile(const string & filename);
-
+bool exists(const string& filename);
 
 #endif // UTIL_H
