@@ -117,5 +117,11 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
         };
         writeConfusion(conf_train,curdir+"/"+classifier->name()+"train_result.txt");
         writeConfusion(conf_test,curdir+"/"+classifier->name()+"test_result.txt");
+
+        // write everything to a single file as well, for easier comparison
+        ofstream stream(curdir + "/
+            results.csv");
+        stream << classifier->name() << "," << computeRecall(conf_test) << "," << computePrecision(conf_test) << std::endl;
+        stream.close();
     }
 }
