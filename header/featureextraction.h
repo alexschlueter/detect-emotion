@@ -450,7 +450,7 @@ cv::Mat extractFeaturesFromData(const std::vector<PointCloud<N>> &data, const Fe
  * Helper function to extract time based features from a vector of point clouds.
  */
 template<int N=66>
-cv::Mat extractTimeFeaturesFromData(const std::vector<PointCloud<N>> &data, const TimeFeatureExtractionBase<N> &extractor)
+cv::Mat extractTimeFeaturesFromData(const std::vector<PointCloud<N>> &data, const TimeFeatureExtractionBase<N> &extractor, int time_frame_step = 1)
 {
     if(data.size() == 0)
         return cv::Mat();
@@ -458,34 +458,59 @@ cv::Mat extractTimeFeaturesFromData(const std::vector<PointCloud<N>> &data, cons
     // calculate required matrix size
     unsigned int numCols = extractor.getNumFeatures();
     unsigned int numSeq = extractor.getNumInputFrames();
-    unsigned int numRows = data.size() - numSeq+1;
+    unsigned int numRows = data.size() - time_frame_step*(numSeq-1);
     cv::Mat result(numRows, numCols, CV_32FC1);
-    typename std::vector<PointCloud<N>>::const_iterator beg = data.begin();
+    std::vector<PointCloud<N>> subset;
+    if (time_frame_step != 1){
+        subset.reserve(numSeq);
+    }
+    using Iter = typename std::vector<PointCloud<N>>::const_iterator;
 
     // extract features for each row
     for(int i=0; i<numRows; i++)
     {
-        extractor.extractFeatures(beg+i,data.end()).copyTo(result.row(i));
+        Iter beg, end;
+        if (time_frame_step == 1){
+            beg = data.begin()+i;
+            end = beg + numSeq;
+        }else{
+           subset.clear();
+           for(int j=0; j < numSeq; j++){
+               assert(i+time_frame_step*j < data.size());
+               subset.push_back(data[i+j*time_frame_step]);
+           }
+           beg = subset.begin();
+           end = subset.end();
+        }
+        extractor.extractFeatures(beg, end).copyTo(result.row(i));
     }
     return result;
 }
 
 
 template<int N=66>
-cv::Mat extractTimeTruth(const cv::Mat &video, const TimeFeatureExtractionBase<N> &extractor)
+cv::Mat extractTimeTruth(const cv::Mat &video, const TimeFeatureExtractionBase<N> &extractor, int time_frame_step = 1)
 {
     if(video.empty())
         return cv::Mat();
 
     // calculate required matrix size
     unsigned int numSeq = extractor.getNumInputFrames();
-    unsigned int numRows = video.rows - numSeq+1;
+    unsigned int numRows = video.rows - time_frame_step*(numSeq-1);
     cv::Mat result(numRows, 1, CV_32FC1);
-
     // extract features for each row
     for(int i=0; i<numRows; i++)
     {
-        cv::Mat subm = video(cv::Rect(0,i,1,3));
+        cv::Mat subm;
+        if (time_frame_step == 1){
+                subm = video(cv::Rect(0,i,1,numSeq));
+        }else{
+            subm = cv::Mat(numSeq,1,CV_32FC1);
+            for (int j=0; j < numSeq; j++){
+                assert(i+time_frame_step*j < video.rows);
+                subm.at<float>(j) = video.at<float>(i+time_frame_step*j,0);
+            }
+        }
         result.at<float>(i,0) =  extractor.modifyTruth(subm);
     }
     return result;

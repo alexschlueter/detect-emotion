@@ -109,7 +109,7 @@ void sign_handler(int _){
 
 int main(int argc, char** argv){
     if (argc < 2){
-        cout << "[ERROR] " << argv[0] << ": path to configfile required"<<endl;
+        cerr << "[ERROR] " << argv[0] << ": path to configfile required"<<endl;
         return EXIT_FAILURE;
     }
     string filename(argv[1]);
@@ -175,8 +175,8 @@ void Trainer::loop(){
         for (auto && feature_proc: r.time_features_processors){
             const TimeFeatureExtractionBase<66>*  feature = &*feature_proc.extractor;
             cout << "\tUsing time-feature "<<feature->name()<<endl;
-            loop_action_feature(train_set.extractTimeFeature(*feature,action,r.action_threshold),
-                                     test_set.extractTimeFeature(*feature,action,r.action_threshold), action, feature->name(),feature_proc.processors);
+            loop_action_feature(train_set.extractTimeFeature(*feature,action,r.action_threshold,r.time_frame_step),
+                                     test_set.extractTimeFeature(*feature,action,r.action_threshold, r.time_frame_step), action, feature->name(),feature_proc.processors);
         }
         exporter->save();
     }

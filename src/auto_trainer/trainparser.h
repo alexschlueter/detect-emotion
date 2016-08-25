@@ -36,6 +36,7 @@ struct ParseResult{
     vector<FrameFeatureProcessor> frame_features_processors;
     vector<TimeFeatureProcessor> time_features_processors;
     int action_threshold;
+    int time_frame_step;
 };
 
 ParseResult parseConfig(const std::string & filename);

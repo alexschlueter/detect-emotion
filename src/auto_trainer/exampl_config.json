@@ -68,5 +68,6 @@
       "truth_threshold": 2,
       "processors": []
     }
-  ]
+  ],
+  "time_frame_step": 1
 }

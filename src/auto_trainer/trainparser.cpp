@@ -236,7 +236,7 @@ ParseResult parseConfig(const string &filename){
     lookupkeys(json,{"landmark_dir","action_dir","action_names",
                     "action_threshold","training_percent","classifier",
                     "cloud_processor","frame_features",
-                    "time_features"
+                    "time_features", "time_frame_step"
                });
     ParseResult res;
     res.landmarkdir = json["landmark_dir"].toString().toStdString();
@@ -248,6 +248,11 @@ ParseResult parseConfig(const string &filename){
     res.cloud_processor =  parseArray(json["cloud_processor"].toArray(),arrayf(parseCloudProcessor));
     res.frame_features_processors = parseArray(json["frame_features"].toArray(), arrayf(parseFrameFeatureProcessor));
     res.time_features_processors = parseArray(json["time_features"].toArray(), arrayf(parseTimeFeatureProcessor));
+    res.time_frame_step = json["time_frame_step"].toInt();
+    if (res.time_frame_step < 1 ){
+        cerr << "[ERROR] time_frame_step is lower than 1"<<endl;
+        exit(EXIT_FAILURE);
+    }
     return res;
 }
 
