@@ -23,6 +23,16 @@ string dirOfFile(const string &filename){
 }
 
 Video loadLandmark(const std::string &filename){
+    clog << "Loading Landmark-File: "<<filename << endl;
+    QFileInfo info(QString::fromStdString(filename));
+    if (!info.exists()){
+        cerr << "[ERROR] Cannot read landmark file, "<<filename << "does not exists"<< endl;
+        return Video();
+    }
+    if (!info.isFile()){
+        cerr << "[ERROR] "<<filename << " is not a file"<<endl;
+        return Video();
+    }
     auto landm =  readBinaryFile<66>(filename);
     std::vector<PointCloud<66>> res;
     res.reserve(landm.size());
@@ -33,6 +43,15 @@ Video loadLandmark(const std::string &filename){
 }
 
 VideoList loadLandmarkFromFolder(const string & dir){
+    QFileInfo info(QString::fromStdString(dir));
+    if (!info.exists()){
+        cerr << "[ERROR] Cannot read landmark directory, "<<dir << "does not exists"<< endl;
+        return VideoList();
+    }
+    if (!info.isDir()){
+        cerr << "[ERROR] "<<dir << " is not a directory"<<endl;
+        return VideoList();
+    }
     QDir d(QString::fromStdString(dir));
     d.setNameFilters(QStringList()<<"*.bin");
     auto entries = d.entryInfoList();
@@ -45,13 +64,23 @@ VideoList loadLandmarkFromFolder(const string & dir){
 }
 
 vector<ActionUnit> loadActionUnitFormFolder(const string & dir){
+    QFileInfo info(QString::fromStdString(dir));
+    if (!info.exists()){
+        cerr << "[ERROR] Cannot read action unit directory, "<<dir << "does not exists"<< endl;
+        return vector<ActionUnit>();
+    }
+    if (!info.isDir()){
+        cerr << "[ERROR] "<<dir << " is not a directory"<<endl;
+        return vector<ActionUnit>();
+    }
     QDir d(QString::fromStdString(dir));
     auto subdirs = d.entryInfoList(QDir::Dirs | QDir::NoDotAndDotDot);
     vector<ActionUnit> res;
     res.reserve(subdirs.size());
     for (auto && subdir : subdirs){
-        auto filename = QStringLiteral("%1/%2_AUs.txt").arg(subdir.absoluteFilePath()).arg(QDir(subdir.absoluteFilePath()).dirName());
-        res.emplace_back(readActionUnitFromFile(filename.toStdString()));
+        auto filename = QStringLiteral("%1/%2_AUs.txt").arg(subdir.absoluteFilePath()).arg(QDir(subdir.absoluteFilePath()).dirName()).toStdString();
+        clog << "Loading Action-Unit-File: "<<filename << endl;
+        res.emplace_back(readActionUnitFromFile(filename));
     }
     return res;
 }
