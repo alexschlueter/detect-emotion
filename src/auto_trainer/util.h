@@ -22,5 +22,7 @@ vector<ActionUnit> loadActionUnitFormFolder(const string & dir);
 void mkdirs(const string & filename);
 string dirOfFile(const string & filename);
 bool exists(const string& filename);
+string relativeTo(const string & dir, const string & filename);
+string absoluteTo(const string & dir, const string & relfilename);
 
 #endif // UTIL_H

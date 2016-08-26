@@ -388,6 +388,15 @@ public:
     std::string name() const{
         return "SimpleTimeDifferentialExtraction_"+_base_feature->name();
     }
+
+    inline const std::shared_ptr<FeatureExtractionBase<N>>& base_feature() const{
+       return _base_feature;
+    }
+
+    inline float truth_diff_threshold() const{
+        return _truth_diff_threshold;
+    }
+
 private:
     std::shared_ptr<FeatureExtractionBase<N>> _base_feature;
     float _truth_diff_threshold;

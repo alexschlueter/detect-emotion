@@ -8,6 +8,7 @@
   "action_threshold": 3,
   "classifier": {"name": "svm", "load": "/path/to/saved/classifier"},
   "cloud_processor": [
+    {"name": "mask", "tokeep": [1,2,5,3]},
     {"name": "PointCloudNormalization"}
   ],
   // EITHER FRAME-FEATURE

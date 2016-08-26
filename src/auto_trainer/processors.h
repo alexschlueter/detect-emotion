@@ -34,6 +34,7 @@ public:
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
     virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 private:
     double _meanx, _meany, _stdx, _stdy;
 };
@@ -50,11 +51,13 @@ public:
 class CloudMask: public CloudProcessor{
 public:
     CloudMask(std::ifstream & file);
+    CloudMask(const std::vector<int> &toKeep);
     virtual void analyse(const CloudAction & ) ;
     virtual CloudAction apply(const CloudAction &) const ;
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
     virtual bool serializable() const{ return false; }
+    inline const std::vector<int> &tokeep() const{return _toKeep;}
 private:
     std::vector<int> _toKeep;
 };
@@ -96,6 +99,7 @@ public:
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
     virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 };
 
 class PersonShuffler: public CloudProcessor{
@@ -105,6 +109,7 @@ public:
     virtual std::string name() const;
     virtual void save(const std::string & ) const;
     virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 };
 
 class ReduceNegatives: public FeatureProcessor{

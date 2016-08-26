@@ -89,3 +89,14 @@ bool exists(const string &filename){
     QFileInfo info(QString::fromStdString(filename));
     return info.exists();
 }
+
+
+string relativeTo(const string &dirname, const string &filename){
+    QDir dir(QString::fromStdString(dirname));
+    return dir.relativeFilePath(QString::fromStdString(filename)).toStdString();
+}
+
+string absoluteTo(const string &dirname, const string &relfilename){
+    QDir dir(QString::fromStdString(dirname));
+    return dir.filePath(QString::fromStdString(relfilename)).toStdString();
+}

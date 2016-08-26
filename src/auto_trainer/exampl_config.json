@@ -37,7 +37,7 @@
     {"name": "randomforest", "max_depth": 4, "rand_subset_size": 0, "number_of_trees": 10}
   ],
   "cloud_processor": [
-    {"name": "mask", "filename": "path/to/mask.txt"},
+    {"name": "mask", "filename": "path/to/mask.txt", "tokeep": [1,2,3,4]},
     {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
     {"name": "PointCloudNormalization"},
     {"name": "PersonShuffler"},

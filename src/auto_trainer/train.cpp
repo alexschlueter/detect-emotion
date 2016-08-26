@@ -7,6 +7,7 @@
 #include "util.h"
 #include "wrapper.h"
 #include "exporter.h"
+#include "evalwriter.h"
 using namespace std;
 
 
@@ -15,10 +16,11 @@ public:
     Trainer(TrainParseResult&& r_,const string & outpath_): r(std::move(r_)),outpath(outpath_){ }
     TrainParseResult r;
     string outpath;
+    string cloud_out_dir;
     void loop();
     std::unique_ptr<PythonExport> exporter;
 private:
-    void loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string& actionname, const string & extractorname, const vector<FeatureProcessorP>& processors);
+    void loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname, const vector<FeatureProcessorP> & processors, FrameFeatureProcessor* used_frame_feature,TimeFeatureProcessor * used_time_feature);
 };
 
 #if onunix
@@ -84,6 +86,7 @@ void Trainer::loop(){
 
     // Save processors
     string savepath = outpath+"/processor_data/";
+    this->cloud_out_dir = savepath;
     mkdirs(savepath);
     for(auto && proc: r.cloud_processor){
         proc->save(savepath+proc->name());
@@ -98,20 +101,24 @@ void Trainer::loop(){
             const FeatureExtractionBase<66>*  feature = &*feature_proc.extractor;
             cout << "\tUsing frame-feature "<<feature->name()<<endl;
           loop_action_feature(train_set.extractFrameFeature(*feature,action,r.action_threshold),
-                              test_set.extractFrameFeature(*feature,action,r.action_threshold), action, feature->name(), feature_proc.processors);
+                              test_set.extractFrameFeature(*feature,action,r.action_threshold),
+                              action, feature->name(), feature_proc.processors,
+                              &feature_proc,nullptr);
         }
 
         for (auto && feature_proc: r.time_features_processors){
             const TimeFeatureExtractionBase<66>*  feature = &*feature_proc.extractor;
             cout << "\tUsing time-feature "<<feature->name()<<endl;
             loop_action_feature(train_set.extractTimeFeature(*feature,action,r.action_threshold,r.time_frame_step),
-                                     test_set.extractTimeFeature(*feature,action,r.action_threshold, r.time_frame_step), action, feature->name(),feature_proc.processors);
+                                test_set.extractTimeFeature(*feature,action,r.action_threshold, r.time_frame_step),
+                                action, feature->name(),feature_proc.processors,
+                                nullptr, &feature_proc);
         }
         exporter->save();
     }
 }
 
-void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname, const vector<FeatureProcessorP> & processors){
+void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth & test, const string & actionname, const string & extractorname, const vector<FeatureProcessorP> & processors, FrameFeatureProcessor * used_frame_feature,TimeFeatureProcessor* used_time_feature){
     FeatureTruth trainset = train;
     FeatureTruth testset = test;
     auto pos_train_size = trainset.positiveSamples().size();
@@ -144,7 +151,8 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
     for(auto && classifier_constr: r.classifier){
         cout << "\t\t\t - Train Classificator"<< endl;
         auto classifier = classifier_constr->train(trainset._features,trainset._truth);
-        classifier->serialize(savepath+"/classifier_"+classifier->name()+".dat");
+        string classifier_outpath = savepath+"/classifier_"+classifier->name()+".dat";
+        classifier->serialize(classifier_outpath);
         auto conf_train = computeConfusionMatrixFromTestSet(*classifier,trainset._features,trainset._truth);
         auto conf_test = computeConfusionMatrixFromTestSet(*classifier,testset._features,testset._truth);
         auto writeConfusion = [&classifier](const ConfusionMatrix& conf, const string & filename){
@@ -159,9 +167,19 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
           return make_tuple(recall, precision);
         };
         string name = extractorname+"-"+classifier->name();
-        auto train_res = writeConfusion(conf_train,curdir+"/"+classifier->name()+"train_result.txt");
+        auto train_res = writeConfusion(conf_train,curdir+"/"+classifier->name()+"_train_result.txt");
         exporter->addTrainResult(get<0>(train_res),get<1>(train_res),name);
-        auto test_res = writeConfusion(conf_test,curdir+"/"+classifier->name()+"test_result.txt");
+        auto test_res = writeConfusion(conf_test,curdir+"/"+classifier->name()+"_test_result.txt");
         exporter->addTestResult(get<0>(test_res),get<1>(test_res),name);
+
+        string evalconfig = serializeEvalConfig(
+                    actionname, relativeTo(curdir,cloud_out_dir),
+                    r.cloud_processor,*classifier_constr,
+                    relativeTo(curdir,classifier_outpath),r.action_threshold,
+                    relativeTo(curdir,savepath),used_frame_feature,used_time_feature,
+                    r.time_frame_step);
+        ofstream stream(curdir+"/config_"+classifier->name()+".json");
+        stream << evalconfig;
+        stream.close();
     }
 }

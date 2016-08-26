@@ -156,7 +156,7 @@ FeatureTruth FeatureMinMaxNormalizer::apply(const FeatureTruth & f) const{
 void FeatureMinMaxNormalizer::save(const string &filename) const{
     cv::FileStorage storage(filename,cv::FileStorage::WRITE);
     storage << "max"<<_scaler.colMax;
-    storage << "min"<<_scaler.colMax;
+    storage << "min"<<_scaler.colMin;
     storage.release();
 }
 
@@ -166,7 +166,7 @@ std::unique_ptr<FeatureMinMaxNormalizer> FeatureMinMaxNormalizer::load(const str
     auto res =  std::unique_ptr<FeatureMinMaxNormalizer>(new FeatureMinMaxNormalizer());
     try{
         storage["max"] >> res->_scaler.colMax;
-        storage["min"] >> res->_scaler.colMax;
+        storage["min"] >> res->_scaler.colMin;
     }catch (...){
         storage.release();
         return nullptr;
@@ -215,6 +215,7 @@ CloudMask::CloudMask(ifstream &file){
         _toKeep.push_back(lm);
     }
 }
+CloudMask::CloudMask(const std::vector<int> & tokeep):_toKeep(tokeep){ }
 
 void CloudMask::analyse(const CloudAction &){
     // empty
