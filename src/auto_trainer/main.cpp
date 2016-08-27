@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string.h>
 #include "train.h"
 #include "eval.h"
 using namespace std;

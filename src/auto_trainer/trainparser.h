@@ -3,7 +3,7 @@
 #include "wrapper.h"
 #include "pointcloud.h"
 #include "classifier.h"
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 #include "featureextraction.h"
 #include "processors.h"
 #include "util.h"

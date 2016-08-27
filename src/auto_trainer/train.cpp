@@ -1,6 +1,7 @@
 #include "train.h"
 #include <iostream>
 #include <tuple>
+#include <csignal>
 #include "reader.h"
 #include "actionunit.h"
 #include "trainparser.h"
