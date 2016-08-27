@@ -60,6 +60,29 @@
         {"name": "shuffle"},
         {"name": "reducenegatives", "negativeToPositives": 3}
       ]
+    },
+    {
+      "name": "orientation",
+      "processors":[]
+    },
+    {
+      "name": "euclideandistance",
+      "processors":[]
+    },
+    {
+      "name": "centerdistance",
+      "processors":[]
+    },
+    {
+      "name": "centerorientation",
+      "processors":[]
+    },
+    {
+      "name": "aggregate",
+      "processors":[],
+      "subfeatures": [
+        {"name": "xy"}, {"name": "interpolation",}
+      ]
     }
   ],
   "time_features": [

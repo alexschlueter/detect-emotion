@@ -181,7 +181,7 @@ public:
         // (N-1)th triangular number
         return N * (N-1)/2;
     }
-    std::string name() const{
+    std::string name() const override{
         return "OrientationFeatureExtraction";
     }
 };
@@ -234,7 +234,7 @@ public:
         // the n-th triangular number
         return N*(N-1)/2;
     }
-    std::string name() const{
+    std::string name() const override{
         return "EuclideanDistanceExtraction";
     }
 };
