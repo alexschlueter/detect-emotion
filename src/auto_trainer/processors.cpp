@@ -360,6 +360,7 @@ std::string FeatureStdMeanNormalizer::name() const{
 }
 
 FeatureTruth FeatureStdMeanNormalizer::apply(const FeatureTruth & f) const{
+    assert(f._features.type() == CV_32FC1);
     cv::Mat newFeatures = f._features.clone();
     for(int i=0; i< f._features.cols; i++){
         newFeatures.col(i) = (newFeatures.col(i) - _mean.at<float>(i))/_std.at<float>(i);

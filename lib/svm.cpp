@@ -54,6 +54,7 @@ SVMConstructor::SVMConstructor(){
 std::unique_ptr<Classifier> SVMConstructor::train(const cv::Mat & trainingsset, const cv::Mat& truthset) const{
     auto res = std::unique_ptr<CvSVM>(new CvSVM());
     assert(trainingsset.rows == truthset.rows);
+    assert(trainingsset.type() == CV_32FC1);
     assert(truthset.cols == 1);
     //Transform Matrix for SVM
     cv::Mat truthAsFloat;

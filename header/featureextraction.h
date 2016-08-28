@@ -380,6 +380,7 @@ public:
     virtual ClassifierResult modifyTruth(cv::Mat submat) const{
         assert(submat.cols == 1);
         assert(submat.rows >= getNumInputFrames());
+        assert(submat.type() == CV_32FC1);
         auto diff = std::abs((submat.at<float>(2,0)-submat.at<float>(0,0)));
         if (diff >= _truth_diff_threshold) return action;
         return noaction;

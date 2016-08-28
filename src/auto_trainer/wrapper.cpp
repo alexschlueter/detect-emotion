@@ -23,6 +23,7 @@ FeatureTruth FeatureTruth::added(const FeatureTruth &other) const{
 }
 
 FeatureTruth FeatureTruth::sampleTruth(ClassifierResult res) const{
+    assert(_truth.type() == CV_32FC1);
     std::vector<size_t> idxs;
     for (size_t i=0; i< _truth.rows; i++){
         if (_truth.at<float>(i,0) == static_cast<float>(res)){

@@ -40,6 +40,7 @@ RandomForestConstructor::RandomForestConstructor(){}
 std::unique_ptr<Classifier> RandomForestConstructor::train(const cv::Mat & trainingsset, const cv::Mat& truthset) const{
     auto res = std::unique_ptr<CvRTrees>(new CvRTrees());
     assert(trainingsset.rows == truthset.rows);
+    assert(trainingsset.type() == CV_32FC1);
     assert(truthset.cols == 1);
 
     cv::Mat truthAsFloat;

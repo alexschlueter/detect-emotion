@@ -136,6 +136,7 @@ private:
     {
         // make sure this is a vector, not a matrix
         assert(data.rows == 1 || data.cols == 1);
+        assert(data.type() == CV_32FC1);
 
         // sum over all entries with the mean subtracted
         float variance = 0;
@@ -154,6 +155,7 @@ private:
 
     float calculateRetainedVariance(const cv::Mat &data, bool dataAsRow = true)
     {
+        assert(data.type() == CV_32FC1);
         // calculate the total variance of the dataset
         float totalVariance = 0;
         int numIterations = dataAsRow ? data.cols : data.rows;
