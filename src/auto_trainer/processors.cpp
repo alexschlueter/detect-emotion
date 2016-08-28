@@ -194,7 +194,7 @@ void ReduceNegatives::analyse(const FeatureTruth &){
 FeatureTruth ReduceNegatives::apply(const FeatureTruth &f ) const{
     auto negatives = f.negativeSamples();
     auto positives = f.positiveSamples();
-    if (negatives.size() < positives.size()*_negativesToPostives){
+    if (negatives.size() <= positives.size()*_negativesToPostives){
         return f;
     }
     return positives.added(negatives.subset(0,positives.size()*_negativesToPostives));
@@ -223,12 +223,16 @@ void CloudMask::analyse(const CloudAction &){
 
 CloudAction CloudMask::apply(const CloudAction & cloud) const{
     VideoList newVideos;
+    newVideos.reserve(cloud._landmarks.size());
     for (const Video & v: cloud._landmarks){
-        Video newVideo = v;
-        for (auto && cloud: newVideo){
+        Video newVideo;
+        newVideo.reserve(v.size());
+        for (auto && cloud: v){
+            PointCloud<66> newCloud{};
             for (auto v: _toKeep){
-                cloud[v] = cv::Point2f(0,0);
+                newCloud[v] = cloud[v];
             }
+           newVideo.push_back(newCloud);
         }
         newVideos.push_back(newVideo);
     }
