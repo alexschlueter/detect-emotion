@@ -36,6 +36,9 @@ void PythonExport::writePlot(){
     python_text << "\tprecisions = np.array([tset[k]['precision'] for k in tset])\n";
     python_text << "\trecalls = np.array([tset[k]['recall'] for k in tset])\n";
     python_text << "\tlabels = tset.keys()\n";
+    python_text << "\tworse = np.min([recalls,precisions],axis=0)\n";
+    python_text << "\tbestworse = np.argmax(worse)\n";
+    python_text << "\tprint('%s: best result %s with %f<=recall,precision'%(name,labels[bestworse],worse[bestworse]))\n";
     python_text << "\tax.plot(precisions, recalls,'pr')\n";
     python_text << "\tfor i in xrange(len(labels)):\n";
     python_text << "\t\tp,r = precisions[i], recalls[i]\n";
