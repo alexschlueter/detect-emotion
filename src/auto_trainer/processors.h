@@ -138,4 +138,16 @@ private:
     FeatureScaling _scaler;
 };
 
+class FeatureStdMeanNormalizer: public FeatureProcessor{
+public:
+    virtual void analyse(const FeatureTruth&);
+    virtual FeatureTruth apply(const FeatureTruth&) const;
+    virtual std::string name() const ;
+    virtual void save(const std::string& filename ) const;
+    static std::unique_ptr<FeatureStdMeanNormalizer> load(const std::string &filename);
+    virtual bool serializable() const{ return true; }
+private:
+    cv::Mat _mean, _std;
+};
+
 #endif // PROCESSORS_H

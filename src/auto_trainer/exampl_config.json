@@ -48,6 +48,7 @@
       "name": "xy",
       "processors":[
         {"name": "minmaxnormalize"},
+        {"name": "stdmeannormalize"},
         {"name": "pcaReducer", "retain_variance": 0.95},
         {"name": "shuffle"},
         {"name": "reducenegatives", "negativeToPositives": 3}

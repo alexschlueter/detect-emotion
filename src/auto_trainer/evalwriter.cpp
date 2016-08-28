@@ -87,6 +87,7 @@ QJsonObject serializeTimeFeature(const TimeFeatureExtractionBase<66> & extractor
 
 #define standard_feature_proc_entry(x,name) standard_entry(x,FeatureProcessor,name)
 static SerialMap<FeatureProcessor> featu_proc_serializer = {
+    standard_feature_proc_entry(FeatureStdMeanNormalizer,"stdmeannormalize"),
     standard_feature_proc_entry(FeatureMinMaxNormalizer,"minmaxnormalize"),
     standard_feature_proc_entry(PCAFeatureReducer,"pcaReducer")
 };

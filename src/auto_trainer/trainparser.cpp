@@ -89,6 +89,15 @@ static LoaderMap<FeatureProcessor*> featureProcessor_loader = {
          }
          return res;
      }},
+    {"stdmeannormalize", [](const string & filename,const QJsonObject&){
+         lookupfile(filename);
+         auto res = FeatureStdMeanNormalizer::load(filename).release();
+         if (res == nullptr){
+             cerr << "[ERROR] Unable to load stdmeannormalize-feature-processor "<<filename<<endl;
+             exit(EXIT_FAILURE);
+         }
+         return res;
+     }},
 };
 
 static ParseMap<FeatureProcessor*> featureProcessor_parser = {
@@ -99,6 +108,7 @@ static ParseMap<FeatureProcessor*> featureProcessor_parser = {
      }},
     {"shuffle", [](const QJsonObject&){ return new FeatureShuffler();}},
     {"minmaxnormalize", [](const QJsonObject&){ return new FeatureMinMaxNormalizer();}},
+    {"stdmeannormalize", [](const QJsonObject&){ return new FeatureStdMeanNormalizer();}},
     {"reducenegatives", [](const QJsonObject& obj){
          lookupkeys(obj,{"negativeToPositives"});
          double negToPos = obj["negativeToPositives"].toDouble();
@@ -155,6 +165,7 @@ static ParseMap<CloudProcessor*> cloudProcessor_parser = {
          if (dim < 1 || dim > 66){
              cerr << "[ERROR] Invalid reducing dimension: "<<dim<<endl;
              cerr << "[INFO] Valid are values between 1-66"<<endl;
+             exit(EXIT_FAILURE);
          }
          return new PCACloudReducer(dim);
      }}

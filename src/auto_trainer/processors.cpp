@@ -144,7 +144,7 @@ void FeatureMinMaxNormalizer::analyse(const FeatureTruth & features){
 }
 
 std::string FeatureMinMaxNormalizer::name() const{
-    return "FeatureNormalizer";
+    return "FeatureMinMaxNormalizer";
 }
 
 FeatureTruth FeatureMinMaxNormalizer::apply(const FeatureTruth & f) const{
@@ -337,4 +337,54 @@ std::unique_ptr<PCACloudReducer> PCACloudReducer::load(const string &filename) {
         storage.release();
         return nullptr;
     }
+}
+
+/*===============================================
+=            FeatureStdMeanNormalizer           =
+===============================================*/
+
+void FeatureStdMeanNormalizer::analyse(const FeatureTruth & features){
+    cv::reduce(features._features,_mean,0,CV_REDUCE_AVG);
+    cv::Mat mean2;
+    cv::pow(_mean,2,mean2);
+    cv::Mat features2mean;
+    cv::Mat features2;
+    cv::pow(features._features,2,features2);
+    cv::reduce(features2,features2mean,0,CV_REDUCE_AVG);
+
+    cv::sqrt(features2mean - mean2,_std);
+}
+
+std::string FeatureStdMeanNormalizer::name() const{
+    return "FeatureStdMeanNormalizer";
+}
+
+FeatureTruth FeatureStdMeanNormalizer::apply(const FeatureTruth & f) const{
+    cv::Mat newFeatures = f._features.clone();
+    for(int i=0; i< f._features.cols; i++){
+        newFeatures.col(i) = (newFeatures.col(i) - _mean.at<float>(i))/_std.at<float>(i);
+    }
+    return FeatureTruth(newFeatures,f._truth);
+}
+
+void FeatureStdMeanNormalizer::save(const string &filename) const{
+    cv::FileStorage storage(filename,cv::FileStorage::WRITE);
+    storage << "std"<<_std;
+    storage << "mean"<<_mean;
+    storage.release();
+}
+
+std::unique_ptr<FeatureStdMeanNormalizer> FeatureStdMeanNormalizer::load(const string &filename) {
+    cv::FileStorage storage(filename,cv::FileStorage::READ);
+    if (!storage.isOpened()) return nullptr;
+    auto res =  std::unique_ptr<FeatureStdMeanNormalizer>(new FeatureStdMeanNormalizer());
+    try{
+        storage["std"] >> res->_std;
+        storage["mean"] >> res->_mean;
+    }catch (...){
+        storage.release();
+        return nullptr;
+    }
+    storage.release();
+    return res;
 }
