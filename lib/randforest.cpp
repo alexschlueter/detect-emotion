@@ -22,6 +22,8 @@ public:
      std::stringstream str;
      str << "random_forest";
      str << "_maxCategories="<<params.max_categories;
+     str << "_rand_subset_size="<<params.nactive_vars;
+     str << "_number_of_trees="<<params.term_crit.max_iter;
      str << "_maxDepth="<<params.max_depth;
      str << "_min_sample_count="<<params.min_sample_count;
      str << "_regression_accuracy="<<params.regression_accuracy;
