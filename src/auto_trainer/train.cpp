@@ -150,7 +150,7 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
 
     // Train every classifier
     for(auto && classifier_constr: r.classifier){
-        cout << "\t\t\t - Train Classificator"<< endl;
+        cout << "\t\t\t - Train Classificator"<<flush;
         auto classifier = classifier_constr->train(trainset._features,trainset._truth);
         string classifier_outpath = savepath+"/classifier_"+classifier->name()+".dat";
         classifier->serialize(classifier_outpath);
@@ -172,6 +172,7 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
         exporter->addTrainResult(get<0>(train_res),get<1>(train_res),name);
         auto test_res = writeConfusion(conf_test,curdir+"/"+classifier->name()+"_test_result.txt");
         exporter->addTestResult(get<0>(test_res),get<1>(test_res),name);
+        cout << " => Recall: "<<get<0>(test_res)<<", Precision: "<<get<1>(test_res)<<endl;
 
         string evalconfig = serializeEvalConfig(
                     actionname, relativeTo(curdir,cloud_out_dir),
