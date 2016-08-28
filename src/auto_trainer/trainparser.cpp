@@ -341,7 +341,17 @@ TrainParseResult parseTrainConfig(const string &filename){
     QJsonParseError err;
     auto json = QJsonDocument::fromJson(data, & err).object();
     if (err.error != QJsonParseError::NoError){
-        cerr << "[FATAL] Error while parsing json: "<<err.errorString().toStdString() << endl;
+        // Extrace line, column from offset
+        auto it = data.begin();
+        auto err_idx = data.begin()+err.offset;
+        unsigned int line = 0;
+        unsigned int col = 0;
+        while (it != err_idx && it != data.end()){
+            if (*it == '\n') {line++; col = 0;}
+            else {col++;}
+            it++;
+        }
+        cerr << "[FATAL] Error while parsing json "<<line+1<<":"<<col+1<<": "<<err.errorString().toStdString() << endl;
         exit(EXIT_FAILURE);
     }
     lookupkeys(json,{"landmark_dir","action_dir","action_names",

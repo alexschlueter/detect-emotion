@@ -43,10 +43,28 @@ QJsonObject serializeCloudProcessor(const CloudProcessor & processor){
     return cloud_proc_serializer[typeid(processor).name()](processor);
 }
 
+QJsonObject serializeFrameFeature(const FeatureExtractionBase<66> & extractor);
+
 #define standard_frame_extr_entry(x,name) standard_entry(x,FeatureExtractionBase<66>,name)
 static SerialMap<FeatureExtractionBase<66>> frame_extr_serializer = {
     standard_frame_extr_entry(XYFeatureExtraction<66>, "xy"),
-    standard_frame_extr_entry(InterpolationFeatureExtraction, "interpolation")
+    standard_frame_extr_entry(InterpolationFeatureExtraction, "interpolation"),
+    standard_frame_extr_entry(OrientationExtraction<66>, "orientation"),
+    standard_frame_extr_entry(CenterOrientationExtraction<66>, "centerorientation"),
+    standard_frame_extr_entry(EuclideanDistanceExtraction<66>, "euclideandistance"),
+    standard_frame_extr_entry(CenterDistanceExtraction<66>, "centerdistance"),
+    standard_frame_extr_entry(CenterOrientationExtraction<66>, "centerorientation"),
+    {typeid(FeatureExtractionAggregate<66>).name(), [](const FeatureExtractionBase<66> & t){
+         const FeatureExtractionAggregate<66> & feature = dynamic_cast<const FeatureExtractionAggregate<66>&>(t);
+         QJsonObject res;
+         res["name"]="aggregate";
+         QJsonArray arr;
+         for (auto && subfeature: feature.extractions){
+             arr.push_back(serializeFrameFeature(*subfeature));
+         }
+         res["subfeatures"] = arr;
+         return res;
+     }}
 };
 #undef standard_frame_extr_entry
 QJsonObject serializeFrameFeature(const FeatureExtractionBase<66> & extractor){
