@@ -1,0 +1,46 @@
+%Filename: t1fmt.fd
+%Created by: tex driver
+%Created using fontinst v1.801
+
+%THIS FILE SHOULD BE PUT IN A TEX INPUTS DIRECTORY
+
+\ProvidesFile{t1fmt.fd}
+   [2008/02/14 Fontinst v1.801 font definitions for T1/fMt.]
+
+\DeclareFontFamily{T1}{fMt}{}
+
+\DeclareFontShape{T1}{fMt}{m}{n}{
+   <-> fMtr8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{m}{sc}{
+   <-> fMtrc8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{m}{sl}{
+   <-> fMtro8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{m}{it}{
+   <-> fMtri8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{b}{n}{
+   <-> fMtb8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{b}{sc}{
+   <-> fMtbc8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{b}{sl}{
+   <-> fMtbo8t
+}{}
+
+\DeclareFontShape{T1}{fMt}{bx}{n}{<->ssub * fMt/b/n}{}
+\DeclareFontShape{T1}{fMt}{bx}{sc}{<->ssub * fMt/b/sc}{}
+\DeclareFontShape{T1}{fMt}{bx}{sl}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{T1}{fMt}{b}{it}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{T1}{fMt}{bx}{it}{<->ssub * fMt/b/it}{}
+
+\endinput

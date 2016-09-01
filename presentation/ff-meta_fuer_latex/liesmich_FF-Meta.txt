@@ -1,0 +1,113 @@
+Dies ist liesmich_FF-Meta.txt vom 21.08.2012 WWU/ZIV/Kr
+
+Ansprechpartner: Wolfgang Kaspar, ZIV, kaspar@uni-muenster.de, NA 31673.
+
+Wer zum Briefeschreiben LaTeX verwendet und hierfür das in den
+90er-Jahren vom ZIV zur Verfügung gestellte Brief-Paket mit dem
+Briefkopf der WWU einsetzt, findet auf den Seiten des WWU Marketing
+unter "Geschäftsausstattung" eine Archiv-Datei, die einen Briefkopf
+nach den Vorgaben des neuen Corporate Designs der WWU enthält.
+
+Hinweise zur Installation der Schrift FF-Meta
+---------------------------------------------
+
+Wenn die Schrift FF-Meta zusammen mit einer TeX-Installation
+verwendet werden soll, die von einem zentralen Server zur Verfügung
+gestellt wird, sollte in der Regel die zuständige IVV alle hierfür
+nötigen Einstellungen vornehmen.
+(http://www.uni-muenster.de/IVV/).
+
+Im Folgenden wird beschrieben, wie die Schrift unter einer
+TeX-Installation, die z. B. mit Hilfe einer TeX-Live-DVD
+lokal auf einem Arbeitsplatz-PC installiert wurde, eingebunden
+werden kann.
+
+
+Installation unter XemTeX (TeX-Live)
+- - - - - - - - - - - - - - - - - - -
+
+1. Den Inhalt der Archiv-Datei "FF-Meta_fuer_LaTeX.zip" unter
+Beibehaltung der Verzeichnissstruktur in ein Arbeitsverzeichnis
+kopieren.
+
+2. Alle Verzeichnisse und Dateien in dem Verzeichnis "\texmf" in die
+entsprechenden Verzeichnisse des lokalen TeX-Baumes verschieben bzw.
+integrieren.
+
+3. In der Eingabeaufforderung (siehe "Start" -> "Alle Programme" ->
+"Zubehör") das Kommando "updmap-sys --enable Map=meta" ausführen.
+Hierdurch wird die Schrift dem TeX-System bekannt gegeben.
+
+Beispiel:
+Arbeitsverzeichnis: c:\temp
+Inhalt des ZIP-Archivs: c:\temp\texmf
+lokaler TeX-Baum: c:\texmf-local
+Die Verzeichnisse "fonts" und "tex" unter c:\temp\texmf
+nach c:\texmf-local verschieben.
+Eingabeaufforderung öffnen und den Befehl
+"updmap-sys --enable Map=meta"
+ausführen.
+
+
+Installation unter MiKTeX 2.x
+- - - - - - - - - - - - - - -
+(Autor: Volker Hamelbeck, Physikalisches Institut)
+
+1. Den Inhalt der Archiv-Datei "FF-Meta_fuer_LaTeX.zip" unter
+Beibehaltung der Verzeichnissstruktur in ein Arbeitsverzeichnis
+kopieren.
+
+2. Alle Verzeichnisse und Dateien in dem Verzeichnis "\texmf" in die
+entsprechenden Verzeichnisse des lokalen TeX-Baumes verschieben bzw.
+integrieren.
+
+3. Zusätzlich im lokalen MiKTeX-Baum die Datei meta.map aus dem
+Verzeichnis "fonts\map\dvips\meta" in das Verzeichnis "dvips\config"
+kopieren.
+
+4. In der Eingabeaufforderung (siehe "Start" -> "Alle Programme" ->
+"Zubehör") in das MiKtex-Verzeichnis wechseln und dort das Kommando
+"initexmf --mkmaps" ausführen. Das aktualisiert die Datenbank der
+installierten Schriftarten.
+
+5. In der gleichen Eingabeaufforderung den Befehl "initexmf -u"
+aufrufen. Das führt "Refresh file name database" aus.
+
+Beispiel:
+Arbeitsverzeichnis: c:\temp
+Inhalt des ZIP-Archivs: c:\temp\texmf
+lokaler TeX-Baum: c:\MiKtex 2.5
+Die Verzeichnisse "fonts" und "tex" unter c:\temp\texmf
+nach c:\Miktex 2.5 verschieben.
+Die Datei meta.map von c:\Miktex 2.5\fonts\map\dvips\meta
+nach c:\Miktex 2.5\dvips\config kopieren.
+Eingabeaufforderung öffnen
+und im Verzeichnis c:\Miktex 2.5 die Befehle
+"initexmf --mkmaps"
+und
+"initexmf -u"
+ausführen.
+
+Hinweis:
+In einigen MiKTeX-Installationen kann das Paket "emerald"
+installiert sein. Dieses Paket enthält im Verzeichnis
+"tex\latex\emerald" Dateien, die den gleichen Namen besitzen,
+wie die Dateien im Verzeichnis "tex\latex\meta". Damit die
+Meta-Schriften verwendet werden können, müssen entweder das Paket
+"emerald" deinstalliert oder die gleichnamigen Dateien im Verzeichnis
+"tex\latex\emerald" gelöscht oder umbenannt werden.
+
+
+Installation unter Mac OS 10.6.2 (Snow Leopard)
+- - - - - - - - - - - - - - - - - - - - - - - -
+(Autor: Stefan Ost, ZIV)
+
+Für eine systemweite Installation:
+
+1. Den Inhalt der Archiv-Datei "FF-Meta_fuer_LaTeX.zip" unter
+Beibehaltung der Verzeichnissstruktur in /usr/local/texlive/texmf-local
+entpacken. Zugriffsrechte prüfen!
+
+2. TeX filename database auffrischen: sudo -H mktexlsr
+
+3. Font bekanntmachen: sudo -H updmap-sys --enable Map meta.map

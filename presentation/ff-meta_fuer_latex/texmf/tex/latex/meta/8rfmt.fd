@@ -1,0 +1,37 @@
+%Filename: 8rfmt.fd
+%Created by: tex driver
+%Created using fontinst v1.801
+
+%THIS FILE SHOULD BE PUT IN A TEX INPUTS DIRECTORY
+
+\ProvidesFile{8rfmt.fd}
+   [2008/02/14 Fontinst v1.801 font definitions for 8r/fMt.]
+
+\DeclareFontFamily{8r}{fMt}{}
+
+\DeclareFontShape{8r}{fMt}{m}{n}{
+   <-> fMtr8r
+}{}
+
+\DeclareFontShape{8r}{fMt}{m}{sl}{
+   <-> fMtro8r
+}{}
+
+\DeclareFontShape{8r}{fMt}{m}{it}{
+   <-> fMtri8r
+}{}
+
+\DeclareFontShape{8r}{fMt}{b}{n}{
+   <-> fMtb8r
+}{}
+
+\DeclareFontShape{8r}{fMt}{b}{sl}{
+   <-> fMtbo8r
+}{}
+
+\DeclareFontShape{8r}{fMt}{bx}{n}{<->ssub * fMt/b/n}{}
+\DeclareFontShape{8r}{fMt}{bx}{sl}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{8r}{fMt}{b}{it}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{8r}{fMt}{bx}{it}{<->ssub * fMt/b/it}{}
+
+\endinput
