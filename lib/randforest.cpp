@@ -22,6 +22,8 @@ public:
      std::stringstream str;
      str << "random_forest";
      str << "_maxCategories="<<params.max_categories;
+     str << "_rand_subset_size="<<params.nactive_vars;
+     str << "_number_of_trees="<<params.term_crit.max_iter;
      str << "_maxDepth="<<params.max_depth;
      str << "_min_sample_count="<<params.min_sample_count;
      str << "_regression_accuracy="<<params.regression_accuracy;
@@ -33,10 +35,12 @@ private:
     CvRTParams _param;
 };
 RandomForestConstructor::RandomForestConstructor(CvRTParams params):_params(params){}
+RandomForestConstructor::RandomForestConstructor(){}
 
 std::unique_ptr<Classifier> RandomForestConstructor::train(const cv::Mat & trainingsset, const cv::Mat& truthset) const{
     auto res = std::unique_ptr<CvRTrees>(new CvRTrees());
     assert(trainingsset.rows == truthset.rows);
+    assert(trainingsset.type() == CV_32FC1);
     assert(truthset.cols == 1);
 
     cv::Mat truthAsFloat;

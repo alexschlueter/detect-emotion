@@ -1,6 +1,6 @@
 #ifndef PROCESSORS_H
 #define PROCESSORS_H
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 #include "wrapper.h"
 
 class CloudProcessor{
@@ -11,6 +11,7 @@ public:
     virtual std::string name() const= 0;
     virtual void save(const std::string & filename) const = 0;
     virtual bool onlyOnTrainingSet() const{ return false;}
+    virtual bool serializable() const = 0;
 };
 
 using MatList = std::vector<cv::Mat>;
@@ -22,6 +23,7 @@ public:
     virtual std::string name() const = 0;
     virtual void save(const std::string& filename ) const = 0;
     virtual bool onlyOnTrainingSet() const{ return false;}
+    virtual bool serializable() const = 0;
 };
 
 class RandomJitterExpander:public CloudProcessor{
@@ -31,6 +33,8 @@ public:
     virtual CloudAction apply(const CloudAction &) const;
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
+    virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 private:
     double _meanx, _meany, _stdx, _stdy;
 };
@@ -41,17 +45,36 @@ public:
     virtual CloudAction apply(const CloudAction &) const ;
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
+    virtual bool serializable() const{ return false; }
 };
 
 class CloudMask: public CloudProcessor{
 public:
     CloudMask(std::ifstream & file);
+    CloudMask(const std::vector<int> &toKeep);
     virtual void analyse(const CloudAction & ) ;
     virtual CloudAction apply(const CloudAction &) const ;
     virtual std::string name() const;
     virtual void save(const std::string & filename) const;
+    virtual bool serializable() const{ return false; }
+    inline const std::vector<int> &tokeep() const{return _toKeep;}
 private:
     std::vector<int> _toKeep;
+};
+
+#include "pca.h"
+class PCACloudReducer: public CloudProcessor{
+public:
+    PCACloudReducer(unsigned int dimension);
+    virtual void analyse(const CloudAction & ) ;
+    virtual CloudAction apply(const CloudAction &) const ;
+    virtual std::string name() const;
+    virtual void save(const std::string & filename) const;
+    static  std::unique_ptr<PCACloudReducer> load(const std::string &filename);
+    virtual bool serializable() const{ return true; }
+private:
+    unsigned int _dimension;
+    std::unique_ptr<PCA_Result<66>> _pca;
 };
 
 #include "pcanalysis.h"
@@ -62,6 +85,8 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const;
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
+    static std::unique_ptr<PCAFeatureReducer> load(const std::string &filename);
+    virtual bool serializable() const{ return true; }
 private:
     double _retain_variance;
     PCAnalysis _pca;
@@ -73,6 +98,8 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const;
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
+    virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 };
 
 class PersonShuffler: public CloudProcessor{
@@ -80,7 +107,9 @@ public:
     virtual void analyse(const CloudAction & ) ;
     virtual CloudAction apply(const CloudAction &) const ;
     virtual std::string name() const;
-    virtual void save(const std::string & filename) const;
+    virtual void save(const std::string & ) const;
+    virtual bool serializable() const{ return false; }
+    virtual bool onlyOnTrainingSet() const{ return true;}
 };
 
 class ReduceNegatives: public FeatureProcessor{
@@ -91,6 +120,7 @@ public:
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
     virtual bool onlyOnTrainingSet() const{ return true;}
+    virtual bool serializable() const{ return false; }
 private:
     double _negativesToPostives;
 };
@@ -102,8 +132,22 @@ public:
     virtual FeatureTruth apply(const FeatureTruth&) const;
     virtual std::string name() const ;
     virtual void save(const std::string& filename ) const;
+    static std::unique_ptr<FeatureMinMaxNormalizer> load(const std::string &filename);
+    virtual bool serializable() const{ return true; }
 private:
     FeatureScaling _scaler;
+};
+
+class FeatureStdMeanNormalizer: public FeatureProcessor{
+public:
+    virtual void analyse(const FeatureTruth&);
+    virtual FeatureTruth apply(const FeatureTruth&) const;
+    virtual std::string name() const ;
+    virtual void save(const std::string& filename ) const;
+    static std::unique_ptr<FeatureStdMeanNormalizer> load(const std::string &filename);
+    virtual bool serializable() const{ return true; }
+private:
+    cv::Mat _mean, _std;
 };
 
 #endif // PROCESSORS_H

@@ -45,7 +45,7 @@ public:
 
 
     FeatureTruth extractFrameFeature(const FeatureExtractionBase<66>& extractor, const string & actionname, int threshold) const;
-    FeatureTruth extractTimeFeature(const TimeFeatureExtractionBase<66>& extractor, const string & actionname, int threshold) const;
+    FeatureTruth extractTimeFeature(const TimeFeatureExtractionBase<66>& extractor, const string & actionname, int threshold, int time_frame_step) const;
 
     inline CloudAction appened(const CloudAction & other) const{
        VideoList lands;

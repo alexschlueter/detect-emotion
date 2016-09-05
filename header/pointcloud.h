@@ -70,6 +70,10 @@ public:
     const T* operator->() const{
         return &_d->_val;
     }
+
+    bool isNull() const{
+        return _d == nullptr;
+    }
 private:
     void detach(){
         if (_d->_refcounter==1) return;
@@ -232,10 +236,17 @@ public:
     inline PointArray<N> & points() {return *_points;}
 
     inline const cv::Point2f & operator[](std::size_t i) const{
+        if (_points.isNull()){
+            static cv::Point2f nullP(0,0);
+            return nullP;
+        }
         return (*_points)[i];
     }
 
     inline cv::Point2f & operator[](std::size_t i) {
+        if (_points.isNull()){
+            _points = ImplicitSharedPtr<PointArray<N>>(PointArray<N>());
+        }
         return (*_points)[i];
     }
 

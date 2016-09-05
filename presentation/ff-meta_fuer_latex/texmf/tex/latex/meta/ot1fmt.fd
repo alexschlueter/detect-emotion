@@ -1,0 +1,46 @@
+%Filename: ot1fmt.fd
+%Created by: tex driver
+%Created using fontinst v1.801
+
+%THIS FILE SHOULD BE PUT IN A TEX INPUTS DIRECTORY
+
+\ProvidesFile{ot1fmt.fd}
+   [2008/02/14 Fontinst v1.801 font definitions for OT1/fMt.]
+
+\DeclareFontFamily{OT1}{fMt}{}
+
+\DeclareFontShape{OT1}{fMt}{m}{n}{
+   <-> fMtr7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{m}{sc}{
+   <-> fMtrc7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{m}{sl}{
+   <-> fMtro7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{m}{it}{
+   <-> fMtri7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{b}{n}{
+   <-> fMtb7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{b}{sc}{
+   <-> fMtbc7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{b}{sl}{
+   <-> fMtbo7t
+}{}
+
+\DeclareFontShape{OT1}{fMt}{bx}{n}{<->ssub * fMt/b/n}{}
+\DeclareFontShape{OT1}{fMt}{bx}{sc}{<->ssub * fMt/b/sc}{}
+\DeclareFontShape{OT1}{fMt}{bx}{sl}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{OT1}{fMt}{b}{it}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{OT1}{fMt}{bx}{it}{<->ssub * fMt/b/it}{}
+
+\endinput

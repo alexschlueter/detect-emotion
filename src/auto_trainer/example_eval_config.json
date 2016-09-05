@@ -1,0 +1,33 @@
+{
+  "landmark_dir": "/path/to/dir",
+  "action_dir": "/path/to/dir",
+  "action_names": [
+    "Inner Brow Raiser",
+    "Outer Brow Raiser"
+  ],
+  "action_threshold": 3,
+  "classifier": {"name": "svm", "load": "/path/to/saved/classifier"},
+  "cloud_processor": [
+    {"name": "mask", "tokeep": [1,2,5,3]},
+    {"name": "PointCloudNormalization"}
+  ],
+  // EITHER FRAME-FEATURE
+  "frame_feature":  
+    {
+      "name": "xy",
+      "processors":[
+        {"name": "minmaxnormalize", "load": "/path/to/saved/minmaxnor"},
+        {"name": "pcaReducer", "load": "/path/to/pca"},
+        {"name": "shuffle"}
+      ]
+    },
+    // OR  TIME_FEATURE
+  "time_feature":
+    {
+      "name": "differential",
+      "base": {"name": "xy"},
+      "truth_threshold": 2,
+      "processors": []
+    }
+    "time_frame_step": 1
+}

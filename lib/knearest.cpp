@@ -49,7 +49,7 @@ std::unique_ptr<Classifier> KNearestNeighborsConstructor::train(const cv::Mat & 
     return std::unique_ptr<Classifier>(new KNearestNeighborClassifier(std::move(res),_k));
 }
 
-std::unique_ptr<Classifier> SVMConstructor::deserialize(const std::string & filename) const{
+std::unique_ptr<Classifier> KNearestNeighborsConstructor::deserialize(const std::string & filename) const{
     CvKNearest * res = new CvKNearest();
     //TODO: Not implemented in opencv2
     res->load(filename.c_str());

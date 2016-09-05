@@ -1,6 +1,6 @@
 #include "wrapper.h"
 #include <random>
-#include <opencv2/core.hpp>
+#include <opencv2/core/core.hpp>
 
 #include <iostream>
 FeatureTruth::FeatureTruth(){ }
@@ -23,6 +23,7 @@ FeatureTruth FeatureTruth::added(const FeatureTruth &other) const{
 }
 
 FeatureTruth FeatureTruth::sampleTruth(ClassifierResult res) const{
+    assert(_truth.type() == CV_32FC1);
     std::vector<size_t> idxs;
     for (size_t i=0; i< _truth.rows; i++){
         if (_truth.at<float>(i,0) == static_cast<float>(res)){
@@ -110,13 +111,13 @@ FeatureTruth CloudAction::extractFrameFeature(const FeatureExtractionBase<66> &e
     return FeatureTruth(resFeatures,resAction);
 }
 
-FeatureTruth CloudAction::extractTimeFeature(const TimeFeatureExtractionBase<66> &extractor, const string &actionname, int threshold) const{
+FeatureTruth CloudAction::extractTimeFeature(const TimeFeatureExtractionBase<66> &extractor, const string &actionname, int threshold, int time_frame_step) const{
     cv::Mat resFeatures;
     for(auto && video: this->_landmarks){
         if (resFeatures.empty()){
-            resFeatures = extractTimeFeaturesFromData<66>(video,extractor);
+            resFeatures = extractTimeFeaturesFromData<66>(video,extractor, time_frame_step);
         }else{
-            cv::vconcat(resFeatures,extractTimeFeaturesFromData<66>(video,extractor),resFeatures);
+            cv::vconcat(resFeatures,extractTimeFeaturesFromData<66>(video,extractor, time_frame_step),resFeatures);
         }
     }
 
@@ -124,7 +125,7 @@ FeatureTruth CloudAction::extractTimeFeature(const TimeFeatureExtractionBase<66>
     for(auto && unit: _actionUnits){
         std::vector<ActionUnit> unitV{unit};
         cv::Mat curVideoTruth = extractAction(unitV, actionname, threshold);
-        cv::Mat timeTruth = extractTimeTruth<66>(curVideoTruth,extractor);
+        cv::Mat timeTruth = extractTimeTruth<66>(curVideoTruth,extractor, time_frame_step);
         if (resActions.empty()){
             resActions = timeTruth;
         }else{

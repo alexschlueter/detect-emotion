@@ -252,3 +252,12 @@ UpgradeLog*.htm
 # Microsoft Fakes
 FakesAssemblies/
 
+# LaTeX
+auto/
+*.aux
+*.fdb_latexmk
+*.fls
+*.nav
+*.snm
+*.synctex.gz
+*.toc

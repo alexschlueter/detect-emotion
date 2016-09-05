@@ -1,0 +1,37 @@
+%Filename: ts1fmt.fd
+%Created by: tex driver
+%Created using fontinst v1.801
+
+%THIS FILE SHOULD BE PUT IN A TEX INPUTS DIRECTORY
+
+\ProvidesFile{ts1fmt.fd}
+   [2008/02/14 Fontinst v1.801 font definitions for TS1/fMt.]
+
+\DeclareFontFamily{TS1}{fMt}{}
+
+\DeclareFontShape{TS1}{fMt}{m}{n}{
+   <-> fMtr8c
+}{}
+
+\DeclareFontShape{TS1}{fMt}{m}{sl}{
+   <-> fMtro8c
+}{}
+
+\DeclareFontShape{TS1}{fMt}{m}{it}{
+   <-> fMtri8c
+}{}
+
+\DeclareFontShape{TS1}{fMt}{b}{n}{
+   <-> fMtb8c
+}{}
+
+\DeclareFontShape{TS1}{fMt}{b}{sl}{
+   <-> fMtbo8c
+}{}
+
+\DeclareFontShape{TS1}{fMt}{bx}{n}{<->ssub * fMt/b/n}{}
+\DeclareFontShape{TS1}{fMt}{bx}{sl}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{TS1}{fMt}{b}{it}{<->ssub * fMt/b/sl}{}
+\DeclareFontShape{TS1}{fMt}{bx}{it}{<->ssub * fMt/b/it}{}
+
+\endinput
