@@ -11,32 +11,57 @@
                <script src="Lip_Corner_Depressor.js"></script>
                <script src="Nose_Wrinkler.js"></script>
                <script src="Chin_Raiser.js"></script>
+               <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/css/bootstrap.min.css" crossorigin="anonymous">
+               <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.4/js/bootstrap.min.js" crossorigin="anonymous"></script>
+               <!-- <link rel="stylesheet" href="main.css"> -->
                <style type="text/css" media="screen">
                   h2{
                     text-align: center
                   }
+                  .table-hover tbody tr:hover td, .table-hover tbody tr:hover th {
+                    background-color: #d9edf7;
+                  }
                </style>
 </head>
 <body>
-  <div id="plotroot" style="width: 100%"></div>
+  <div class="container-fluid">
+    <div id="plotroot" style="width: 100%"></div>
+  </div>
 
   <script>
-      var addHead = function(name){
-        var plotroot = document.getElementById("plotroot")
-        var h = document.createElement("h2")
-        var text = document.createTextNode(name); 
-        h.appendChild(text)
-        plotroot.appendChild(h)
-      }
-      var i = 0
-      var addOne = function(test, train, name){
+      var i = 0;
+      var plots = [];
+      var sortByF1 = function(x, y, f1s) {
+            var a = f1s[x], b = f1s[y];
+            if( !isFinite(a) && !isFinite(b) ) {
+                return 0;
+            }
+            if( !isFinite(a) ) {
+                return 1;
+            }
+            if( !isFinite(b) ) {
+                return -1;
+            }
+            return b-a;
+        }
+       var addOne = function(test, train, name){
        var plotroot = document.getElementById("plotroot")
+       var pltrow = document.createElement("div");
+       pltrow.className = "row";
+       plotroot.appendChild(pltrow);
+       var pltcol = document.createElement("div");
+       pltcol.className = "col-sm-12";
+       pltrow.appendChild(pltcol);
+       var h = document.createElement("h2");
+       h.innerHTML = name;
+       pltcol.appendChild(h);
        var plot = document.createElement("div")
+       plots[i] = plot;
        id = "plot_"+i;
        i=i+1
        plot.id = id
        plot.style = "width: 100%"
-       plotroot.appendChild(plot)
+       pltcol.appendChild(plot)
        var f1_train = [], f1_test = [];
        var train_indices = [], test_indices = [];
         for (var j = 0; j < train.x.length; j++) {
@@ -44,30 +69,86 @@
             train.x[j] = 1 - train.x[j];
             train_indices[j] = j;
         }
-        train_indices.sort(function(a, b) { return f1_train[b] - f1_train[a]; });
+        train_indices.sort(function(a, b) { return sortByF1(a, b, f1_train); });
         for (var j = 0; j < test.x.length; j++) {
             f1_test[j] = 2 * test.x[j] * test.y[j] / (test.x[j] + test.y[j]);
             test.x[j] = 1 - test.x[j];
             test_indices[j] = j;
         }
-        test_indices.sort(function(a, b) { return f1_test[b] - f1_test[a]; });
+        test_indices.sort(function(a, b) { return sortByF1(a, b, f1_test); });
         console.log(train_indices, f1_train, train);
        train["xaxis"] = "x2"
        train["yaxis"] = "y2"
        test["name"] = "Validation"
-       train["name"] = "Train"
+       train["name"] = "Training"
        layout = {
-         xaxis: {range: [0,1], domain: [0,0.45],title: "1 - precision"},
-         yaxis:{range:[0,1],title:"recall"},
-         xaxis2:{range: [0,1],domain: [0.55,1]},
-         yaxis2: {range: [0,1], anchor: "x2"},
-         title: name,
+         xaxis: {range: [0,1], domain: [0,0.45],title: "1 - Precision"},
+         yaxis:{range:[0,1],title:"Recall"},
+         xaxis2:{range: [0,1],domain: [0.55,1],title: "1 - Precision"},
+         yaxis2: {range: [0,1], anchor: "x2",title:"Recall"},
+         margin: {t: 40},
+           /* title: name,*/
          hovermode: "closest"
        }
       Plotly.newPlot(plot,[test,train],layout);
       plot.on("plotly_hover", function(eventdata){
         var points = eventdata.points[0],
             pointNum = points.pointNumber;
+          console.log(pointNum);
+          for (var j = 0; j < 5; j++) {
+              if (test_indices[j] == pointNum) {
+              }
+          }
+          Plotly.Fx.hover(plot, [
+            {curveNumber: 0, pointNumber: pointNum},
+            {curveNumber: 1, pointNumber: pointNum}
+          ],["xy","x2y2"])
+      })
+
+       var tbrow = document.createElement("div");
+       tbrow.className = "row";
+       plotroot.appendChild(tbrow);
+       var tbcol = document.createElement("div");
+       tbcol.className = "col-sm-12";
+       tbrow.appendChild(tbcol);
+      var table = document.createElement("table");
+          table.className = "table table-hover";
+          tbcol.appendChild(table);
+          table.innerHTML = `<thead>
+<th>#</th>
+<th>F1 score</th>
+<th>Classifier and Parameters</th>
+</thead>`
+      var tbo = document.createElement("tbody");
+      table.appendChild(tbo);
+          for (var j = 0; j < 5; j++) {
+              var row = tbo.insertRow(j);
+              row.onmouseover = function(myp) {return function() {
+                for (var j = 0; j < 5; j++) {
+                    tbo.rows[j].className = "";
+                }
+                Plotly.Fx.hover(plot,[
+                    {curveNumber:0, pointNumber:myp},
+                    {curveNumber:1, pointNumber:myp}
+                  ], ["xy", "x2y2"]);  };
+              }(test_indices[j]);
+              var numcell = row.insertCell(0);
+              numcell.innerHTML =j + 1;
+              var f1cell = row.insertCell(1);
+              f1cell.innerHTML = f1_test[test_indices[j]].toFixed(4);
+              var cfcell = row.insertCell(2);
+              cfcell.innerHTML = test.text[test_indices[j]];
+          }
+      plot.on("plotly_hover", function(eventdata){
+        var points = eventdata.points[0],
+            pointNum = points.pointNumber;
+          console.log(pointNum);
+          for (var j = 0; j < 5; j++) {
+              tbo.rows[j].className = "";
+              if (test_indices[j] == pointNum) {
+                  tbo.rows[j].className = "table-info";
+              }
+          }
           Plotly.Fx.hover(plot, [
             {curveNumber: 0, pointNumber: pointNum},
             {curveNumber: 1, pointNumber: pointNum}
@@ -84,6 +165,11 @@
       addOne(Nose_Wrinkler_test, Nose_Wrinkler_train,"Nose Wrinkler")
       addOne(Lip_Corner_Depressor_test, Lip_Corner_Depressor_train,"Lip Corner Depressor")
       addOne(Chin_Raiser_test, Chin_Raiser_train,"Chin Raiser")
+    window.onresize = function() {
+        for (var i = 0; i < plots.length; i++) {
+            Plotly.Plots.resize(plots[i]);
+        }
+    };
   </script>
 </body>
 </html>
