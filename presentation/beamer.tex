@@ -10,6 +10,8 @@
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{pgfplots}
+\usepackage{lmodern}
+\usepackage{media9}
 
 % Uncomment the following two lines if you want to prepare your document for
 % the fast mode.
@@ -29,13 +31,13 @@
 \addtobeamertemplate{frametitle}{
   \ifx\insertframetitle\empty
     \ifx\insertframesubtitle\empty
-      \ifx\insertsubsection\empty 
+      \ifx\insertsubsection\empty
         \frametitle{\insertsectionhead}
       \else
         \frametitle{\insertsubsectionhead}
-      \fi  
-    \else     
-    \fi  
+      \fi
+    \else
+    \fi
     \else
     \fi
  }{}
@@ -55,10 +57,10 @@
 }
 
 \author{Robin, Johannes, Alexander}
-\title{Erkennung von Action Units anhand \\ von Landmarks}
+\title{Emotionserkennung}
 % \institutelogo{Logo on title frame}
 % \institutelogosmall{Logo on other frames}
-\subtitle{Gruppe: Emotionserkennung 1}
+\subtitle{Klassifikation von Action-Units anhand von Landmarks}
 \date{8. September 2016}
 
 \begin{document}
@@ -88,25 +90,58 @@
 \end{frame}
 
 \section{Aufgabenstellung}
+\subsection{Eingabedaten}
 \begin{frame}
-  \begin{itemize}
-    \item Müssen wir das vorstellen?
-  \end{itemize}
+  \begin{center}
+  \includemedia[
+      activate=onclick,
+      height=0.8\textheight
+  ]{\includegraphics{aufgabenstellung.png}}{aufgabenstellung.swf}
+  \end{center}
+\end{frame}
+
+\subsection{Ziel}
+\begin{frame}
+  \begin{block}{Ziel}
+    Trainieren eines Klassifikators, der in der Lage ist aus eingehenden Landmarks die aktivierten Action Units zu erkennen.
+  \end{block}
+  \pause
 \end{frame}
 
 \section{Pipeline}
 \subsection{Normalisierung}
 \begin{frame}
   \begin{itemize}
-    \item Zentrieren, Rotation ausgleichen...
-    \item Vergleichbarkeit der Punktwolken aus verschiedenen Frames herstellen
+    \item Verschiedene Personen unter den Eingabevideos
+    \item Problem: Varianz durch unterschiedliche Größe und Rotation der Daten
+    \item Lösung: Normalisierung der Daten
   \end{itemize}
 \end{frame}
 
 \subsection{Feature Extraction}
 \begin{frame}
   \begin{itemize}
-    \item bla
+    \item Aufgabe: Extrahierung aussagekräftiger Merkmale aus den Landmarks
+    \item Beispiel: Relation der Landmarks zueinander
+  \end{itemize}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+    \item FeatureExtractor als Aggregate
+  \end{itemize}
+  \begin{center}
+    \includegraphics[height=0.5\textheight]{feature_extractor.png}
+  \end{center}
+\end{frame}
+
+\begin{frame}
+  \begin{itemize}
+    \item XYFeatureExtraction
+    \item OrientationExtraction
+    \item DistanceExtraction
+    \item MaskedFeatureExtraction
+    \item TimeFeatureExtraction
   \end{itemize}
 \end{frame}
 
@@ -137,9 +172,16 @@
   \pause
   \begin{itemize}
     \item So wird sichergestellt,
-    \item dass alle Elemente der Präsentation 
+    \item dass alle Elemente der Präsentation
     \item dieselbe Farbe nutzen.
   \end{itemize}
+\end{frame}
+
+\subsection{Zusammenfassung}
+\begin{frame}
+  \begin{center}
+    \includegraphics[height=0.8\textheight]{pipeline.png}
+  \end{center}
 \end{frame}
 
 \section{Evaluation}
