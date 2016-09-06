@@ -1,0 +1,89 @@
+<html>
+<head>
+               <script src="plotly-latest.min.js"></script>
+               <script src="Brow_Lowerer.js"></script>
+               <script src="Cheek_Raiser.js"></script>
+               <script src="Inner_Brow_Raiser.js"></script>
+               <script src="Lips_Part.js"></script>
+               <script src="Outer_Brow_Raiser.js"></script>
+               <script src="Upper_Lid_Raiser.js"></script>
+               <script src="Lip_Corner_Puller.js"></script>
+               <script src="Lip_Corner_Depressor.js"></script>
+               <script src="Nose_Wrinkler.js"></script>
+               <script src="Chin_Raiser.js"></script>
+               <style type="text/css" media="screen">
+                  h2{
+                    text-align: center
+                  }
+               </style>
+</head>
+<body>
+  <div id="plotroot" style="width: 100%"></div>
+
+  <script>
+      var addHead = function(name){
+        var plotroot = document.getElementById("plotroot")
+        var h = document.createElement("h2")
+        var text = document.createTextNode(name); 
+        h.appendChild(text)
+        plotroot.appendChild(h)
+      }
+      var i = 0
+      var addOne = function(test, train, name){
+       var plotroot = document.getElementById("plotroot")
+       var plot = document.createElement("div")
+       id = "plot_"+i;
+       i=i+1
+       plot.id = id
+       plot.style = "width: 100%"
+       plotroot.appendChild(plot)
+       var f1_train = [], f1_test = [];
+       var train_indices = [], test_indices = [];
+        for (var j = 0; j < train.x.length; j++) {
+            f1_train[j] = 2 * train.x[j] * train.y[j] / (train.x[j] + train.y[j]);
+            train.x[j] = 1 - train.x[j];
+            train_indices[j] = j;
+        }
+        train_indices.sort(function(a, b) { return f1_train[b] - f1_train[a]; });
+        for (var j = 0; j < test.x.length; j++) {
+            f1_test[j] = 2 * test.x[j] * test.y[j] / (test.x[j] + test.y[j]);
+            test.x[j] = 1 - test.x[j];
+            test_indices[j] = j;
+        }
+        test_indices.sort(function(a, b) { return f1_test[b] - f1_test[a]; });
+        console.log(train_indices, f1_train, train);
+       train["xaxis"] = "x2"
+       train["yaxis"] = "y2"
+       test["name"] = "Validation"
+       train["name"] = "Train"
+       layout = {
+         xaxis: {range: [0,1], domain: [0,0.45],title: "1 - precision"},
+         yaxis:{range:[0,1],title:"recall"},
+         xaxis2:{range: [0,1],domain: [0.55,1]},
+         yaxis2: {range: [0,1], anchor: "x2"},
+         title: name,
+         hovermode: "closest"
+       }
+      Plotly.newPlot(plot,[test,train],layout);
+      plot.on("plotly_hover", function(eventdata){
+        var points = eventdata.points[0],
+            pointNum = points.pointNumber;
+          Plotly.Fx.hover(plot, [
+            {curveNumber: 0, pointNumber: pointNum},
+            {curveNumber: 1, pointNumber: pointNum}
+          ],["xy","x2y2"])
+      })
+      }
+      addOne(Brow_Lowerer_test, Brow_Lowerer_train,"Brow Lowerer")
+      addOne(Cheek_Raiser_test, Cheek_Raiser_train,"Cheek Raiser")
+      addOne(Inner_Brow_Raiser_test, Inner_Brow_Raiser_train,"Inner Brow Raiser")
+      addOne(Outer_Brow_Raiser_test, Outer_Brow_Raiser_train,"Outer Brow Raiser")
+      addOne(Lips_Part_test, Lips_Part_train,"Lips Part")
+      addOne(Upper_Lid_Raiser_test, Upper_Lid_Raiser_train,"Upper Lid Raiser")
+      addOne(Lip_Corner_Puller_test, Lip_Corner_Puller_train,"Lip Corner Puller")
+      addOne(Nose_Wrinkler_test, Nose_Wrinkler_train,"Nose Wrinkler")
+      addOne(Lip_Corner_Depressor_test, Lip_Corner_Depressor_train,"Lip Corner Depressor")
+      addOne(Chin_Raiser_test, Chin_Raiser_train,"Chin Raiser")
+  </script>
+</body>
+</html>
