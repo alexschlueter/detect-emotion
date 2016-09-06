@@ -81,6 +81,7 @@
        train["yaxis"] = "y2"
        test["name"] = "Validation"
        train["name"] = "Training"
+       train.text = [];
        layout = {
          xaxis: {range: [0,1], domain: [0,0.45],title: "1 - Precision"},
          yaxis:{range:[0,1],title:"Recall"},
