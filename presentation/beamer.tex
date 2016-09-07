@@ -106,77 +106,105 @@
   \end{block}
 \end{frame}
 
+\section{Programmierumgebung}
+\begin{frame}
+  \begin{itemize}
+    \item C++11
+    \item OpenCV
+    \item QT5
+  \end{itemize}
+\end{frame}
+
 \section{Pipeline}
 \subsection{Normalisierung}
 \begin{frame}
   \begin{itemize}
-    \item Gesichter bewegen sich
-    \item Verschiedene Personen unter den Eingabevideos
-    \item Problem: Varianz durch unterschiedliche Position, Skalierung und
-      Rotation der Punktwolken
+    \item Problem: Variationen von Position, Skalierung und
+      Rotation in den Eingabevideos
     \item Lösung: Normalisierung der Daten
-    \item Mittelpunkt abziehen, Skalierung auf feste Box
-    \item Rotation anhand von Linien zwischen Augen-Landmarks ermitteln und korrigieren
+    \begin{itemize}
+      \item Zentrieren des Mittelpunktes
+      \item Skalierung zwischen 0..1
+      \item Rotation mithilfe der Augen
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
 \subsection{Feature Extraction}
 \begin{frame}
   \begin{itemize}
-    \item Aufgabe: Extrahierung aussagekräftiger Merkmale aus den Landmarks
-    \item Beispiel: Relation der Landmarks zueinander
+    \item Entwicklung verschiedener Merkmale aus den Landmark-Daten
+    \item Beispiel: Relation der Landmarks untereinander
+    \item Aufgabe: Extrahierung möglichst aussagekräftiger Merkmale
+    \item Schwierigkeit: Aussagekraft der Merkmale vor dem Training unbekannt
   \end{itemize}
 \end{frame}
 
 \begin{frame}
 \begin{figure}
     \includegraphics[height=0.7\textheight]{feature_extractor.png}
-
     \caption{FeatureExtractor als Aggregate}
     \end{figure}
 \end{frame}
 
 \begin{frame}
-  \begin{itemize}
-    \item XYFeatureExtraction
-    \item OrientationExtraction
-    \item DistanceExtraction
-    \item MaskedFeatureExtraction
-    \item TimeFeatureExtraction
+\begin{itemize}
+  \item Unsere Features:
+    \begin{itemize}
+      \item XYFeatureExtraction
+      \item OrientationExtraction
+      \item DistanceExtraction
+      \item TimeFeatureExtraction
+    \end{itemize}
   \end{itemize}
 \end{frame}
 
 \subsection{PCA}
 \begin{frame}
   \begin{itemize}
-    \item bla
+    \item $($66 Landmarks$) \times ($\#Features$)$ = teilweise hohe Komplexität\newline
+          $\rightarrow$Reduktion der Frames auf besonders relevante Features
   \end{itemize}
 \end{frame}
 
-\subsection{Feature Scaling}
+\subsection{Feature-Scaling and -Manipulation}
 \begin{frame}
   \begin{itemize}
-    \item bla
+    \item Features mit unterschiedlichen Wertebereichen: Rotationsgrad, Distance,...\newline
+          $\rightarrow$Normalisierung der Features auf 0..1
+    \item Wenig true-positives in den Eingabedaten\newline
+          $\rightarrow$Optional: Generierung zusätzlicher true-positives
   \end{itemize}
 \end{frame}
 
 \subsection{Klassifikation}
-\subsubsection{SVM}
-\subsubsection{Andere Klassifikatoren}
+% \subsubsection{SVM}
 \begin{frame}
-  % \frametitle{Folientitel sollten kurz und prägnant sein}
-  \begin{block}{Hervorhebungen}
-    \textbf{Wenn man Dinge hervorheben möchte nutzt man entweder Fettdruck,}
-    \textit{ kursive Schrift} \alert{ oder das Schlüsselwort ``alert''}.
-  Auch ``itemize''-Umgebungen werden von der Stilvorlage überschrieben:
-  \end{block}
-  \pause
   \begin{itemize}
-    \item So wird sichergestellt,
-    \item dass alle Elemente der Präsentation
-    \item dieselbe Farbe nutzen.
+    \item Klassifikatoren können mit verschiedenen Parametern trainiert werden
+    \item Problem erneut: optimale Parameter unbekannt
+    \item Unsere Klassifikatoren:
+      \begin{itemize}
+        \item Support Vector Machine: OpenCV::SVM mit verschiedenen Parametern
+        \item Random Forest: OpenCV::CvRTrees
+      \end{itemize}
   \end{itemize}
 \end{frame}
+
+% \subsubsection{Andere Klassifikatoren}
+% \begin{frame}
+%   % \frametitle{Folientitel sollten kurz und prägnant sein}
+%   % \begin{block}{Hervorhebungen}
+%   %   \textbf{Wenn man Dinge hervorheben möchte nutzt man entweder Fettdruck,}
+%   %   \textit{ kursive Schrift} \alert{ oder das Schlüsselwort ``alert''}.
+%   % Auch ``itemize''-Umgebungen werden von der Stilvorlage überschrieben:
+%   % \end{block}
+%   % \pause
+%   \begin{itemize}
+%     \item Random Forest: OpenCV::CvRTrees
+%     \item ...
+%   \end{itemize}
+% \end{frame}
 
 \subsection{Zusammenfassung}
 \begin{frame}[plain]
@@ -191,10 +219,10 @@
   \begin{itemize}
   \item Erstelle eine Konfigurationsdatei, in der alle zu testenden
     Klassifikatoren und Parameter gespeichert sind (Demo)
-  \item Teile ersten Datensatz in $60\%$ Trainings- und $40\%$ Validierungsdaten auf 
+  \item Teile ersten Datensatz in $60\%$ Trainings- und $40\%$ Validierungsdaten auf
     \item Trainiere und evaluiere automatisch alle Klassifikatoren auf allen
       Action Units
-    \item Wähle pro Action Unit die besten 5 anhand des F1 score aus 
+    \item Wähle pro Action Unit die besten 5 anhand des F1 score aus
     \item Evaluiere Performance auf zweitem Datensatz (bisher unbekannte Testdaten)
   \end{itemize}
 \end{frame}
@@ -249,6 +277,15 @@
 \caption{Precision-Recall-Kurve}
 \label{fig:prec-recall}
 \end{figure}
+\end{frame}
+
+\subsection{Vorausblick}
+\begin{frame}
+  \begin{itemize}
+    \item Verbesserung der Klassifikation durch Kombination von Klassifikatoren
+    \item Ausbau der Time-Based Extraction
+    \item ...
+  \end{itemize}
 \end{frame}
 
 \end{document}
