@@ -65,7 +65,7 @@
 \title{Emotionserkennung}
 % \institutelogo{Logo on title frame}
 % \institutelogosmall{Logo on other frames}
-\subtitle{Klassifikation von Action-Units anhand von Landmarks}
+\subtitle{Klassifikation von Action Units anhand von Landmarks}
 \date{8. September 2016}
 
 \begin{document}
@@ -157,10 +157,19 @@
 \begin{itemize}
   \item Unsere Features:
     \begin{itemize}
-      \item XYFeatureExtraction
-      \item OrientationExtraction
-      \item DistanceExtraction
-      \item TimeFeatureExtraction
+      \item X-/Y-Koordinaten
+      \item Orientierung
+        \begin{itemize}
+          \item Paarweise
+          \item Zum Mittelpunkt
+        \end{itemize}
+      \item Euklidische Distanz
+        \begin{itemize}
+          \item Paarweise
+          \item Zum Mittelpunkt
+        \end{itemize}
+      \item Interpolation
+      \item Zeitbasiert
     \end{itemize}
   \end{itemize}
 \end{frame}
@@ -169,19 +178,19 @@
 \begin{frame}
   \begin{itemize}
     \item $($66 Landmarks$) \times ($\#Features$)$ = teilweise hohe Komplexität\newline
-          $\rightarrow$Reduktion der Frames auf besonders relevante Features
-    \item ActionUnits betrachten isolierten Teil des Gesichts\newline
-          $\rightarrow$Verwerfen irrelevanter Daten, die Störungen verursachen können
+          $\rightarrow$Reduktion der Features auf Hauptkomponenten
+    \item Approximation der Daten bei Erhaltung von 97\% der Varianz
+    \item Vorsicht: PCA betrachtet die Aussagekraft der Hauptkomponenten bezogen auf die Landmarks, NICHT auf die Erkennung der Action-Units
   \end{itemize}
 \end{frame}
 
-\subsection{Feature-Scaling and -Manipulation}
+\subsection{Feature-Manipulation and -Scaling}
 \begin{frame}
   \begin{itemize}
-    \item Features mit unterschiedlichen Wertebereichen: Rotationsgrad, Distance,...\newline
-          $\rightarrow$Normalisierung der Features auf 0..1
     \item Wenig true-positives in den Eingabedaten\newline
           $\rightarrow$Optional: Generierung zusätzlicher true-positives
+    \item Features mit unterschiedlichen Wertebereichen: Rotationsgrad, Distance,...\newline
+          $\rightarrow$Normalisierung der Features auf 0..1
   \end{itemize}
 \end{frame}
 
@@ -189,6 +198,7 @@
 % \subsubsection{SVM}
 \begin{frame}
   \begin{itemize}
+    \item Bearbeitete Features werden zum Training an Klassifikatoren übergeben
     \item Klassifikatoren können mit verschiedenen Parametern trainiert werden
     \item Problem erneut: optimale Parameter unbekannt
     \item Unsere Klassifikatoren:
@@ -198,21 +208,6 @@
       \end{itemize}
   \end{itemize}
 \end{frame}
-
-% \subsubsection{Andere Klassifikatoren}
-% \begin{frame}
-%   % \frametitle{Folientitel sollten kurz und prägnant sein}
-%   % \begin{block}{Hervorhebungen}
-%   %   \textbf{Wenn man Dinge hervorheben möchte nutzt man entweder Fettdruck,}
-%   %   \textit{ kursive Schrift} \alert{ oder das Schlüsselwort ``alert''}.
-%   % Auch ``itemize''-Umgebungen werden von der Stilvorlage überschrieben:
-%   % \end{block}
-%   % \pause
-%   \begin{itemize}
-%     \item Random Forest: OpenCV::CvRTrees
-%     \item ...
-%   \end{itemize}
-% \end{frame}
 
 \subsection{Zusammenfassung}
 \begin{frame}[plain]
