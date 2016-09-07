@@ -253,47 +253,81 @@
     \Huge Webdemo
   \end{center}
 \end{frame}
+
+% \begin{frame}
+%   \begin{table}
+%   \centering
+%   \pgfplotstabletypeset[
+%   col sep=comma,
+%   columns/Klassifikator/.style={string type}
+%   ]{data/tab_prec_recall.csv}
+%   \caption{Vergleich der Klassifikatoren}
+%   \label{tab:prec-recall}
+%   \end{table}
+% \end{frame}
+
+% \begin{frame}[plain]
+% \begin{figure}
+% \begin{tikzpicture}
+%   \begin{axis}[
+%     width=\textwidth,
+%     height=\textheight,
+%     xmin=0, xmax=1,
+%     ymin=0, ymax=1,
+%     xlabel={$1-\text{Precision}$},
+%     ylabel={Recall},
+%     domain=0:1,
+%     % legend entries={Sachen},
+%     % legend pos=north west
+%   ]
+%   \addplot table[only marks, col sep=comma] {data/plt_prec_recall.csv};
+%   \end{axis}
+% \end{tikzpicture}
+% \caption{Precision-Recall-Kurve}
+% \label{fig:prec-recall}
+% \end{figure}
+% \end{frame}
+\subsection{Diskussion}
 \begin{frame}
-  \begin{table}
-  \centering
-  \pgfplotstabletypeset[
-  col sep=comma,
-  columns/Klassifikator/.style={string type}
-  ]{data/tab_prec_recall.csv}
-  \caption{Vergleich der Klassifikatoren}
-  \label{tab:prec-recall}
-  \end{table}
+  \begin{itemize}
+    \item Gute Ergebnisse bei ``Lips Part'', akzeptable bei ``Lip Corner Puller''
+      \begin{itemize}
+        \item Möglicher Grund: vergleichsweise viele positive Daten (``Lips
+          Part'': $8\%$)
+        \item Einfache Klassifikation anhand der Abstände der Mund-Landmarks
+      \end{itemize}
+    \item Schlecht z.B. ``Lip Corner Depressor'': $<0.1\%$ positiv
+  \end{itemize}
 \end{frame}
 
-\begin{frame}[plain]
-\begin{figure}
-\begin{tikzpicture}
-  \begin{axis}[
-    width=\textwidth,
-    height=\textheight,
-    xmin=0, xmax=1,
-    ymin=0, ymax=1,
-    xlabel={$1-\text{Precision}$},
-    ylabel={Recall},
-    domain=0:1,
-    % legend entries={Sachen},
-    % legend pos=north west
-  ]
-  \addplot table[only marks, col sep=comma] {data/plt_prec_recall.csv};
-  \end{axis}
-\end{tikzpicture}
-\caption{Precision-Recall-Kurve}
-\label{fig:prec-recall}
-\end{figure}
+\begin{frame}
+  \begin{itemize}
+    \item Trade-off zwischen Precision und Recall deutlich zu sehen
+    \item Klassifikation mit Zeitableitung liefert keine guten Ergebnisse
+      \begin{itemize}
+        \item Noch weniger positive Daten
+      \end{itemize}
+    \item Random Forests erfolgreich zusammen mit CenterDistanceExtraction, InterpolationFeatureExtraction
+  \end{itemize}
 \end{frame}
 
 \subsection{Ausblick}
 \begin{frame}
   \begin{itemize}
     \item Verbesserung der Klassifikation durch Kombination von Klassifikatoren
-    \item Ausbau der Time-Based Extraction
-    \item ...
+    \item Erkennung von Emotionen, die sich aus mehreren Action Units zusammensetzen
+    \item Ausbau der zeitbasierten Features
+    \item Weitere Methoden zur Generierung positiver Samples
   \end{itemize}
+\end{frame}
+
+\begin{frame}[c]
+  \frametitle{~}
+  \begin{center}
+    \usebeamerfont*{frametitle}
+    \usebeamercolor[fg]{frametitle}
+    \Huge Ende
+  \end{center}
 \end{frame}
 
 \end{document}
