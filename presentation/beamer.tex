@@ -11,6 +11,7 @@
 \usepackage{pgfplots}
 \usepackage{lmodern}
 \usepackage{media9}
+\usepackage{etoolbox}
 
 % Uncomment the following two lines if you want to prepare your document for
 % the fast mode.
@@ -25,6 +26,11 @@
   \renewcommand*\beamer@checkframetitle{%
     \global\let\beamer@frametitle\relax\@ifnextchar%
     \bgroup\beamer@inlineframetitle{}}
+\makeatother
+
+% Reduce TOC margins
+\makeatletter
+\patchcmd{\beamer@sectionintoc}{\vskip1.5em}{\vskip0.5em}{}{}
 \makeatother
 
 \addtobeamertemplate{frametitle}{
@@ -51,7 +57,7 @@
 {
   \begin{frame}
     \frametitle{Inhalt}
-    \tableofcontents[currentsection,subsubsectionstyle=hide]
+    \tableofcontents[currentsection,currentsubsection,subsectionstyle=show/show/hide,subsubsectionstyle=hide]
   \end{frame}
 }
 
@@ -85,7 +91,7 @@
 \end{frame}
 \begin{frame}
   \frametitle{Inhalt}
-  \tableofcontents[subsubsectionstyle=hide]
+  \tableofcontents[subsectionstyle=hide,subsubsectionstyle=hide]
 \end{frame}
 
 \section{Aufgabenstellung}
@@ -110,7 +116,7 @@
 \begin{frame}
   \begin{itemize}
     \item C++11
-    \item OpenCV
+    \item OpenCV2
     \item QT5
   \end{itemize}
 \end{frame}
@@ -185,7 +191,7 @@
     \item Problem erneut: optimale Parameter unbekannt
     \item Unsere Klassifikatoren:
       \begin{itemize}
-        \item Support Vector Machine: OpenCV::SVM mit verschiedenen Parametern
+        \item Support Vector Machine: OpenCV::SVM
         \item Random Forest: OpenCV::CvRTrees
       \end{itemize}
   \end{itemize}
@@ -279,7 +285,7 @@
 \end{figure}
 \end{frame}
 
-\subsection{Vorausblick}
+\subsection{Ausblick}
 \begin{frame}
   \begin{itemize}
     \item Verbesserung der Klassifikation durch Kombination von Klassifikatoren
