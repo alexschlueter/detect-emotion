@@ -1,0 +1,117 @@
+{
+  "landmark_dir": "/home/rob/Projects/uni/detect-emotion/data/Landmark_Points_bin (2)/",
+  "action_dir": "/home/rob/Projects/uni/detect-emotion/data/ActionUnit_Labels/",
+  "action_threshold": 1,
+  "action_names": [
+    "Lips Part",
+    "Inner Brow Raiser",
+    "Outer Brow Raiser",
+    "Brow Lowerer",
+    "Upper Lid Raiser",
+    "Cheek Raiser",
+    "Nose Wrinkler",
+    "Lip Corner Puller",
+    "Lip Corner Depressor",
+    "Chin Raiser",
+    "Lip Stretcher",
+    "Jaw Drop"
+  ],
+  "training_percent": 0.6,
+  "classifier": [
+    {"name": "svm", "type": "linear"},
+    {"name": "svm", "type": "rbf","gamma": 1 },
+    {"name": "svm", "type": "rbf","gamma": 2 },
+    {"name": "svm", "type": "rbf","gamma": 5 },
+    {"name": "svm", "type": "rbf","gamma": 0.4 },
+    {"name": "svm", "type": "sigmoid","gamma": 1, "coef0": 0},
+    {"name": "svm", "type": "sigmoid","gamma": 2, "coef0": 0},
+    {"name": "svm", "type": "sigmoid","gamma": 5, "coef0": 0},
+    {"name": "svm", "type": "sigmoid","gamma": 0.4, "coef0": 0},
+    {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 2 },
+    {"name": "svm", "type": "polynom","gamma": 5, "coef0": 0, "degree": 2 },
+    {"name": "svm", "type": "polynom","gamma": 1, "coef0": 0, "degree": 10 },
+    {"name": "svm", "type": "polynom","gamma": 2, "coef0": 0, "degree": 10 },
+    {"name": "svm", "type": "polynom","gamma": 5, "coef0": 0, "degree": 10 },
+    {"name": "svm", "type": "polynom","gamma": 0.3, "coef0": 0, "degree": 10 },
+    {"name": "randomforest", "max_depth": 4, "rand_subset_size": 0, "number_of_trees": 10},
+    {"name": "randomforest", "max_depth": 10, "rand_subset_size": 0, "number_of_trees": 20},
+    {"name": "randomforest", "max_depth": 20, "rand_subset_size": 0, "number_of_trees": 20},
+    {"name": "randomforest", "max_depth": 10, "rand_subset_size": 0, "number_of_trees": 50},
+    {"name": "randomforest", "max_depth": 20, "rand_subset_size": 0, "number_of_trees": 50}
+  ],
+  "cloud_processor": [
+    {"name": "randomJitterExpander", "meanx": 0, "meany":0, "stdx": 1, "stdy": 1},
+    {"name": "PointCloudNormalization"}
+  ],
+  "frame_features": [
+    {
+      "name": "xy",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "interpolation",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "orientation",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "euclideandistance",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "centerdistance",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "centerorientation",
+      "processors":[
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    }
+  ],
+  "time_features": [
+    {
+      "name": "differential",
+      "base": {"name": "xy"},
+      "truth_threshold": 1,
+      "processors": [
+        {"name": "stdmeannormalize"},
+        {"name": "pcaReducer", "retain_variance": 0.97},
+        {"name": "shuffle"}
+      ]
+    },
+    {
+      "name": "differential",
+      "base": {"name": "interpolation"},
+      "truth_threshold": 1,
+      "processors": [
+        {"name": "stdmeannormalize"},
+        {"name": "shuffle"}
+      ]
+    }
+  ],
+  "time_frame_step": 2
+}

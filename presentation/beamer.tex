@@ -1,7 +1,6 @@
 \documentclass{beamer}
 
-% \usepackage[pantone312,english]{wwustyle-nometa}
-\usepackage[pantone312]{wwustyle}
+\usepackage[pantone312]{wwustyle-moreauthors}
 
 \usepackage[ngerman]{babel}
 \usepackage[utf8]{inputenc}
@@ -52,7 +51,7 @@
 {
   \begin{frame}
     \frametitle{Inhalt}
-    \tableofcontents[currentsection]
+    \tableofcontents[currentsection,subsubsectionstyle=hide]
   \end{frame}
 }
 
@@ -86,7 +85,7 @@
 \end{frame}
 \begin{frame}
   \frametitle{Inhalt}
-  \tableofcontents
+  \tableofcontents[subsubsectionstyle=hide]
 \end{frame}
 
 \section{Aufgabenstellung}
@@ -111,9 +110,13 @@
 \subsection{Normalisierung}
 \begin{frame}
   \begin{itemize}
+    \item Gesichter bewegen sich
     \item Verschiedene Personen unter den Eingabevideos
-    \item Problem: Varianz durch unterschiedliche Größe und Rotation der Daten
+    \item Problem: Varianz durch unterschiedliche Position, Skalierung und
+      Rotation der Punktwolken
     \item Lösung: Normalisierung der Daten
+    \item Mittelpunkt abziehen, Skalierung auf feste Box
+    \item Rotation anhand von Linien zwischen Augen-Landmarks ermitteln und korrigieren
   \end{itemize}
 \end{frame}
 
@@ -185,16 +188,35 @@
 \section{Evaluation}
 \subsection{Methodik}
 \begin{frame}
-  % \frametitle{Ein Alerted-Block}
-  \begin{alertblock}{Achtung!}
-    Hier kommt Rot ins Spiel!
-  \end{alertblock}
-  \begin{exampleblock}{Beispiel}
-    Hier kommt Grün ins Spiel!
-  \end{exampleblock}
+  \begin{itemize}
+  \item Erstelle eine Konfigurationsdatei, in der alle zu testenden
+    Klassifikatoren und Parameter gespeichert sind (Demo)
+  \item Teile ersten Datensatz in $60\%$ Trainings- und $40\%$ Validierungsdaten auf 
+    \item Trainiere und evaluiere automatisch alle Klassifikatoren auf allen
+      Action Units
+    \item Wähle pro Action Unit die besten 5 anhand des F1 score aus 
+    \item Evaluiere Performance auf zweitem Datensatz (bisher unbekannte Testdaten)
+  \end{itemize}
 \end{frame}
+% \begin{frame}
+%   % \frametitle{Ein Alerted-Block}
+%   \begin{alertblock}{Achtung!}
+%     Hier kommt Rot ins Spiel!
+%   \end{alertblock}
+%   \begin{exampleblock}{Beispiel}
+%     Hier kommt Grün ins Spiel!
+%   \end{exampleblock}
+% \end{frame}
 
 \subsection{Ergebnisse}
+\begin{frame}[c]
+  % \frametitle{~}
+  \begin{center}
+    \usebeamerfont*{frametitle}
+    \usebeamercolor[fg]{frametitle}
+    \Huge Webdemo
+  \end{center}
+\end{frame}
 \begin{frame}
   \begin{table}
   \centering
