@@ -76,7 +76,6 @@
             test_indices[j] = j;
         }
         test_indices.sort(function(a, b) { return sortByF1(a, b, f1_test); });
-        console.log(train_indices, f1_train, train);
        train["xaxis"] = "x2"
        train["yaxis"] = "y2"
        test["name"] = "Validation"
@@ -117,7 +116,10 @@
           tbcol.appendChild(table);
           table.innerHTML = `<thead>
 <th>#</th>
-<th>F1 score</th>
+<th>F1 score (Val)</th>
+<th>F1 score (Test)</th>
+<th>Test Precision</th>
+<th>Test Recall</th>
 <th>Classifier and Parameters</th>
 </thead>`
       var tbo = document.createElement("tbody");
@@ -137,7 +139,13 @@
               numcell.innerHTML =j + 1;
               var f1cell = row.insertCell(1);
               f1cell.innerHTML = f1_test[test_indices[j]].toFixed(4);
-              var cfcell = row.insertCell(2);
+              var f1tcell = row.insertCell(2);
+              f1tcell.innerHTML = (2 * test.top5testp[j]*test.top5testr[j] / (test.top5testp[j]+test.top5testr[j])).toFixed(4);
+              var tpcell = row.insertCell(3);
+              tpcell.innerHTML = test.top5testp[j].toFixed(4);
+              var trcell = row.insertCell(4);
+              trcell.innerHTML = test.top5testr[j].toFixed(4);
+              var cfcell = row.insertCell(5);
               cfcell.innerHTML = test.text[test_indices[j]];
           }
       plot.on("plotly_hover", function(eventdata){
