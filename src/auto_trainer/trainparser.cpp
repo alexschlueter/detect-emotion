@@ -271,7 +271,7 @@ FeatureProcessorP parseFeatureProcessor(const QJsonObject &obj, const string & r
     auto name = obj["name"].toString().toLower().toStdString();
     if (obj.contains("load")){
         lookupname(featureProcessor_parser,name);
-        auto filename = absoluteTo(reldir,obj["load"].toString().toStdString());
+        auto filename = obj["load"].toString().toStdString();
         lookupfile(filename);
         return FeatureProcessorP(featureProcessor_loader[name](filename,obj));
     }else{
@@ -284,7 +284,7 @@ CloudProcessorP parseCloudProcessor(const QJsonObject &obj, const string & reldi
     auto name = obj["name"].toString().toLower().toStdString();
     if (obj.contains("load")){
         lookupname(cloudProcessor_loader,name);
-        auto filename = absoluteTo(reldir,obj["load"].toString().toStdString());
+        auto filename = obj["load"].toString().toStdString();
         lookupfile(filename);
         return CloudProcessorP(cloudProcessor_loader[name](filename,obj));
     }else{
@@ -332,7 +332,7 @@ ClassifierP parseClassifier(const QJsonObject & obj, const string & reldir){
     lookupkeys(obj,{"name","load"});
     auto name = obj["name"].toString().toLower().toStdString();
     lookupname(classifier_loader,name);
-    auto filename = absoluteTo(reldir,obj["load"].toString().toLower().toStdString());
+    auto filename = obj["load"].toString().toStdString();
     lookupfile(filename);
     return ClassifierP(classifier_loader[name](filename,obj));
 }
@@ -424,7 +424,7 @@ EvalParseResult parseEvalConfig(const string &filename){
     switch (res.kind){
     case EvalParseResult::Kind::time:
         lookupkeys(json,{"time_frame_step"});
-        res.frameFeature = parseFrameFeatureProcessor(json["time_feature"].toObject(),reldir);
+        res.timeFeature = parseTimeFeatureProcessor(json["time_feature"].toObject(),reldir);
         res.time_frame_step = json["time_frame_step"].toInt();
         if (res.time_frame_step < 1 ){
             cerr << "[ERROR] time_frame_step is lower than 1"<<endl;
