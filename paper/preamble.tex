@@ -1,0 +1,185 @@
+%!TEX root = bachelor.tex
+% -- Author: Jannes Bantje, j.bantje@wwu.de
+\documentclass[a4paper,index=totoc,toc=bibliography,fontsize=10,DIV=13,headinclude,twoside,BCOR=12mm,cleardoublepage=empty,draft]{scrreprt}
+
+
+%-- Basics für graphische Sachen
+\usepackage[usenames,x11names]{xcolor} % Die Optionen definieren zusätzliche Farben (siehe Dokumentation)
+\usepackage[final]{graphicx}
+
+%-- typografische Verbesserungen, Codierungskram, Schriftwahl und erste Mathepakete
+\usepackage[utf8]{inputenc}
+\usepackage[lining,semibold]{libertine}
+\usepackage[T1]{fontenc}
+\usepackage{textcomp} % verhindert ein paar Fehler bei den Fonts
+\usepackage[varl]{zi4}
+\usepackage{mathtools,amssymb,amsthm} % Verbesserung von amsmath (die amsmath selbst lädt)
+\usepackage[libertine,cmintegrals,bigdelims,varbb]{newtxmath}
+\usepackage[ngerman]{babel}
+\usepackage[babel=true, tracking=true,final]{microtype}
+
+% \useosf % aktiviert sog. "old style figures", also werden Zahlen – im Text – teilweise unterhalb der Grundlinie angezeigt. Muss man mögen...
+
+
+%-- Alternative Konfiguration mit XeLaTeX, die ein großes "ß" anzeigen kann!
+%-- ACHTUNG: wenn diese benutzt werden soll, dan MUSS man in der ersten Zeile von bachelor.tex "pdflatex" durch "xelatex" ersetzen und natürlich den obigen Block auskommentieren und diesen wiederrum aktivieren!!!
+
+% \usepackage{lmodern}
+% \usepackage{mathtools,amssymb,amsthm} % Verbesserung von amsmath (die amsmath selbst lädt)
+% \usepackage[libertine,cmintegrals,bigdelims,varbb]{newtxmath}
+% \usepackage[no-math]{fontspec}
+% \usepackage{polyglossia} % moderner babel-ersatz
+% \setmainlanguage[spelling=new,babelshorthands=true]{german}
+% \shorthandoff{"}
+% \defaultfontfeatures{Mapping=tex-text, Ligatures={Required,Common,Contextual}}
+% \setmainfont{LinLibertine}[Extension=.otf,UprightFont=*_R,BoldFont=*_RZ,ItalicFont=*_RI,BoldItalicFont=*_RZI,ItalicFeatures={Ligatures=Historical}]
+% \setsansfont{LinBiolinum}[Scale=MatchUppercase, Extension=.otf, UprightFont=*_R, BoldFont=*_RB, ItalicFont=*_RI,BoldItalicFont=*_RBO]
+% \setmonofont{Inconsolatazi4}[Scale=MatchUppercase,Extension=.otf,UprightFont=*-Regular,BoldFont=*-Bold,StylisticSet=1]
+% \usepackage[final]{microtype}
+
+
+%-- Zeilenabstand einstellen
+\usepackage{setspace}
+% Nun kann man, wenn gewünscht den Zeilenabstand zum Beispiel auf 1,5 setzen mit \onehalfspacing
+
+\newcommand{\command}[1]{\texttt{\textbackslash{}#1}}
+
+
+
+%-- Mathematikpakete und Einstellungen
+\mathtoolsset{centercolon} % sorgt dafür dass := und =: besser aussehen
+\usepackage{mathdots} % sorgt dafür, dass Punte wie zB \ddots besser aussehen
+\newcommand{\Underbrace}[2]{{\underbrace{#1}_{#2}}} % Underbrace als Befehl in LaTeX-Syntax (und ohne Spacing-Probleme mit nachfolgenden Operatoren...)
+\renewcommand{\le}{\leqslant} % ich finde Kleinergleich mit schrägen Strich schöner
+\renewcommand{\ge}{\geqslant}
+
+%-- charakteristische-Funktion-/Indikatorfunktion-Eins '\ind'
+\usepackage{silence}
+\WarningFilter{latexfont}{Size substitutions with differences}
+\WarningFilter{latexfont}{Font shape `U/bbold/m/n' in size}
+\DeclareSymbolFont{bbold}{U}{bbold}{m}{n}
+\DeclareSymbolFontAlphabet{\mathbbold}{bbold}
+\newcommand{\ind}{\mathbbold{1}} 
+
+%-- Ein sehr hübscher Mengen-Befehl
+\newcommand\SetSymbol[1][]{\nonscript\:#1\vert\allowbreak\nonscript\:\mathopen{}}
+\providecommand\given{} % to make it exist
+\DeclarePairedDelimiterX\set[1]\{\}{\renewcommand\given{\SetSymbol[\delimsize]}#1}
+
+%-- Klammern, Skalarprodukt und Norm
+\DeclarePairedDelimiter{\enbrace}{(}{)}
+\DeclarePairedDelimiter{\abs}{|}{|}
+\DeclarePairedDelimiterX\skal[2]{\langle}{\rangle}{#1\,\delimsize\vert\,#2}
+\DeclarePairedDelimiter{\norm}{\lVert}{\rVert}
+
+%-- Differentialrechnung
+\newcommand{\mathd}{\mathrm{d}\mkern-0.5mu}
+\newcommand{\diff}[2]{\frac{{\partial #1}}{{\partial #2}} }
+\newcommand{\diffd}[2]{\frac{\mathd #1}{\mathd #2} }
+
+%-- eigene Befehle
+\DeclareMathOperator{\sgn}{sgn}
+
+
+%-- kommutative Diagramme
+\usepackage{tikz-cd} %-- meiner Meinung nach das beste Paket für kommutative Diagramme
+\tikzset{% um Kompatibilität mit Babel herzustellen und die angenehme "<label>"-Syntax zu nutzen
+  every picture/.append style={
+    execute at begin picture={\shorthandoff{"}},
+    execute at end picture={\shorthandon{"}}
+  }
+}
+\usetikzlibrary{quotes,babel}
+
+%-- Für Literaturangaben, hier wird NICHT das total veraltete bibtex benutzt!
+\usepackage[%
+	backend=biber,
+	sortlocale=auto,
+	natbib,
+	hyperref,
+	backref,
+	style=alphabetic % eine unvollständige Auswahl von Styles: ieee, numeric, apa
+	]%
+{biblatex}
+\addbibresource{quellen.bib} % Literaturdatei einlesen
+
+% -- Konfiguration von Hyperref (sorgt für anklickbare Links und ein PDF-Inhaltsverzeichnis)
+\usepackage[hidelinks, pdfpagelabels, bookmarksopen=true, bookmarksnumbered=true, linkcolor=black, urlcolor=SkyBlue2, plainpages=false,pagebackref, citecolor=black, hypertexnames=true, pdfborderstyle={/S/U}, linkbordercolor=SkyBlue2, colorlinks=false, backref=false]{hyperref}
+\hypersetup{final}
+
+%-- Für Aufzählungen und andere Listen, Anführungszeichen und Zitate
+\usepackage[shortlabels]{enumitem} % durch die Option ist die gleiche Syntax wie zB mit dem Paket paralist möglich
+\setlist[enumerate,description]{font=\sffamily\bfseries} % sorgt dafür, dass die Labels bei enumerate und description fett sind
+\usepackage[german=quotes]{csquotes}
+
+%-- Für hilfreiche Anmerkungen am Seitenrand
+\usepackage[obeyDraft,textsize=small]{todonotes}
+
+%-- Kopf- und Fußzeilen bearbeiten
+\usepackage{scrpage2}
+\pagestyle{scrheadings}
+\clearscrheadfoot % Standardkonfiguration löschen
+\setheadsepline{1pt} % Linie für die Kopfzeile
+\automark[section]{chapter} % definiert, welcher Text in den Kolumnentiteln erscheinen soll
+\rohead{\rightmark} % section erscheint rechts oben
+\lehead{\scshape\leftmark} % chapter erscheint links oben in ist in small caps gesetzt
+\ofoot[\pagemark]{\pagemark} % Seitenzahlen immer außen, hier wir auch der plain Stil bearbeitet!
+\ifoot[Titel der Bachelorarbeit]{Titel der Bachelorarbeit}
+\renewcommand*{\pnumfont}{\LARGE\sffamily} % Seitenzahlen in groß und serifenlos
+\renewcommand*{\footfont}{\large\sffamily\color{gray}}
+% \renewcommand*{\headfont}{\normalfont}
+
+
+
+%-- Theorem-Pakete und Konfiguration
+\usepackage{thmtools}
+
+\usepackage{bookmark} 
+% Theoreme als PDF-Lesezeichen
+\bookmarksetup{open,numbered}
+\makeatletter
+\newcommand*{\theorembookmark}{%
+  \bookmark[
+    dest=\@currentHref,
+    rellevel=1,
+    keeplevel,
+  ]{%
+    \thmt@thmname\space\csname the\thmt@envname\endcsname
+    \ifx\thmt@shortoptarg\@empty
+    \else
+      \space(\thmt@shortoptarg)%
+    \fi
+  }%
+}   
+\makeatother
+
+
+
+\declaretheoremstyle[%
+	headfont=\sffamily\bfseries,
+	notefont=\normalfont\sffamily,
+	bodyfont=\normalfont,
+	headformat=\NUMBER\ \NAME\NOTE,
+	headpunct={},
+	postheadspace=1ex,
+	postheadhook=\theorembookmark,
+	spaceabove=15pt,spacebelow=10pt,]%
+{mainstyle}
+\declaretheoremstyle[%
+	headfont=\bfseries\scshape,
+	bodyfont=\normalfont,
+	headpunct=:,
+	postheadspace=1ex,
+	spacebelow=12pt,spaceabove=2pt,
+	qed=\qedsymbol]%
+{beweise}
+
+\declaretheorem[name=Definition,parent=section,style=mainstyle]{definition}
+\declaretheorem[name=Satz,sharenumber=definition,style=mainstyle]{satz}
+\declaretheorem[name=Korollar,sharenumber=definition,style=mainstyle]{korollar}
+\declaretheorem[name=Lemma,sharenumber=definition,style=mainstyle]{lemma}
+\declaretheorem[name=Proposition,sharenumber=definition,style=mainstyle]{proposition}
+
+\declaretheorem[name=Beweis,numbered=no,style=beweise]{beweis}
+
+\usepackage{titling}

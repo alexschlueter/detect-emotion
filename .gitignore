@@ -261,3 +261,7 @@ auto/
 *.snm
 *.synctex.gz
 *.toc
+*.run.xml
+*.blg
+*.bcf
+*.bbl
