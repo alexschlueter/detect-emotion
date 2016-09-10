@@ -18,116 +18,30 @@ Hier entsteht ein Vorwort.
 \pagenumbering{arabic}
 \setcounter{page}{1}
 
-\chapter{Erstes Kapitel} % (fold)
-\label{cha:erstes_kapitel}
-\[
-	\sum_{i=0}^{\infty} a^i = \int y^2 \,\mathrm{d} x 
-\]
-
-\section{Demobereich} % (fold)
-\subsection{Demonstration von \texttt{todonotes}} 
-Man kann mittels \texttt{\textbackslash{}todo} Notizen an den Rand schreiben.\todo{Hier muss noch was hinzugefügt werden \ldots} Dafür muss allerdings in dem \texttt{\textbackslash{}documentclass}-Befehl die Option \texttt{draft} gesetzt sein. Man kann sich auch eine große Box mitten in den Text setzen lassen, die eine noch anzufertigende Zeichnung markiert. Dazu benutzt man \texttt{\textbackslash{}missingfigure$\{$\ldots$\}$}:
-\missingfigure{Hier fehlt eine Zeichnung}
-
-\subsection{Demonstration von \texttt{tikzcd}}
-Mit der Umgebung \texttt{tikzcd} kann man sehr einfach schöne kommutative Diagramme zeichnen, die man auch noch bis aufs Feinste konfigurieren kann.
-\[
-	\begin{tikzcd}[sep=large]
-		A \rar["f"] \dar[dashed] & B \dar[hook] \\
-		C \urar["g"] & D
-	\end{tikzcd}
-\]
-Kleiner Vergleich von \texttt{\textbackslash{}underbrace} und \texttt{\textbackslash{}Underbrace}
-\[
-	\underbrace{a+b}_{=1} + (x-y) \qquad \text{versus} \qquad \Underbrace{a+b}{=1} + (x-y)
-\]
-
-\subsection{Literaturangaben und Zitate} % (fold)
-Wichtige Info vorweg: Das Aussehen der Referenzen hängt sehr stark von dem verwendeten Stil ab! Der einfachste Befehl zum Zitieren ist 
-\texttt{\textbackslash{}cite}, dessen Output in etwas das Folgende ist: \cite{CGL}. Man kann noch ein optionales Argument angeben und da zum Beispiel das Kapitel reinschreiben: \cite[Kapitel $\pi$]{CGL}.
-\begin{itemize}
-	\item \textquote[\cite{CGL}]{kurzes Zitat von Gauß} erzeugt mit \texttt{\textbackslash{}textcite$[\backslash\texttt{cite}\{\ldots\}]\{\ldots\}$}
-	\item Für längere Zitat benutzt man besser den Befehl \texttt{\textbackslash{}blockcite$[\backslash\texttt{cite}\{\ldots\}]\{\ldots\}$}, der je nach 
-	Länge des Arguments den zitierten Text vom Fließtext absetzt: \blockquote[\cite{CGL}]{Hier kommt jetzt ein ganz langer Text hin, von dem ich hoffe, 
-	dass ihn keiner liest, denn er enthält nun mal so gerade gar keine sinnvolle Information. Hier kommt jetzt ein ganz langer Text hin, von dem ich hoffe, 
-	dass ihn keiner liest, denn er enthält nun mal so gerade gar keine sinnvolle Information. Hier kommt jetzt ein ganz langer Text hin, von dem ich hoffe, 
-	dass ihn keiner liest, denn er enthält nun mal so gerade gar keine sinnvolle Information.}
-	Hier geht der Fließtext weiter.
-	\item Möchte man einfach nur ein Wort mit Anführungszeichen versehen benutzt man \texttt{\textbackslash{}enquote$\{\ldots \}$}. Zu Beispiel so:
-	Die sogenannte \enquote{Lie-Algebra}. Man sollte Anführungszeichen \emph{nie} per Hand setzen!
-\end{itemize}
-
-\subsection{Alles zu Theoremen, Definition und so weiter} % (fold)
-Eine Definition kann man ganz leicht über \texttt{\textbackslash{}begin$\{$definition$\}$ \ldots \textbackslash{}end$\{$definition$\}$} erstellen:
-\begin{definition}
-Ein topologischer Raum $X$ heißt \emph{zusammenhängend}, falls er sich nicht als disjunkte Vereinigung von zwei nichtleeren, offenen Mengen schreiben lässt.
-\end{definition}
-Die Nummerierung erfolgt in der momentanen Einstellung innerhalb des \texttt{section}-Zählers. Genauso sind auch \texttt{Satz,Korollar,Lemma,Proposition} definiert. 
-Selbstverständlich lassen sich noch weitere solche Umgebungen definieren. Für Beweise gibt es die Umgebung \texttt{beweis}, die das Zeichen am Ende eines Beweises selbstständig setzt. Dies funktioniert allerdings nur im Fließtext zuverlässig. Unter Umständen muss man mit \texttt{\textbackslash{}qedhere} nachhelfen.
-\begin{beweis}
-Wir beweisen die Behauptung per Induktion, die keinen Sinn ergibt:
-\[
-	a^2+b^2=c^2 \qedhere
-\]
-\end{beweis}
-% subsection alles_zu_theoremen_definition_und_so_weiter (end)
-
-\subsection{Verschiede Mathebefehle} % (fold)
-Hier werden kurz einige wichtige Mathebefehle vorgestellt:
-\begin{description}
-	\item[Mengen] Sinnigerweise heißt der Befehl \texttt{\textbackslash{}set}. Ein einfaches Beispiel:
-	\[
-		\set{v_1,\ldots ,v_n}
-	\]
-	In der Stern-Variante wird die Größe der Klammern automatisch angepasst, man kann die Größe aber auch manuell mit den bekannten Befehlen \texttt{\textbackslash{}big} 
-	usw. setzen:
-	\[
-		\set*{ \binom{n}{1}, \ldots , \binom{n}{k} } \qquad \set[\Big]{x_1, \ldots ,x_n}
-	\]
-	Ein \texttt{\textbackslash{}given} im Argument erzeugt die folgende ständig benötigte Notation:
-	\[
-		\set{x \in \mathbb{R}^2 \given x_1^2 + x_2^2=1} \qquad \set*{ x \in \mathbb{R}^n \given \sqrt{\sum_{i=1}^{n} x_i^2}=1}
-	\]
-	Ähnliche Konstrukte lassen sich natürlich auch für ähnliche Notation zum Beispiel in der Wahrscheinlichkeitstheorie realisieren.
-	\item[Klammern] Oft braucht man auch einfach nur Klammern, die sich der Größe des Inhalts anpassen. In diesem Dokument ist dafür \texttt{\textbackslash{}enbrace} und 
-	\command{abs} definiert. Die Syntax ist wie im ersten Fall nur ohne die \command{given} Option
-	\[
-		\enbrace*{V_1, \ldots ,V_m , \bigoplus_{i=1}^\infty V_i}  \qquad \abs*{x+y} \le \abs{x} + \abs{y} \qquad \abs*{\sum_{i=1}^{\infty} a_i}   
-	\]
-	\item[Skalarprodukt] Mittels  \command{skal} (zwei Argumente). Hausaufgabe: Herausfinden, wie man auf die Komma-Notation wechselt:
-	\[
-		\skal{v}{v_1 + \ldots + v_n} = \skal*{\sum v_i}{v}
-	\]
-	\item[Norm] Von der Syntax her genauso funktioniert \command{norm}
-	\[
-		\norm*{\frac{x}{\norm{x} } } =1
-	\]
-\end{description}
-% subsection verschiede_mathebefehle (end)
-
-\subsection{Differentialrechnung} % (fold)
-Meiner Meinung nach gehört das kleine \enquote{d} in Ableitungen oder Integralen aufrecht: Dazu gibt es den Befehl \command{mathd}:
-\[
-	\int\! x^2 \, \mathd x
-\]
-Für (partielle) Ableitungen gibt es dann noch die Befehle \command{diff} und \command{diffd} (jeweils zwei Argumente, die man auch leer lassen darf)
-\[
-	\diffd{}{t} \cos (c \cdot t) \qquad \diff{f}{x} \qquad \diff{^2 f}{x \partial y}
-\]
-% subsection differentialrechnung (end)
-
-\subsection{Eigene Operatoren} % (fold)
-Wer zum Beispiel für die Sinusfunktion \texttt{sin (x)} statt \texttt{\textbackslash{}sin (x)} schreibt, der begeht eine typografische Todsünde:
-\[
-	sin (x) \qquad \text{ versus } \qquad \sin (x)
-\]
-Benutzt man den Befehl, kann man auch die Klammer weglassen, ohne das Spacing zu stören: $\sin x$.
-Viele solcher Befehle sind schon vordefiniert. Wenn man selbst neue braucht, geht dies sehr einfach mittels \command{DeclareMathOperator} (siehe Quelltext). Hier wurde ein
-Befehl für das Signum definiert
-\[
-	\sgn \sigma = \pm 1
-\]
-% subsection eigene_operatoren (end)
+\chapter{Erstes Kapitel}
+\begin{tikzpicture}
+  \begin{axis}[
+    width=10cm,
+    height=10cm,
+    ticks=none,
+    y dir=reverse
+    ]
+    \addplot [
+    mark=*,
+    only marks,
+    mark size=0.6pt,
+    nodes near coords={
+      \pgfmathprintnumber\coordindex
+    },
+    every node near coord/.style={
+        font=\scriptsize,
+        anchor=north west,
+        xshift=-3pt,
+        yshift=3pt
+    }
+    ] table {data/face.dat};
+ \end{axis}
+\end{tikzpicture}
 
 \appendix % hier beginnt der Anhang
 \printbibliography
