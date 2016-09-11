@@ -23,6 +23,8 @@ Hier entsteht ein Vorwort.
   \centering
 \begin{tikzpicture}
   \begin{axis}[
+  % anchor=origin, % Same as before
+    % rotate around={6:(current axis.origin)},
     width=10cm,
     height=10cm,
     ticks=none,
@@ -31,17 +33,30 @@ Hier entsteht ein Vorwort.
     \addplot [
     mark=o,
     only marks,
-    mark size=0.6pt,
-    nodes near coords={
-      \pgfmathprintnumber\coordindex
-    },
-    every node near coord/.style={
-        font=\scriptsize,
-        anchor=north west,
-        xshift=-3pt,
-        yshift=3pt
-    }
-    ] table {data/face_lipcorner_low.dat};
+    mark size=1pt,
+    % nodes near coords={
+    %   \pgfmathprintnumber\coordindex
+    % },
+    % every node near coord/.style={
+    %     font=\scriptsize,
+    %     anchor=north west,
+    %     xshift=-3pt,
+    %     yshift=3pt
+    % }
+    ] table [x expr=\thisrowno{0}*cos(6)+\thisrowno{1}*sin(6),y expr=\thisrowno{0}*-sin(6)+\thisrowno{1}*cos(6)]{data/face_lipcorner_low.dat};
+    \addplot [
+    red,
+    x filter/.expression={\coordindex==36 || \coordindex==45 ? x : nan}
+    ] table [
+    x expr=\thisrowno{0}*cos(6)+\thisrowno{1}*sin(6),y expr=\thisrowno{0}*-sin(6)+\thisrowno{1}*cos(6)
+    ] {data/face_lipcorner_low.dat};
+    \addplot [
+    blue,
+    dashed,
+    x filter/.expression={\coordindex==16 || \coordindex==0 ? x : nan}
+    ] table [
+    x expr=\thisrowno{0}*cos(6)+\thisrowno{1}*sin(6),y expr=\thisrowno{0}*-sin(6)+\thisrowno{1}*cos(6)
+    ] {data/face_lipcorner_low.dat};
  \end{axis}
 \end{tikzpicture}
 \caption{66 Landmarks bilden ein Gesicht.}
