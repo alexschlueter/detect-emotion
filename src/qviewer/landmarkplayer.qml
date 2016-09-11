@@ -25,6 +25,14 @@ FocusScope{
     Keys.onDownPressed:  if (frame >10) {frame = frame-10}
     Keys.onUpPressed: if (frame <landmarkModel.length-12) {frame = frame+10}
 
+    function printCoords() {
+      var pts = landmarkModel[frame].trueNormalized().points;
+      for (var i = 0; i < pts.length; i++) {
+      console.log(pts[i].x + " " + pts[i].y);
+      }
+      console.log("\n");
+      }
+
     Timer{
         property int realfps: 30
         property real rest: 0

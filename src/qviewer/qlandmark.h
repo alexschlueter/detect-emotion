@@ -44,6 +44,7 @@ public:
     QVariantList points();
     // Normalize the points
     Q_INVOKABLE QLandmark* normalized();
+    Q_INVOKABLE QLandmark* trueNormalized();
 
     const PointCloud<66> & pointCloud() const{ return _points; }
 signals:

@@ -79,12 +79,18 @@ ApplicationWindow {
                 value: 66
                 id: pcaDimBox
             }
+            Button{
+              text:"Print LM coords"
+              id: saveBtn
+              onClicked: player.printCoords()
+            }
         }
     }
 
     property int personidx: personBox.currentIndex
 
     LandmarkPlayer{
+        id: player
         anchors.fill: parent
         fps: fpsbox.value
         normalize: normbox.checked

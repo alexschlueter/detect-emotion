@@ -16,3 +16,11 @@ QLandmark* QLandmark::normalized(){
     points = points.scale(600);
     return new QLandmark(std::move(points),this);
 }
+
+QLandmark* QLandmark::trueNormalized(){
+  auto points = centerPointCloud(_points);
+  points = rotatePointCloudOnEyeAndForehead(points);
+  //points = rotatePointCloudOnForeHead(points);
+  points = scalePointCloud2(points,1);
+  return new QLandmark(std::move(points),this);
+}
