@@ -1,4 +1,3 @@
-
 \begin{figure}
   \centering
   \begin{tikzpicture}
@@ -7,9 +6,12 @@
       only marks,
       mark size=1.5pt,
       xlabel=$1-\text{Precision}$,
-      ylabel=Recall
+      ylabel=Recall,
+      legend entries={SVM, Random Forest},
+      legend pos=north west
       ]
-     \addplot table [x index=1, y index=2, x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
+     \addplot+ [x filter/.expression={\thisrow{IsSVM}==1 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
+     \addplot+ [x filter/.expression={\thisrow{IsSVM}==0 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
     \end{axis}
   \end{tikzpicture}
   \caption{Ergebnisse der Klassifikatoren und Parameter für Lips Part}

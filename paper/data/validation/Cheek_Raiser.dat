@@ -1,44 +1,44 @@
-FeaturesClassifier	Precision	Recall
-XYFeatureExtraction-svm_linear 0.156044 0.0600677
-XYFeatureExtraction-svm_rbf_gamma=1 0 0
-XYFeatureExtraction-svm_rbf_gamma=2 0.0609939 1
-XYFeatureExtraction-svm_rbf_gamma=5 0 0
-XYFeatureExtraction-svm_rbf_gamma=0.4 0 0
-XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=1 0.0534137 0.839255
-XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=2 0.0537061 0.843486
-XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=5 0.0535955 0.841794
-XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4 0.0417263 0.641286
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2 0.263968 0.275804
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2 0.233956 0.339255
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree10 0.000484966 0.000846024
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=2_degree10 0.000484966 0.000846024
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree10 0.0619562 1
-XYFeatureExtraction-svm_polynom_coef0=0_gamma=0.3_degree10 0 0
-XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=10_maxDepth=4_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.410256 0.0270728
-XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.702128 0.0837563
-XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.428571 0.0583756
-XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.11399 0.0186125
-XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.316425 0.110829
-InterpolationFeatureExtraction-svm_linear 0.212162 0.132826
-InterpolationFeatureExtraction-svm_rbf_gamma=1 0.0598505 0.928088
-InterpolationFeatureExtraction-svm_rbf_gamma=2 0.034188 0.0135364
-InterpolationFeatureExtraction-svm_rbf_gamma=5 0.0573716 0.806261
-InterpolationFeatureExtraction-svm_rbf_gamma=0.4 0.0304709 0.00930626
-InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=1 0.0298007 0.247885
-InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=2 0.036201 0.294416
-InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=5 0.051742 0.380711
-InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4 0.0250124 0.214044
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2 0.0565115 0.566836
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2 0.0565115 0.566836
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree10 0.0610065 1
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=2_degree10 0.0610065 1
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree10 0 0
-InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=0.3_degree10 0 0
-InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=10_maxDepth=4_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0
-InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0
-InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.663158 0.0532995
-InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0
-InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0
-OrientationFeatureExtraction-svm_linear 0.0609939 1
-OrientationFeatureExtraction-svm_rbf_gamma=1 0.0609939 1
-OrientationFeatureExtraction-svm_rbf_gamma=2 0.0609939 1
+FeaturesClassifier	Precision	Recall	IsSVM
+XYFeatureExtraction-svm_linear 0.156044 0.0600677 1
+XYFeatureExtraction-svm_rbf_gamma=1 0 0 1
+XYFeatureExtraction-svm_rbf_gamma=2 0.0609939 1 1
+XYFeatureExtraction-svm_rbf_gamma=5 0 0 1
+XYFeatureExtraction-svm_rbf_gamma=0.4 0 0 1
+XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=1 0.0534137 0.839255 1
+XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=2 0.0537061 0.843486 1
+XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=5 0.0535955 0.841794 1
+XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4 0.0417263 0.641286 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2 0.263968 0.275804 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2 0.233956 0.339255 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree10 0.000484966 0.000846024 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=2_degree10 0.000484966 0.000846024 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree10 0.0619562 1 1
+XYFeatureExtraction-svm_polynom_coef0=0_gamma=0.3_degree10 0 0 1
+XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=10_maxDepth=4_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.410256 0.0270728 0
+XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.702128 0.0837563 0
+XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.428571 0.0583756 0
+XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.11399 0.0186125 0
+XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.316425 0.110829 0
+InterpolationFeatureExtraction-svm_linear 0.212162 0.132826 1
+InterpolationFeatureExtraction-svm_rbf_gamma=1 0.0598505 0.928088 1
+InterpolationFeatureExtraction-svm_rbf_gamma=2 0.034188 0.0135364 1
+InterpolationFeatureExtraction-svm_rbf_gamma=5 0.0573716 0.806261 1
+InterpolationFeatureExtraction-svm_rbf_gamma=0.4 0.0304709 0.00930626 1
+InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=1 0.0298007 0.247885 1
+InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=2 0.036201 0.294416 1
+InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=5 0.051742 0.380711 1
+InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4 0.0250124 0.214044 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2 0.0565115 0.566836 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2 0.0565115 0.566836 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree10 0.0610065 1 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=2_degree10 0.0610065 1 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree10 0 0 1
+InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=0.3_degree10 0 0 1
+InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=10_maxDepth=4_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0 0
+InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0 0
+InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0.663158 0.0532995 0
+InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0 0
+InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0 0 0 0
+OrientationFeatureExtraction-svm_linear 0.0609939 1 1
+OrientationFeatureExtraction-svm_rbf_gamma=1 0.0609939 1 1
+OrientationFeatureExtraction-svm_rbf_gamma=2 0.0609939 1 1
