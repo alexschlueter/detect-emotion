@@ -1,0 +1,68 @@
+\pgfplotstableread{data/eye_open.dat}{\eyeopen}
+\pgfplotstableread{data/eye_closed.dat}{\eyeclosed}
+
+\newcommand{\drawar}[2]{
+    \pgfplotstablegetelem{#1}{0}\of{\eyeopen}     %% get n-th x
+    \pgfmathsetmacro{\xo}{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{1}\of{\eyeopen}     %% get n-th y
+    \pgfmathsetmacro{\yo}{\pgfplotsretval}
+
+    \pgfplotstablegetelem{#1}{0}\of{\eyeclosed}     %% get n-th x
+    \pgfmathsetmacro{\xc}{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{1}\of{\eyeclosed}     %% get n-th y
+    \pgfmathsetmacro{\yc}{\pgfplotsretval}
+
+    \edef\doplot{\noexpand\draw[->] (axis cs:\xo,\yo) -- (axis cs:\xc,\yc) node[midway,right=2pt] {$\Delta v_{#2}$};}
+    \doplot
+}
+
+\begin{figure}
+  \centering
+\begin{tikzpicture}
+  \begin{scope}[local bounding box=scope1]
+  \begin{axis}[
+    width=7cm,
+    height=4cm,
+    ticks=none,
+    y dir=reverse,
+    axis lines=none,
+    legend entries={$\text{Frame}_{t-1}$,$\text{Frame}_{t+1}$},
+    legend style={
+      at={(-0.1,1)},
+      anchor=north east
+    }
+    ]
+    \addplot+ [
+    mark=*,
+    only marks,
+    mark size=1pt,
+    nodes near coords={
+      \pgfmathparse{int(\coordindex+42)}
+      \pgfmathresult
+    },
+    every node near coord/.style={
+        font=\scriptsize,
+        anchor=south west,
+        xshift=-2pt,
+        yshift=-3pt
+      },
+    ] table {\eyeopen};
+    \addplot+ [
+    mark=*,
+    only marks,
+    mark size=1pt,
+    ] table {\eyeclosed};
+
+    \drawar{1}{43}
+    \drawar{2}{44}
+    
+  \end{axis}
+\end{scope}
+
+  \begin{scope}[local bounding box=scope2,shift={($(scope1.east)+(4cm,0)$)}]
+\node  {$\colvec{4}{\vdots}{\Delta v_{43}}{\Delta v_{44}}{\vdots}$};
+  \end{scope}
+\draw  \myarrowopts ($(scope1.east)+(0.5cm,0)$) -- ($(scope2.west)+(-0.5cm,0)$) node[above,midway] {extract difference};
+\end{tikzpicture}
+\caption{TimeDifferentialExtraction}
+\end{figure}
