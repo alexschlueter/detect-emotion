@@ -31,7 +31,7 @@
      \addplot+ [x filter/.expression={\thisrow{IsSVM}==0 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lip_Corner_Puller.dat};
     \end{axis}
   \end{tikzpicture}
-  \caption{Ergebnisse der Klassifikatoren und Parameter für Lips Part}
+  \caption{Validierungsergebnisse für Lips Part und Lip Corner Puller. Jeder Punkt steht für eine Kombination aus Feature Extraction, Klassifikator und Parametern.}
 \end{figure}
 
 
