@@ -217,6 +217,20 @@
    preaction = {decorate},
    postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]}
 
+\usepackage{booktabs}
+
+\pgfplotstableset{
+every head row/.style={
+  before row={
+  \toprule
+  },
+  after row=\midrule,
+},
+every last row/.style={
+  after row=\bottomrule
+},
+}
+
 %%% Local Variables: 
 %%% mode: latex
 %%% TeX-master: "paper"

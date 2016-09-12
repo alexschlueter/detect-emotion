@@ -76,7 +76,7 @@ create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
  \end{axis}
 \draw  \myarrowopts ($(plot1.east)+(0.5cm,0)$) -- ($(plot2.west)+(-0.5cm,0)$) node[above,midway] {normalize} node[below,midway] {rotation};
 \end{tikzpicture}
-\caption{66 Landmarks bilden ein Gesicht.}
+\caption{Normalisierung der Rotation anhand ausgesuchter Linien}
 \end{figure}
 \begin{figure}
   \centering
@@ -115,13 +115,15 @@ create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
     ] table {data/face_lipcorner_low.dat};
   \end{axis}
 \end{scope}
-  \begin{scope}[local bounding box=scope2, shift={($(scope1.east)+(3cm,-0.5cm)$)}]
+  \begin{scope}[local bounding box=scope2, shift={($(scope1.east)+(3cm,-0.6cm)$)}]
     
   \begin{axis}[
     width=0.4\textwidth,
     height=3.5cm,
     axis lines=left,
     ticks=none,
+    xmin=-0.55,
+    ymin=-4e-2,
     legend entries={$ax^4+bx^3+cx²+dx+e$},
     legend style={
       at={(0,-0.2)},
@@ -140,9 +142,9 @@ create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
     },
     every node near coord/.style={
         font=\scriptsize,
-        anchor=north west,
-        xshift=-3pt,
-        yshift=3pt
+        anchor=south west,
+        xshift=-2pt,
+        yshift=-3pt
     }
     ] table {data/lipcorner_low_norm.dat};
     \addplot [red,
@@ -166,6 +168,37 @@ create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
 \caption{InterpolationFeatureExtraction}
 \end{figure}
 
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      title=Lips Part,
+      only marks,
+      mark size=1.5pt,
+      xlabel=$1-\text{Precision}$,
+      ylabel=Recall
+      ]
+     \addplot table [x index=1, y index=2, x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Ergebnisse der Klassifikatoren und Parameter für Lips Part}
+\end{figure}
+
+
+
+\begin{figure}
+  \centering
+  \pgfplotstabletypeset[
+  precision=3,
+  columns={F1Validation, F1Test, PrecisionTest,
+    RecallTest}, columns/F1Validation/.style={column name={F1 score
+      Validation}}, columns/F1Test/.style={column name={F1 score Test}},
+  columns/PrecisionTest/.style={column name={Precision Test}},
+  columns/RecallTest/.style={column name={Recall Test}}
+  ]{data/top5/Lips_Part.dat}
+  
+  \caption{F1 scores und Testergebnisse der Top 5 Klassifikatoren für Lips Part}
+\end{figure}
 
 
 
