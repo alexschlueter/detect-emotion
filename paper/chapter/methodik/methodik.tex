@@ -1,3 +1,39 @@
 \chapter{Methodik}
+Hier keine Details zur Implementierung!
+\section{Vorverarbeitung}
+\subsection{Punktwolken}
+\begin{enumerate}
+  \item Beschreibung der Daten ?!
+  \item Normalisierung
+  \item Randomisiertes erweitern
+  \item PCA
+\end{enumerate}
 \input{cloud_norm.pgf}
+\subsection{Feature Extrahieren}
+\subsubsection{Statische Features}
+\begin{enumerate}
+  \item XYFeature
+  \item Orientation
+  \item EuclidianDistance
+  \item CenterDistance
+  \item CenterOrienation
+  \item Interpolation
+\end{enumerate}
 \input{interpolation_extraction.pgf}
+\subsubsection{Zeitliche Features}
+\begin{itemize}
+\item TimeDifferential
+\end{itemize}
+\subsubsection{Featureverarbeitung}
+\begin{itemize}
+  \item Negativanteil verringern
+  \item MinMax/MeanVar Normalisieren
+  \item Shufflen
+  \item PCA
+\end{itemize}
+
+Vielleicht noch eine Beschreibung einer allgemeinen Pipeline.
+\section{Evaluierungsmethoden}
+\begin{enumerate}
+  \item Beschreibung von F1-Score
+\end{enumerate}
