@@ -1,0 +1,19 @@
+
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      title=Lips Part,
+      only marks,
+      mark size=1.5pt,
+      xlabel=$1-\text{Precision}$,
+      ylabel=Recall
+      ]
+     \addplot table [x index=1, y index=2, x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{Ergebnisse der Klassifikatoren und Parameter für Lips Part}
+\end{figure}
+
+
+

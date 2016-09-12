@@ -1,0 +1,59 @@
+\pgfplotstableread[x expr=\thisrowno{0}*cos(6)+\thisrowno{1}*sin(6),y expr=\thisrowno{0}*-sin(6)+\thisrowno{1}*cos(6)]{data/face_lipcorner_low.dat}{\facerot}
+\pgfplotstablecreatecol[
+create col/expr={\thisrow{0}*cos(6)+\thisrow{1}*sin(6)}
+]{xrot}{\facerot}
+\pgfplotstablecreatecol[
+create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
+]{yrot}{\facerot}
+\begin{figure}
+  \centering
+\begin{tikzpicture}
+  \begin{axis}[
+    name=plot1,
+    width=6cm,
+    height=6cm,
+    ticks=none,
+    y dir=reverse
+    ]
+    \addplot [
+    mark=o,
+    only marks,
+    mark size=1pt
+    ] table [x=xrot, y=yrot] \facerot;
+    \addplot [
+    red,
+    x filter/.expression={\coordindex==36 || \coordindex==45 ? x : nan}
+    ] table [x=xrot, y=yrot] \facerot;
+    \addplot [
+    blue,
+    dashed,
+    x filter/.expression={\coordindex==16 || \coordindex==0 ? x : nan}
+    ] table [x=xrot, y=yrot] \facerot;
+ \end{axis}
+  \begin{axis}[
+    name=plot2,
+    at={($(plot1.right of east)+(3cm,0)$)}, anchor=left of west,
+    width=6cm,
+    height=6cm,
+    ticks=none,
+    y dir=reverse
+    ]
+    \addplot [
+    mark=o,
+    only marks,
+    mark size=1pt
+    ] table \facerot;
+    \addplot [
+    red,
+    x filter/.expression={\coordindex==36 || \coordindex==45 ? x : nan}
+    ] table \facerot;
+    \addplot [
+    blue,
+    dashed,
+    x filter/.expression={\coordindex==16 || \coordindex==0 ? x : nan}
+    ] table \facerot;
+ \end{axis}
+\draw  \myarrowopts ($(plot1.east)+(0.5cm,0)$) -- ($(plot2.west)+(-0.5cm,0)$) node[above,midway] {normalize} node[below,midway] {rotation};
+\end{tikzpicture}
+\caption{Normalisierung der Rotation anhand ausgesuchter Linien}
+\end{figure}

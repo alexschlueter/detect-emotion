@@ -1,0 +1,16 @@
+\begin{figure}
+  \centering
+  \pgfplotstabletypeset[
+  precision=3,
+  columns={F1Validation, F1Test, PrecisionTest,
+    RecallTest}, columns/F1Validation/.style={column name={F1 score
+      Validation}}, columns/F1Test/.style={column name={F1 score Test}},
+  columns/PrecisionTest/.style={column name={Precision Test}},
+  columns/RecallTest/.style={column name={Recall Test}}
+  ]{data/top5/Lips_Part.dat}
+  
+  \caption{F1 scores und Testergebnisse der Top 5 Klassifikatoren für Lips Part}
+\end{figure}
+
+
+
