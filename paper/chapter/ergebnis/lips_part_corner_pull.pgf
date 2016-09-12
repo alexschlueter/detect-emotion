@@ -3,6 +3,7 @@
   \begin{tikzpicture}
     \begin{axis}[
       title=Lips Part,
+      width=0.5\textwidth,
       only marks,
       mark size=1.5pt,
       xlabel=$1-\text{Precision}$,
@@ -12,6 +13,22 @@
       ]
      \addplot+ [x filter/.expression={\thisrow{IsSVM}==1 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
      \addplot+ [x filter/.expression={\thisrow{IsSVM}==0 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lips_Part.dat};
+    \end{axis}
+  \end{tikzpicture}
+  ~
+  \begin{tikzpicture}
+    \begin{axis}[
+      title=Lip Corner Puller,
+      width=0.5\textwidth,
+      only marks,
+      mark size=1.5pt,
+      xlabel=$1-\text{Precision}$,
+      ylabel=Recall,
+      legend entries={SVM, Random Forest},
+      legend pos=north west
+      ]
+     \addplot+ [x filter/.expression={\thisrow{IsSVM}==1 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lip_Corner_Puller.dat};
+     \addplot+ [x filter/.expression={\thisrow{IsSVM}==0 ? x : nan}] table [x index=1, y index=2,x expr={1-\thisrow{Precision}}] {data/validation/Lip_Corner_Puller.dat};
     \end{axis}
   \end{tikzpicture}
   \caption{Ergebnisse der Klassifikatoren und Parameter für Lips Part}
