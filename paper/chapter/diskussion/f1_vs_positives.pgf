@@ -1,0 +1,18 @@
+\begin{figure}
+  \centering
+  \begin{tikzpicture}
+    \begin{axis}[
+      % title=,
+      only marks,
+      mark size=1.5pt,
+      xlabel=$\text{\#Positives} / \text{\#Samples}$,
+      ylabel=F1 score,
+      legend entries={Validation, Test},
+      legend pos=north west
+      ]
+     \addplot+ table [col sep=comma, x index=5, y index=2] {data/f1_vs_positives.dat};
+     \addplot+ table [col sep=comma, x index=5, y index=3] {data/f1_vs_positives.dat};
+    \end{axis}
+  \end{tikzpicture}
+  \caption{F1 score des besten Klassifikators jeder Action Unit gegen Anteil positiver Samples}
+\end{figure}
