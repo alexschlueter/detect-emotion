@@ -35,4 +35,5 @@
   \end{axis}
   \end{tikzpicture}
   \caption{Einfach Klassifikation von Lips Part}
+  \label{fig:lips_part_lms}
 \end{figure}

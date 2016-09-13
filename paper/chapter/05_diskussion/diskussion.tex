@@ -11,9 +11,8 @@
 In den Ergebnissen haben wir gesehen, dass Lips Part und Lip Corner Puller
 relativ gut, die anderen Action Units eher schlecht erkannt werden. Lips Part
 ist leich zu erkennen, da nur die Abstände der 6 Landmarks in der Mitte des
-Mundes relevant sind:
+Mundes relevant sind (vgl. \cref{fig:lips_part_lms})
 \input{lips_part_lms.pgf}
-
 Dies erklärt auch, warum die eher simple CenterDistanceExtraction erfolgreich
 ist: Ein Vergleich der Abstände von Landmarks 49 und 52 zum Mittelpunkt liefert
 ein einfaches Kriterium, ob die Action Unit aktiviert ist.
