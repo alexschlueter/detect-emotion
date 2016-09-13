@@ -30,9 +30,6 @@
     \edef\doplot{\noexpand\draw (axis cs:\xo,\yo) -- (axis cs:\xc,\yc);}
     \doplot
 }
-
-\begin{figure}
-  \centering
 \begin{tikzpicture}
   \begin{scope}[local bounding box=scope1]
   \begin{axis}[
@@ -83,5 +80,3 @@
   \end{scope}
 \draw  \myarrowopts ($(scope1.east)+(0.5cm,0)$) -- ($(scope2.west)+(-0.5cm,0)$) node[above,midway] {extract difference};
 \end{tikzpicture}
-\caption{TimeDifferentialExtraction}
-\end{figure}

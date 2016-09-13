@@ -3,6 +3,8 @@ In diesem Kapitel werden sowohl die von uns verwendeten Methoden zum Training de
 als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Außerdem wird erläutert, wie die Ergebnisse
 evaluiert wurden.
 
+\section{Ground-Truth Daten}
+Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu vereinfachen wollen wir das Problem vereinfachen, indem wir die in zwei Kategorien klassifizieren: Action und keine Action. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Action aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass es eine Action gegeben hat.
 \section{Vorverarbeitung}
 \subsection{Aufbereitung der Eingabedaten}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
@@ -35,7 +37,7 @@ Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander 
 der von uns verwendeten Features.
 
 \subsubsection{Statische Features}
-Dazu schreiben, wieso wir finden, dass das Feature ein gutes ist (z.B. weil es den Feature-Raum verkleinert, ...)
+Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu genau einen Zeitpunkt berechnet werden. 
 \begin{enumerate}
   \item \textbf{X-/Y-Koordinaten}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
@@ -54,17 +56,41 @@ Dazu schreiben, wieso wir finden, dass das Feature ein gutes ist (z.B. weil es d
   \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
         etwas über die Relation der einzelnen Landmarks zum gesamten Gesicht aus.
 
-  \item \textbf{Polynominterpolation}: es wird versucht zusammenhängende Landmarks, das heisst Punkte, welche zusammen einen Teil des Gesichtes ergeben,
-        durch ein Polynom zu interpolieren und die Polynomkoeffizienten als Feature zu extrahieren. Die Action Units beziehen sich meist auf genau einen isolierten
-        Bereich des Gesichtes. Daher erscheint es naheliegend, diese Bereiche durch eine Funktion zu approximieren und diese als Feature zu nutzen.
+  \item \textbf{Polynominterpolation}: 
+     hierbei werden verschiedene Bereiche der Gesichts einzeln betrachtet (z.B. die Oberlippe, siehe Abbildung \ref{fig:interpol}).
+     Diese Landmarks, das heißt die Punkte, werden zuerst normiert. Dazu verschiebt man die dortigen Punkte, so dass der Mittelpunkt der Koordinaten-Ursprung ist. Danach werden sie so skaliert, dass die maximale Entfernung in $x$-Richtung gleich $1$ ist.
+     Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate benutzt. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
+     Dieses Verfahren hat folgende Vorteile: 
+     %Erstens entsprechen die Punkte der einzelnen Gesichtsbereiche meist die wichtigen Punkte einer Action Unit.
+     Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierende Feature mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
 \end{enumerate}
+\begin{figure}
+\scalebox{ 0.9 }{
 \input{interpolation_extraction.pgf}
+}
+\caption{InterpolationFeatureExtraction}
+\label{fig:interpol}
+\end{figure}
 
 \subsubsection{Zeitliche Features}
-\begin{itemize}
-\item TimeDifferential
-\end{itemize}
+Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten Features werden anhand einer der Landmarks zu einen gewissen Zeitpunkt berechnet.
+Man kann jedoch die oben aufgelisteten Arten von Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen. 
+Um die zeitliche Ableitung zu einen bestimmten Zeitpunkt zu berechnen, wird numerisch Differentation benutzt. Bezeichnet $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}$ den Feature-Vektor einer der obigen Feature-Extraktoren. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
+
+Als Beispiel nehmen wir die zeitliche Ableitung der XY-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}). 
+Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander subtrahiert und halbiert. Zum Beispiel $\Delta v_{43} \coloneqq \frac{v_{43}(t+1) - v_{43}(t-1)}{2}\in\mathbb{R}^2$ (wobei $v_{j}(t)$ die Koordinate des Punktes $j\in\{0,\ldots,65\}$ zum Zeitpunkt $t$ ist).
+Diese sich so ergebene Differenz dient nun als neues Feature.
+
+\begin{figure}
 \input{time_differential.pgf}
+\caption{TimeDifferentialExtraction}
+\label{fig:timediff}
+\end{figure}
+
+Nun können jedoch nicht mehr die Intensität der Action Units als Vorlage für eine Action oder keine Action benutzt werden. 
+Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action ereignet, aber ihre Intensität nicht ändert.
+Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als Action klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und keine Action ereignet.
+Um dieses Problem zu lösen, betrachtet man die ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer Action aus, sonst von keiner. Somit ist sowohl der Beginn als auch das Ende einer Action Unit eine Action.
 
 \subsubsection{Featureverarbeitung}
 Zweck mitbeschreiben (z.B. PCA -> FeatureRaum weiter reduzieren)
