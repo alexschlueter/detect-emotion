@@ -1,0 +1,18 @@
+\begin{table}[h]
+\centering
+\pgfplotstabletypeset[
+  precision=3,
+  col sep=comma,
+  fixed zerofill,
+  columns={F1Validation, F1Test, PrecisionTest, RecallTest, Classifier, Params, Features},
+  columns/F1Validation/.style={column name={F1 Val}},
+  columns/F1Test/.style={column name={F1 Test}},
+  columns/PrecisionTest/.style={column name={Prec. Test}},
+  columns/RecallTest/.style={column name={Recall Test}},
+  columns/Classifier/.style={string type, column name={Klassif.}},
+  columns/Params/.style={string type, column name={Parameter}},
+  columns/Features/.style={string type, column name={Features}}
+  ]{data/top5/Lips_Part.dat}
+  \caption{F1 scores und Testergebnisse der Top 5 Klassifikatoren für Lips Part}
+  \label{tbl:lips_part_top}
+\end{table}

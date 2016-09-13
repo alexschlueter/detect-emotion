@@ -1,0 +1,4 @@
+Features, Dims, DimsAfterPCA, BestF1, BestClassifier
+XY, 132, 28, 0.2769337740552781, XYFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2
+Interpolation, 37, nan, 0.16337165241689566, InterpolationFeatureExtraction-svm_linear
+Orientation, 2145, 2145, 0.11497502483284777, OrientationFeatureExtraction-svm_linear

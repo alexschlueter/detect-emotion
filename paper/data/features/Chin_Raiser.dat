@@ -1,0 +1,9 @@
+Features, Dims, DimsAfterPCA, BestF1, BestClassifier
+XY, 132, 28, 0.03356619221717488, XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4
+EuclidianDistance, 2145, 30, 0.16161667313258424, EuclideanDistanceExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0
+CenterDistance, 66, 17, 0.19145813951900617, CenterDistanceExtraction-svm_polynom_coef0=0_gamma=0.3_degree10
+Interpolation, 37, nan, 0.03735304175412903, InterpolationFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4
+Orientation, 2145, 2145, 0.029988888152323624, OrientationFeatureExtraction-svm_linear
+TimeDiff_XY, 132, 117, 0.010000007007999297, SimpleTimeDifferentialExtraction_XYFeatureExtraction-svm_sigmoid_coef0=0_gamma=0.4
+TimeDiff_Interpolation, 37, nan, 0.017391257678623817, SimpleTimeDifferentialExtraction_InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2
+CenterOrientation, 66, 2, 0.04058341789322222, CenterOrientationExtraction-svm_rbf_gamma=0.4

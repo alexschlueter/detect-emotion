@@ -1,25 +1,51 @@
 \chapter{Ergebnis}
-\begin{itemize}
-  \item Welche Parameter/Pipeline zum trainieren
-    \begin{itemize}
-      \item Warum diese Parameter und keine anderen?
-    \end{itemize}
-  \item Alle Plots zeigen (oder nur eine Teilmenge?)
-    \begin{itemize}
-      \item Bei den Plots schwache Punkte gar nichts erst anzeigen?!
-      \item Auf jedenfall gute immer beschreiben (welche Parameter z.B.)
-    \end{itemize}
-  \item Auflisten welche Action-Unit welche Classificator gut war (Recall, Precision, F1-Score)
-  \item Klar machen, wie gut diese Klassifikatoren bei Trainingsmenge abschneiden
-  \item Allgemeine Aussage, welche Klassifikatoren mit Parametern überhaupt nicht geeignet sind und welche super sind.
-  \item Aussage welche Action-Unit gut zu klassifizieren ist
-  \item Erwähnen, dass Shuffle SVM-Ergebnisse ändert.
-\end{itemize}
+% \begin{itemize}
+%   \item Alle Plots zeigen (oder nur eine Teilmenge?)
+%     \begin{itemize}
+%       \item Bei den Plots schwache Punkte gar nichts erst anzeigen?!
+%       \item Auf jedenfall gute immer beschreiben (welche Parameter z.B.)
+%     \end{itemize}
+%   \item Auflisten welche Action-Unit welche Classificator gut war (Recall, Precision, F1-Score)
+%   \item Klar machen, wie gut diese Klassifikatoren bei Trainingsmenge abschneiden
+%   \item Allgemeine Aussage, welche Klassifikatoren mit Parametern überhaupt nicht geeignet sind und welche super sind.
+%   \item Aussage welche Action-Unit gut zu klassifizieren ist
+%   \item Erwähnen, dass Shuffle SVM-Ergebnisse ändert.
+% \end{itemize}
 
 \input{all_au_res.pgf}
 
+In \cref{tbl:all_au_res} sind die Ergebnisse des besten Klassifikators
+(ausgewählt nach F1 score auf der Validierungsmenge) pro Action Unit zu sehen.
+Gute Klassifikation auf unbekannten Personen ist möglich für Lips Part: Der hohe
+F1 score $0.656$ in der Validierung bestätigt sich auch auf der Testmenge. Akzeptable
+Performance liefert der beste Klassifikator für Lip Corner Puller. Dieser
+verbessert sich sogar von einem F1 score von $0.37$ in der Validierung auf
+$0.431$ im Test.
+
+Die Klassifikatoren für Outer Brow Raiser und Upper Lid Raiser scheinen in der
+Validierung akzeptabel, erkennen jedoch im Test überhaupt keine Aktivierung der
+Action Units mehr. Die übrigen Action Units werden mit keiner unserer Feature
+Extraction-Methoden an neuen Personen befriedigend klassifiziert.
+
 \input{lips_part_corner_pull.pgf}
-\input{lips_part_f1.pgf}
+
+\cref{fig:lips_prec_recall} zeigt, dass die verschiedenen Kombinationen aus
+Feature Extraction, Klassifikator und Parametern zu stark variierender
+Performance auf der Validierungsmenge führen. Der Tradeoff zwischen Precision
+und Recall ist deutlich zu sehen. Man sieht eine Trennung zwischen SVM und
+Random Forest Klassifikatoren: erstere tendieren dazu, zu viele negative Frames
+(ohne Aktivierung der Action Unit) als positiv zu klassifizieren, was zu
+schlechter Precision führt. Die Random Forests neigen hingegen zu vielen False
+Negatives. Sie schneiden bezogen auf Lips Part besser ab, bei anderen Action
+Units ist die Performance zwischen den Klassifikatoren ausgeglichen.
+
+\input{lips_part_top.pgf}
+\input{lip_corner_pull_top.pgf}
+
+Die Dominanz der Random Forests für Lips Part ist auch in
+\cref{tbl:lip_corner_top} zu sehen. Die beste SVM taucht mit einem F1 score von
+$0.356$ in den Top 5 nicht mehr auf.
+\input{features.pgf}
 
 %%% Local Variables: 
 %%% mode: latex

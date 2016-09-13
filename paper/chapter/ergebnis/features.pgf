@@ -1,0 +1,31 @@
+\begin{table}[h]
+  \centering
+  \pgfplotstabletypeset[
+  col sep=comma,
+  % every head row/.style={
+  %   before row={
+  %     \toprule
+  %     \multirow{2}{*}{AU} & \multicolumn{5}{c}{Bester Klassifikator} \\
+  %     & F1 Val & F1 Test & Precision Test & Recall Test & Features \\
+  %   },
+  %   output empty row,
+  %   after row=\midrule,
+  % },
+  precision=3,
+  fixed,
+  empty cells with={--},
+  sort, sort key=BestF1, sort cmp=float >,
+  columns={Features, BestF1, Dims, DimsAfterPCA},
+  columns/Features/.style={string type, column name={Features},
+    postproc cell content/.code={%
+          \pgfplotsutilstrreplace{_}{\_}{##1}%
+          \pgfkeyslet{/pgfplots/table/@cell content}\pgfplotsretval
+      },},
+  columns/Dims/.style={column name={Dimensionen}},
+  columns/DimsAfterPCA/.style={clear infinite, column name={Dim. nach PCA}},
+  columns/BestF1/.style={column name={Bester F1 score}}
+  ]{data/features/Lips_Part.dat}
+  
+  \caption{Vergleich der verschiedenen Features für Lips Part. Auf Interpolation-Features wurde keine PCA angewandt.}
+  \label{tbl:features}
+\end{table}

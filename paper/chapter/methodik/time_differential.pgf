@@ -16,6 +16,21 @@
     \doplot
 }
 
+\newcommand{\drawline}[1]{
+    \pgfplotstablegetelem{#1}{0}\of{\eyeopen}     %% get n-th x
+    \pgfmathsetmacro{\xo}{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{1}\of{\eyeopen}     %% get n-th y
+    \pgfmathsetmacro{\yo}{\pgfplotsretval}
+
+    \pgfplotstablegetelem{#1}{0}\of{\eyeclosed}     %% get n-th x
+    \pgfmathsetmacro{\xc}{\pgfplotsretval}
+    \pgfplotstablegetelem{#1}{1}\of{\eyeclosed}     %% get n-th y
+    \pgfmathsetmacro{\yc}{\pgfplotsretval}
+
+    \edef\doplot{\noexpand\draw (axis cs:\xo,\yo) -- (axis cs:\xc,\yc);}
+    \doplot
+}
+
 \begin{figure}
   \centering
 \begin{tikzpicture}
@@ -55,6 +70,10 @@
 
     \drawar{1}{43}
     \drawar{2}{44}
+    \drawline{0}
+    \drawline{3}
+    \drawline{4}
+    \drawline{5}
     
   \end{axis}
 \end{scope}

@@ -1,4 +1,4 @@
-\begin{figure}
+\begin{figure}[h]
   \centering
   \begin{tikzpicture}
     \begin{axis}[
@@ -32,6 +32,7 @@
     \end{axis}
   \end{tikzpicture}
   \caption{Validierungsergebnisse für Lips Part und Lip Corner Puller. Jeder Punkt steht für eine Kombination aus Feature Extraction, Klassifikator und Parametern.}
+  \label{fig:lips_prec_recall}
 \end{figure}
 
 
