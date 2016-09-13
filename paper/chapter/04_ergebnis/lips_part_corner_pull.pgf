@@ -1,4 +1,4 @@
-\begin{figure}[h]
+\efigure
   \centering
   \begin{tikzpicture}
     \begin{axis}[

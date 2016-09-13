@@ -26,9 +26,7 @@ Die Klassifikatoren für Outer Brow Raiser und Upper Lid Raiser scheinen in der
 Validierung akzeptabel, erkennen jedoch im Test überhaupt keine Aktivierung der
 Action Units mehr. Die übrigen Action Units werden mit keiner unserer Feature
 Extraction-Methoden an neuen Personen befriedigend klassifiziert.
-
 \input{lips_part_corner_pull.pgf}
-
 \cref{fig:lips_prec_recall} zeigt, dass die verschiedenen Kombinationen aus
 Feature Extraction, Klassifikator und Parametern zu stark variierender
 Performance auf der Validierungsmenge führen. Der Tradeoff zwischen Precision
@@ -41,11 +39,19 @@ Units ist die Performance zwischen den Klassifikatoren ausgeglichen.
 
 \input{lips_part_top.pgf}
 \input{lip_corner_pull_top.pgf}
-
 Die Dominanz der Random Forests für Lips Part ist auch in
 \cref{tbl:lip_corner_top} zu sehen. Die beste SVM taucht mit einem F1 score von
-$0.356$ in den Top 5 nicht mehr auf.
+$0.356$ in den Top 5 nicht mehr auf. Lip Corner Puller wird dagegen von einer
+SVM am besten erkannt, allerdings dominieren wieder Random Forests in den Top 5.
+
 \input{features.pgf}
+Schließlich liefert \cref{tbl:features} einen Vergleich der verschiedenen
+Features am Beispiel von Lips Part. Der Vergleichswert ist ein F1 score von
+$0.585$, wenn man die Koordinaten aller Landmarks als Features übernimmt (``XY''
+in der Tabelle). Besser schneiden die Features ``CenterDistance'' und
+``Interpolation'' ab. Es fällt auf, dass die PCA die Dimensionen von
+``Orientation'' überhaupt nicht und von ``CenterOrientation'' fast vollständig reduziert. Die zeitbasierten Features bilden das Schlusslicht in den
+F1-Wertungen, mehr dazu in der Diskussion.
 
 %%% Local Variables: 
 %%% mode: latex

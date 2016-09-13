@@ -1,5 +1,4 @@
-
-\begin{table}[h]
+\etable
 \centering
 \pgfplotstabletypeset[
   precision=3,

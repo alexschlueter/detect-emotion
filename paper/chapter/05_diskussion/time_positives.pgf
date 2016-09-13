@@ -1,0 +1,25 @@
+\begin{table}[H]
+  \centering
+  \pgfplotstabletypeset[
+  col sep=comma,
+  every head row/.style={
+    before row={
+      \toprule
+      \multirow{2}{*}{AU} & \multicolumn{2}{c}{Positives in Training} \\
+    },
+    % output empty row,
+    after row=\midrule,
+  },
+  precision=3,
+  fixed,
+  empty cells with={--},
+  sort, sort key=NumPositives, sort cmp=float >,
+  columns={AU, NumPositives, PosRatio},
+  columns/AU/.style={string type, column name={}, column type/.add={}{|}},
+  columns/NumPositives/.style={column name={\#}},
+  columns/PosRatio/.style={column name={\%},preproc/expr={100*##1},precision=1},
+  ]{data/time_positives.dat}
+  
+  \caption{Positive Trainingsbeispiele für zeitbasierte Features}
+  \label{tbl:positives}
+\end{table}

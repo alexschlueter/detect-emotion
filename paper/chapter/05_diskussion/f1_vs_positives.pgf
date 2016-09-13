@@ -1,12 +1,12 @@
-\begin{figure}
+\begin{figure}[h]
   \centering
   \begin{tikzpicture}
     \begin{axis}[
       % title=,
       only marks,
       mark size=1.5pt,
-      % xlabel=$\text{\#Positives} / \text{\#Samples}$,
-      xlabel=\#Positives,
+      xlabel=Anteil positiver Frames,
+      % xlabel=\#Positives,
       ylabel=F1 score,
       legend entries={Validation, Test},
       legend pos=north west
@@ -15,5 +15,6 @@
      \addplot+ table [col sep=comma, x=PosRatio, y=F1Test] {data/all_au_top1.dat};
     \end{axis}
   \end{tikzpicture}
-  \caption{F1 score des besten Klassifikators jeder Action Unit gegen Anteil positiver Samples}
+  \caption{F1 score des besten Klassifikators jeder Action Unit gegen Anteil positiver Frames}
+  \label{fig:f1vspos}
 \end{figure}

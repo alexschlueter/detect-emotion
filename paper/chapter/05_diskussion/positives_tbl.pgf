@@ -1,0 +1,26 @@
+\begin{table}[h]
+  \centering
+  \pgfplotstabletypeset[
+  col sep=comma,
+  every head row/.style={
+    before row={
+      \toprule
+      \multirow{2}{*}{AU} & \multirow{2}{*}{F1 Val} & \multicolumn{2}{c}{Positives in Training} \\
+    },
+    % output empty row,
+    after row=\midrule,
+  },
+  precision=3,
+  fixed,
+  empty cells with={--},
+  sort, sort key=BestF1Val, sort cmp=float >,
+  columns={AU, BestF1Val, NumPositives, PosRatio},
+  columns/AU/.style={string type, column name={}, column type/.add={}{|}},
+  columns/BestF1Val/.style={column name={}},
+  columns/NumPositives/.style={column name={\#}},
+  columns/PosRatio/.style={column name={\%},preproc/expr={100*##1},precision=1},
+  ]{data/all_au_top1.dat}
+  
+  \caption{Gegenüberstellung der F1 scores und der Häufigkeit positiver Trainingsbeispiele}
+  \label{tbl:positives}
+\end{table}

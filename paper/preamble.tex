@@ -249,6 +249,12 @@ every last row/.style={
 
 \usepackage{cleveref}
 
+\newcommand{\floatspec}{}
+\edef\efigure{\noexpand\begin{figure}[\floatspec]}
+\edef\etable{\noexpand\begin{table}[\floatspec]}
+
+\usepackage{float}
+
 %%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "paper"

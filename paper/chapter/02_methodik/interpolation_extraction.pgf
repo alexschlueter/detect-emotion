@@ -86,5 +86,6 @@
 
 \end{tikzpicture}
 \caption{InterpolationFeatureExtraction}
+\label{fig:interpol}
 \end{figure}
 

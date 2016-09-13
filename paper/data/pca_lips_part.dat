@@ -1,9 +1,0 @@
-Features, Dims, DimsAfterPCA, BestF1, BestClassifier
-XY, 132, 28, 0.5847536747144507, XYFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0
-EuclidianDistance, 2145, 30, 0.4995391821100266, EuclideanDistanceExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0
-CenterDistance, 66, 17, 0.6564614974805922, CenterDistanceExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=20_maxDepth=20_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0
-Interpolation, 37, , 0.6232271748593834, InterpolationFeatureExtraction-random_forest_maxCategories=2_rand_subset_size=0_number_of_trees=50_maxDepth=10_min_sample_count=2_regression_accuracy=0_truncate_pruned_tree=0
-Orientation, 2145, 2145, 0.14430720771493144, OrientationFeatureExtraction-svm_linear
-TimeDiff_XY, 132, 117, 0.12631571940165331, SimpleTimeDifferentialExtraction_XYFeatureExtraction-svm_polynom_coef0=0_gamma=1_degree2
-TimeDiff_Interpolation, 37, , 0.059829104857876736, SimpleTimeDifferentialExtraction_InterpolationFeatureExtraction-svm_polynom_coef0=0_gamma=5_degree2
-CenterOrientation, 66, 2, 0.13711588751931983, CenterOrientationExtraction-svm_linear

@@ -1,13 +1,58 @@
 \chapter{Diskussion}
-\begin{itemize}
-  \item Wieso sind gut bei Test, aber schlecht bei Training 
-  \item Wieso sind diese Klassifikatoren gut und andere nicht
-   \item Wieso sind viele Action-Units schlecht zu erkennen
-   \item Wieso gerade diese Feature so gut?
-  \item $\Rightarrow$ Overfitting
-  \item Warum geht diese Action-Unit besser als andere
-\end{itemize}
+% \begin{itemize}
+%   \item Wieso sind gut bei Test, aber schlecht bei Training 
+%   \item Wieso sind diese Klassifikatoren gut und andere nicht
+%    \item Wieso sind viele Action-Units schlecht zu erkennen
+%    \item Wieso gerade diese Feature so gut?
+%   \item $\Rightarrow$ Overfitting
+%   \item Warum geht diese Action-Unit besser als andere
+% \end{itemize}
+
+In den Ergebnissen haben wir gesehen, dass Lips Part und Lip Corner Puller
+relativ gut, die anderen Action Units eher schlecht erkannt werden. Lips Part
+ist leich zu erkennen, da nur die Abstände der 6 Landmarks in der Mitte des
+Mundes relevant sind:
+\input{lips_part_lms.pgf}
+
+Dies erklärt auch, warum die eher simple CenterDistanceExtraction erfolgreich
+ist: Ein Vergleich der Abstände von Landmarks 49 und 52 zum Mittelpunkt liefert
+ein einfaches Kriterium, ob die Action Unit aktiviert ist.
+In den Top 5 zu Lip Corner Puller taucht häufig die InterpolationExtraction auf.
+Wie in \cref{fig:interpol} dargestellt, kann durch Polynominterpolation gut die
+Form und Öffnungsrichtung von Ober- und Unterlippe extrahiert werden. 
+
+Eine weitere Erklärung in Bezug auf die Performanceunterschiede für verschiedene
+Action Units liefern \cref{fig:f1vspos,tbl:positives}. Die Anzahl Frames, in
+denen die Action Unit aktiviert ist, variiert stark zwischen den Action Units.
+Nicht überraschend sind Lips Part und Lip Corner Puller in vergleichsweise
+vielen Frames aktiv. Upper Lid Raiser und Outer Brow Raiser lieferten
+zwar gute F1 scores in der Validierung, aber auf der Testmenge war die
+Performance schlecht (vlg. \cref{tbl:all_au_res}). Auch dies stimmt mit einer
+geringen Anzahl positiver Frames überein. Möglicherweise wurde durch die Auswahl
+des besten Klassifikators aus 160 die Validierungsmenge overfitted.
+
+Die Action Unit Brow Lowerer fällt hier aus der Reihe, da sie sehr schlecht
+klassifiziert wurde, obwohl viele positive Frames vorhanden waren.
+Wahrscheinlich haben wir hierfür nicht die richtigen Features gefunden.
 \input{f1_vs_positives.pgf}
+\input{positives_tbl.pgf}
+
+Die zeitbasierte Klassifikation war wenig erfolgreich. Auch hier ist ein Blick
+auf das Verhältnis positiver Frames aufschlussreich:
+\input{time_positives.pgf}
+In den Ergebnissen ist offensichtlich, dass schon die Klassifikation der
+\emph{aktuellen} Action Unit im Frame schwer ist. Deshalb ist es nicht verwunderlich,
+dass die Vorhersage, ob sich die Action Unit gerade ändert, noch schwerer zu
+treffen ist.
+
+Insgesamt ist festzuhalten, dass die Generalisierung auf Personen, die nicht im
+Training gesehen wurden, eine schwierige Aufgabe ist. Wie \cref{tbl:trainvstest}
+zeigt, wurden während des Testlaufs für jede Action Unit mehrere Klassifikatoren
+gefunden, die auf dem Trainingsdatensatz fast perfekte Performance erreichen.
+Allerdings hat sich diese Performance nur in den wenigen bereits diskutierten Fällen
+auf die neuen Personen in Validierungs- und Testmenge übertragen. Die
+Klassifikatoren scheinen sich also die individuellen Formen und Abstände in den Gesichtern
+der Trainingspersonen gemerkt zu haben (Overfitting).
 
 %%% Local Variables: 
 %%% mode: latex
