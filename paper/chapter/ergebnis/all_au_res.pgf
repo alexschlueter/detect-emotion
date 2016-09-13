@@ -1,0 +1,27 @@
+\begin{figure}
+  \centering
+  \pgfplotstabletypeset[
+  col sep=comma,
+  every head row/.style={
+    before row={
+      \toprule
+      \multirow{2}{*}{AU} & \multicolumn{5}{c}{Bester Klassifikator} \\
+      & F1 Val & F1 Test & Precision Test & Recall Test & Features \\
+    },
+    output empty row,
+    after row=\midrule,
+  },
+  precision=3,
+  fixed,
+  empty cells with={--},
+  columns={AU, BestF1Val, F1Test, PrecisionTest, RecallTest, BestFeatures},
+  columns/AU/.style={string type, column name={AU}, column type/.add={}{|}},
+  columns/BestF1Val/.style={column name={F1 score Validation}},
+  columns/F1Test/.style={clear infinite, column name={F1 score Test}},
+  columns/PrecisionTest/.style={column name={Precision Test}},
+  columns/RecallTest/.style={column name={Recall Test}},
+  columns/BestFeatures/.style={string type, column name={Features}}
+  ]{data/all_au_top1.dat}
+  
+  \caption{F1 scores und Testergebnisse des besten Klassifikators pro Action Unit}
+\end{figure}

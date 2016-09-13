@@ -188,13 +188,28 @@
 
 \pgfplotsset{compat=1.13}
 \usetikzlibrary{arrows,decorations.markings,positioning,calc,}
+
+\pgfplotsset{
 % Style to select only points from #1 to #2 (inclusive)
-\pgfplotsset{select coords between index/.style 2 args={
+  select coords between index/.style 2 args={
     x filter/.code={
         \ifnum\coordindex<#1\def\pgfmathresult{}\fi
         \ifnum\coordindex>#2\def\pgfmathresult{}\fi
     }
-}}
+},
+  discard if not/.style 2 args={
+      x filter/.code={
+          \edef\tempa{\thisrow{#1}}
+          \edef\tempb{#2}
+          \ifx\tempa\tempb
+          \else
+              \def\pgfmathresult{inf}
+          \fi
+      }
+    },
+    filter discard warning=false
+}
+
 \newcount\colveccount
 \newcommand*\colvec[1]{
         \global\colveccount#1
@@ -218,6 +233,7 @@
    postaction = {draw,line width=1.4pt, white,shorten >= 4.5pt}]}
 
 \usepackage{booktabs}
+\usepackage{multirow}
 
 \pgfplotstableset{
 every head row/.style={
