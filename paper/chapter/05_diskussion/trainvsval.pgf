@@ -1,0 +1,26 @@
+\begin{table}[h]
+  \centering
+  \pgfplotstabletypeset[
+  col sep=comma,
+  every head row/.style={
+    before row={
+      \toprule
+      \multirow{3}{*}{AU} & \multicolumn{3}{c}{Bester Klassifikator im Training} \\
+    },
+    % output empty row,
+    after row=\midrule,
+  },
+  precision=3,
+  fixed,
+  empty cells with={--},
+  % sort, sort key=BestF1Val, sort cmp=float >,
+  columns={AU, TrainFalseClassified, PrecVal, RecVal},
+  columns/AU/.style={string type, column name={}, column type/.add={}{|}},
+  columns/TrainFalseClassified/.style={column name={Falsch klassif. nach Training}},
+  columns/PrecVal/.style={column name={Precision (Val)}},
+  columns/RecVal/.style={column name={Recall (Val)}},
+  ]{data/trainvsval.dat}
+  
+  \caption{Gute Klassifikation im Training überträgt sich nicht auf die neuen Personen in der Validierungsmenge.}
+  \label{tbl:trainvsval}
+\end{table}

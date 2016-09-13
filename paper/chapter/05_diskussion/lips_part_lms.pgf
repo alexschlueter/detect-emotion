@@ -34,4 +34,5 @@
     ] table {data/face_lipcorner_low.dat};
   \end{axis}
   \end{tikzpicture}
+  \caption{Einfach Klassifikation von Lips Part}
 \end{figure}

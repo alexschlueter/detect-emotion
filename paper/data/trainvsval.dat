@@ -1,0 +1,11 @@
+AU, BestF1Train, PrecTrain, RecTrain, F1Val, PrecVal, RecVal, TrainFalseClassified
+Lip Corner Puller, 0.9993796153615242, 1, 0.99876, 0.02330738034758361, 1, 0.0117911, 8
+Outer Brow Raiser, 1.0, 1, 1, nan, 0, 0, 0
+Lip Corner Depressor, 1.0, 1, 1, nan, 0, 0, 0
+Upper Lid Raiser, 1.0, 1, 1, nan, 0, 0, 0
+Inner Brow Raiser, 0.9995739798274065, 0.999432, 0.999716, nan, 0, 0, 3
+Cheek Raiser, 0.9997444926878817, 0.99983, 0.999659, nan, 0, 0, 3
+Lips Part, 0.9990814218079307, 0.998802, 0.999361, nan, 0, 0, 23
+Brow Lowerer, 0.9985259630815824, 0.998718, 0.998334, nan, 0, 0, 23
+Chin Raiser, 0.9983385934401106, 0.997155, 0.999525, nan, 0, 0, 7
+Nose Wrinkler, 0.9992709689008442, 1, 0.998543, nan, 0, 0, 5

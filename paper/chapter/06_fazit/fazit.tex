@@ -1,10 +1,51 @@
 \chapter{Fazit}
 \section{Zusammenfassung}
+Die Aufgabe des Praktikums war es, Action Units in Gesichtern von Personen mittels der vorgegebenen
+Landmarks zu klassifizieren.
+Wir haben uns zusätzlich die Frage gestellt: Wie gut lässt sich ein Klassifikator
+trainieren, der Action Units bei unbekannten Personen erkennen kann?
+
+Dazu haben wir uns sieben verschiedene Methoden überlegt, um aus den Landmarks
+aussagekräftige Features zu extrahieren. Diese reichen von eher simplen Features (Distanz
+zum Mittelpunkt), zu komplexeren wie die Polynominterpolation und die zeitliche
+Ableitung. Wir haben eine Pipeline gebaut, die es ermöglicht, viele
+Kombinationen aus Features, Klassifikationsalgorithmen und Parametern auf allen
+Action Units zu testen.
+Zur Evaluierung haben wir sinnvolle Performancestatistiken ausgesucht, die
+Klassifikatoren verglichen und die Ergebnisse visualisiert und diskutiert.
+
+Wir stellen fest, dass die Verallgemeinerung auf im Training nicht gesehene
+Personen nur bei zwei Action Units befriedigend funktioniert hat. Dies liegt an
+der ungenügenden Anzahl verschiedener Personen in der Trainingsmenge sowie der
+geringen Anzahl von Frames, in denen manche Action Units aktiviert waren.
+Erfolgreich war die Erkennung von Lips Part und Lip Corner Puller. Hier haben
+auch die von uns entwickelten Features (Distanz zum Mittelpunkt bzw.
+Interpolation) gute Ergebnisse erziehlt.
 \section{Ausblick}
-\begin{itemize}
-  \item Was könnte man noch verbesser, und wieso haben wir das nicht gemacht (z.B. aus Zeitgründe)
-    \begin{enumerate}
-      \item Mehr Kombinationen (Mit/ohne PCA, mehr Time-Differential-Feature, überhaupt mehr zeitliche Features, andere normalisierungen der Punktwolke, Neuronales-Netzwerk oder andere Klassifikatoren dazu benutzen)
-    \end{enumerate}
-  \item Wie könnte das Ergebnis besser werden (z.B. mehr Daten von mehreren Personen)
-\end{itemize}
+% \begin{itemize}
+%   \item Was könnte man noch verbesser, und wieso haben wir das nicht gemacht (z.B. aus Zeitgründe)
+%     \begin{enumerate}
+%       \item Mehr Kombinationen (Mit/ohne PCA, mehr Time-Differential-Feature, überhaupt mehr zeitliche Features, andere normalisierungen der Punktwolke, Neuronales-Netzwerk oder andere Klassifikatoren dazu benutzen)
+%     \end{enumerate}
+%   \item Wie könnte das Ergebnis besser werden (z.B. mehr Daten von mehreren Personen)
+% \end{itemize}
+Um auch bei anderen Action Units bessere Ergebnisse zu erzielen, muss für
+größere Varianz in der Trainingsmenge gesorgt werden. Im Praktikum standen nur
+15 Videos (davon nur 10 in der ersten Phase) zur Verfügung, was dazu geführt
+hat, dass in der Trainingsmenge nur sechs Personen vertreten waren. Die volle
+DISFA Datenbank bietet Videos von 27 Personen. Hier gibt es also mit mehr Daten
+noch Verbesserungspotential.
+
+Im Praktikum wurden nur die Landmarks als Rohdaten benutzt. Allerdings enthalten
+die vollen Videos mehr Informationen, die sich mit Methoden der Computer Vision
+(Gabor Filter etc.) extrahieren ließen. Diese sind teilweise schon mit der DISFA mitgeliefert.
+
+Die Klassifikation anhand von zeitbasierten Features könnte weiter ausgebaut
+werden. Dies ist aus Zeitgründen nicht geschehen. Allerdings müsste dazu die
+Einordnung eines Frames als aktiv bzw. nicht aktiv überdacht werden, damit es
+mehr positive Frames gibt.
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../../paper"
+%%% End: 

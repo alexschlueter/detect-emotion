@@ -46,13 +46,16 @@ dass die Vorhersage, ob sich die Action Unit gerade ändert, noch schwerer zu
 treffen ist.
 
 Insgesamt ist festzuhalten, dass die Generalisierung auf Personen, die nicht im
-Training gesehen wurden, eine schwierige Aufgabe ist. Wie \cref{tbl:trainvstest}
+Training gesehen wurden, eine schwierige Aufgabe ist. Wie \cref{tbl:trainvsval}
 zeigt, wurden während des Testlaufs für jede Action Unit mehrere Klassifikatoren
 gefunden, die auf dem Trainingsdatensatz fast perfekte Performance erreichen.
 Allerdings hat sich diese Performance nur in den wenigen bereits diskutierten Fällen
 auf die neuen Personen in Validierungs- und Testmenge übertragen. Die
 Klassifikatoren scheinen sich also die individuellen Formen und Abstände in den Gesichtern
-der Trainingspersonen gemerkt zu haben (Overfitting).
+der Trainingspersonen gemerkt zu haben (Overfitting). Es lässt sich schließen,
+dass die sechs Personen in der Trainingsmenge nicht genügend Varianz bieten, um
+den Klassifikator zur Abstraktion zu zwingen.
+\input{trainvsval.pgf}
 
 %%% Local Variables: 
 %%% mode: latex
