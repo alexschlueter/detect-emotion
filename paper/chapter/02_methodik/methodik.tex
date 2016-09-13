@@ -1,16 +1,29 @@
 \chapter{Methodik}
-Hier keine Details zur Implementierung!
-
+In diesem Kapitel werden sowohl die von uns verwendeten Methoden zum Training der Klassifikatoren und zum Klassifizieren,
+als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Außerdem wird erläutert, wie die Ergebnisse
+evaluiert wurden.
 
 \section{Vorverarbeitung}
-\subsection{Punktwolken}
+\subsection{Aufbereitung der Eingabedaten}
+Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
+Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
+in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
+Damit die Klassifikation durch diese Störungen nicht beeinträchtigt wird, werden die Eingabedaten zunächst normalisiert. Dies geschieht
+in drei Schritten.
 \begin{enumerate}
-  \item Beschreibung der Daten ?!
-  \item Normalisierung
-  \item Randomisiertes erweitern
-  \item PCA
+  \item Die Landmarks werden um den Koordinaten-Ursprung zentriert. Hierzu berechnen wir einen Vektor vom Mittelpunkt aller Landmarks zum Ursprung und translatieren
+        die gesamte Punktwolke um diesen Vektor.
+  \item Daraufhin wird die Punktwolke so skaliert, dass die maximale horizontale Distanz alle Landmarks genau 1 beträgt. Hierzu berechen wir diese maximale Distanz und
+        teilen alle Koordinaten der Landmarks durch diese.
+  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen, normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu berechnen wir einen Vektor
+        zwischen den beiden Augen des Probanden und rotieren die gesamte Punktwolke so, dass dieser Vektor auf eine Rotation von 0° gebracht wird \ref{Methodik.CloudNormalization}
 \end{enumerate}
-\input{cloud_norm.pgf}
+\input{cloud_norm.pgf}\label{Methodik.CloudNormalization}
+
+Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heisst die Anzahl der Frames
+in denen eine bestimmte Action Unit aktiv ist, ist für die meisten Action Units relativ gesehen sehr gering.\newline
+Um dieses Problem zu reduzieren, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
+und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
 
 
 \subsection{Feature Extraction}

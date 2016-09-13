@@ -55,5 +55,5 @@ create col/expr={\thisrow{0}*-sin(6)+\thisrow{1}*cos(6)}
  \end{axis}
 \draw  \myarrowopts ($(plot1.east)+(0.5cm,0)$) -- ($(plot2.west)+(-0.5cm,0)$) node[above,midway] {normalize} node[below,midway] {rotation};
 \end{tikzpicture}
-\caption{Normalisierung der Rotation anhand ausgesuchter Linien}
+\caption{Normalisierung der Rotation durch einen Vektor zwischen den Augen des Probanden}
 \end{figure}
