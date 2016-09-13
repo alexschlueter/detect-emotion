@@ -1,0 +1,146 @@
+\chapter{Methodik}
+In diesem Kapitel werden sowohl die von uns verwendeten Methoden zum Training der Klassifikatoren und zum Klassifizieren,
+als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Außerdem wird erläutert, wie die Ergebnisse
+evaluiert wurden.
+
+\section{Vorverarbeitung}
+\subsection{Aufbereitung der Eingabedaten}
+Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
+Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
+in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
+Damit die Klassifikation durch diese Störungen nicht beeinträchtigt wird, werden die Eingabedaten zunächst normalisiert. Dies geschieht
+in drei Schritten.
+\begin{enumerate}
+  \item Die Landmarks werden um den Koordinaten-Ursprung zentriert. Hierzu berechnen wir einen Vektor vom Mittelpunkt aller Landmarks zum Ursprung und translatieren
+        die gesamte Punktwolke um diesen Vektor.
+  \item Daraufhin wird die Punktwolke so skaliert, dass die maximale horizontale Distanz alle Landmarks genau 1 beträgt. Hierzu berechen wir diese maximale Distanz und
+        teilen alle Koordinaten der Landmarks durch diese.
+  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen, normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu berechnen wir einen Vektor
+        zwischen den beiden Augen des Probanden und rotieren die gesamte Punktwolke so, dass dieser Vektor auf eine Rotation von 0° gebracht wird \ref{Methodik.CloudNormalization}
+\end{enumerate}
+\input{cloud_norm.pgf}\label{Methodik.CloudNormalization}
+
+Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heisst die Anzahl der Frames
+in denen eine bestimmte Action Unit aktiv ist, ist für die meisten Action Units relativ gesehen sehr gering.\newline
+Um dieses Problem zu reduzieren, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
+und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
+
+
+\subsection{Feature Extraction}
+Bei der (visuellen) Emotionserkennung wird versucht anhand von einem oder mehreren, verschiedenen Merkmalen (engl. features)
+einem Gesicht eine oder mehrere Emotionen zuzuordnen. Je mehr Aussagekraft die Kombination dieser Merkmale über die jeweiligen Emotionen haben,
+desto besser können diese klassifiziert werden. Das Problem dabei ist, dass meist weder die Merkmale, noch
+ihre Aussagekraft zuvor bekannt sind. Deshalb extrahieren wir aus den Eingabedaten, also den Videos mit je 66 Landmarks pro
+Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander zu testen. Es folgt eine Beschreibung
+der von uns verwendeten Features.
+
+\subsubsection{Statische Features}
+Dazu schreiben, wieso wir finden, dass das Feature ein gutes ist (z.B. weil es den Feature-Raum verkleinert, ...)
+\begin{enumerate}
+  \item \textbf{X-/Y-Koordinaten}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
+        über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
+
+  \item \textbf{Paarweise Orientierung}: es werden jeweils alle Paare von je zwei unterschiedlichen Landmarks betrachtet und die Rotation des Vektors zwischen
+        den beiden Punkten als Merkmal genutzt. Weil sich bei verschiedenen Mimiken meist die Position markanter Punkte im Gesicht zueinander ändert, erscheint es sinnvoll
+        Features zu nutzen, die die Landmarks untereinander explizit in Relation setzen.
+
+  \item \textbf{Paarweise Euklidische Distanz}: auch hier werden jeweils alle Paare unterschiedlicher Landmarks betrachtet und die euklidische Distanz zwischen
+        den beiden Punkten als Merkmal genutzt. Dieses Feature erscheint ebenfalls sinnvoll, weil es Informationen über die Relation von Landmarks untereinander hat.
+
+  \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
+        das heisst es wird die Rotation des Vektors zwischen Mittelpunkt und Landmarks als Merkmal genutzt. Dieses Feature enthält Informationen darüber, wie die Position der Landmarks relativ
+        zum gesamten Gesicht ist. Dies erscheint für viele Gesichtsausdrücke sinnvoll.
+
+  \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
+        etwas über die Relation der einzelnen Landmarks zum gesamten Gesicht aus.
+
+  \item \textbf{Polynominterpolation}: es wird versucht zusammenhängende Landmarks, das heisst Punkte, welche zusammen einen Teil des Gesichtes ergeben,
+        durch ein Polynom zu interpolieren und die Polynomkoeffizienten als Feature zu extrahieren. Die Action Units beziehen sich meist auf genau einen isolierten
+        Bereich des Gesichtes. Daher erscheint es naheliegend, diese Bereiche durch eine Funktion zu approximieren und diese als Feature zu nutzen.
+\end{enumerate}
+\input{interpolation_extraction.pgf}
+
+\subsubsection{Zeitliche Features}
+\begin{itemize}
+\item TimeDifferential
+\end{itemize}
+\input{time_differential.pgf}
+
+\subsubsection{Featureverarbeitung}
+Zweck mitbeschreiben (z.B. PCA -> FeatureRaum weiter reduzieren)
+\begin{itemize}
+  \item Negativanteil verringern
+  \item MinMax/MeanVar Normalisieren
+  \item Shufflen
+  \item PCA
+\end{itemize}
+
+\subsubsection{Klassifikatoren}
+SVM + Random Forests, Art von Parametern
+Vielleicht noch eine Beschreibung einer allgemeinen Pipeline.
+
+
+\section{Evaluierungsmethoden}
+Die im vorherigen Abschnitt beschrieben Methoden zur Feature Extraction,
+Verarbeitung und Klassifikation sollen in verschiedenen Kombinationen evaluiert
+werden. Der erste Datensatz aus 10 Personen wird dazu aufgeteilt in 60\%
+Trainingsmenge und 40\% Validierungsmenge. Hier ist die Entscheidung zu treffen,
+wie die Personen auf die Mengen aufgeteilt werden:
+\begin{enumerate}
+\item Erst die Frames durchmischen, dann aufteilen: Dies ist sinnvoll, wenn der
+  Klassifikator nur verwendet werden soll, um Action Units in neuen Frames von schon bekannten
+  Personen zu erkennen. Es wird nicht getestet, wie gut der Klassifikator auf
+  neue Personen generalisiert!
+  \item 6 Personen nur im Training, 4 nur in der Validierung verwenden: Die
+    Performance auf der Validierungsmenge ist repräsentativ dafür, wie gut der
+    Klassifikator Action Units bei bisher unbekannten Personen erkennt
+\end{enumerate}
+Erste Tests haben gezeigt, dass Methode 1 zu deutlich besserern
+Performancestatistiken führt. Wir haben uns aber für Methode 2 entschieden, weil
+die Generalisierung auf neue Personen das interessantere Problem ist: In
+Anwendungsfällen ist es wünschenswert, für neue Personen nicht erst mehrere
+tausend Frames manuell labeln zu müssen, um den Klassifikator auf dieser Person
+zu trainieren.
+
+Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
+aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
+der die Action Unit immer als ``nicht aktiv'' klassifiziert, könnte sehr hohe
+Accuracy erreicht, ohne tatsächlich etwas über die Action Unit gelernt zu haben.
+Stattdessen evaluieren wir die Klassifikatoren anhand von 
+% \begin{table}[h]
+%   \def\arraystretch{2.5}
+%   \centering
+%   \begin{tabular}{l c}
+% Precision: & $\displaystyle\frac{TP}{TP+FP}$ \\
+% Recall: & $\displaystyle\frac{TP}{TP+FN}$ \\
+% F1 score: & $\displaystyle 2\frac{\text{Precision}*\text{Recall}}{\text{Precision}+\text{Recall}}$
+%   \end{tabular}
+% \end{table}
+\begin{equation*}
+\text{Precision}=\frac{TP}{TP+FP}\,, \qquad \text{Recall}=\frac{TP}{TP+FN}\,, \qquad \text{F1 score}=2\cdot\frac{\text{Precision}\cdot\text{Recall}}{\text{Precision}+\text{Recall}}\,.
+\end{equation*}
+
+Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
+von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
+haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
+
+Es werden alle Kombinationen aus Feature Extraction, Klassifikator und Parametern
+auf dem ersten Datensatz trainiert und evaluiert. Anschließend werden die besten
+fünf pro Action Unit anhand des F1 scores ausgewählt. Da pro Action Unit ca. 160
+Kombinationen evaluiert werden, kann es durch diese Auswahl der besten fünf zu
+einem Overfitting gegen die Validierungsmenge kommen. Um realistische Zahlen für
+die Performance zu bekommen, werden deshalb die besten fünf nochmal auf einer
+Testmenge evaluiert. Diese besteht aus fünf bisher unbekannten Personen aus
+einem zweiten Datensatz.
+
+\begin{itemize}
+\item Welche Parameter/Pipeline zum trainieren
+  \begin{itemize}
+  \item Warum diese Parameter und keine anderen?
+  \end{itemize}
+\end{itemize}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: "../../paper"
+%%% End:
