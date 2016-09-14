@@ -24,7 +24,7 @@ in drei Schritten.
 
 Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heißt die Anzahl der Frames
 in denen eine bestimmte Action Unit aktiv ist, ist für die meisten Action Units relativ gesehen sehr gering.\newline
-Um dieses Problem zu reduzieren, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
+Um dieses Problem zu verringern, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
 und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
 
 
@@ -50,7 +50,7 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
         den beiden Punkten als Merkmal benutzt. Dieses Feature erscheint ebenfalls sinnvoll, weil es Informationen über die Relation von Landmarks untereinander hat.
 
       \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks (CenterOrient.)}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
-        das heisst es wird die Rotation des Vektors zwischen Mittelpunkt und Landmarks als Merkmal genutzt. Dieses Feature enthält Informationen darüber, wie die Position der Landmarks relativ
+        das heißt es wird die Rotation des Vektors zwischen Mittelpunkt und Landmarks als Merkmal genutzt. Dieses Feature enthält Informationen darüber, wie die Position der Landmarks relativ
         zum gesamten Gesicht ist. Dies erscheint für viele Gesichtsausdrücke sinnvoll.
 
       \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks (CenterDist.)}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
@@ -65,16 +65,17 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
      Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierende Feature mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
 \end{enumerate}
 \begin{figure}
+  \center
 \scalebox{ 0.9 }{
 \input{interpolation_extraction.pgf}
 }
-\caption{InterpolationFeatureExtraction}
+\caption{Die Koeffizienten eines interpolierenden Polynoms als Feature}
 \label{fig:interpol}
 \end{figure}
 
 \subsubsection{Zeitliche Features}
 Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten statischen Features werden nur anhand einer Frame berechnet.
-Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen.
+Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen (diese Methode bezeichnen wir als TimeDiff.)
 Um die zeitliche Ableitung zu einen bestimmten Zeitpunkt zu berechnen, wird
 numerisch Differentation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}\setminus\{0\}$ den Feature-Vektor eines statischen Features. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
 
@@ -83,37 +84,38 @@ Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander subtrahier
 Diese sich so ergebene Differenz dient nun als neues Feature.
 
 \begin{figure}
+  \center
 \input{time_differential.pgf}
-\caption{TimeDifferentialExtraction}
+\caption{Zeitliche Ableitung der Landmarks als Feature}
 \label{fig:timediff}
 \end{figure}
 
 Nun können jedoch nicht mehr die Intensität der Action Units direkt als Vorlage für eine aktive oder nicht aktive Action benutzt werden.
 Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action aktiv ist , aber ihre Intensität nicht ändert.
 Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als aktiv klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und die Action nicht aktiv ist.
-Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als "`Aktiv"'.
+Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als aktiv.
 
 \subsubsection{Featureverarbeitung}
 Mit den bis hierher extrahierten Features wäre es möglich einen Klassifikator zu trainieren. Dies kann jedoch effizienter geschehen,
 wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Features folgendermaßen verarbeitet:
 
 \begin{itemize}
-  \item \textbf{Reduktion der true-negatives}: Aus der Natur der Eingabedaten ergibt sich, dass das Verhältnis von true-positives zu true-negatives sehr gering ist, das heisst
-        über die Gesamtheit der Frames ist eine ActionUnit in der Regel nur in sehr wenigen Frames aktiviert. Dies kann dazu führen, dass der Klassifikator Mühe hat diese zu erkennen.
-        Um dem Problem entgegenzuwirken können einige der true-negative Frames (das heisst sowohl die Einträge über die ActionUnit, als auch die zum Frame extrahierten Features) entfernt
-        und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
+  % \item \textbf{Reduktion der true-negatives}: Aus der Natur der Eingabedaten ergibt sich, dass das Verhältnis von true-positives zu true-negatives sehr gering ist, das heißt
+  %       über die Gesamtheit der Frames ist eine ActionUnit in der Regel nur in sehr wenigen Frames aktiviert. Dies kann dazu führen, dass der Klassifikator Mühe hat diese zu erkennen.
+  %       Um dem Problem entgegenzuwirken können einige der true-negative Frames (das heißt sowohl die Einträge über die ActionUnit, als auch die zum Frame extrahierten Features) entfernt
+  %       und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
 
   \item \textbf{Normalisierung}: Obwohl unsere Eingabedaten bereits normalisiert sind, ist unter Umständen eine erneute Normalisierung der Features notwendig. Die extrahierten
         Features haben unterschiedliche Wertebereiche. Die Orientierungsfeatures können zum Beispiel Werte zwischen 0 und 360 annehmen. Die Distanzfeatures hingegeben, liegen
         ungefähr im Bereich von 0 bis 1. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
-        Wertebereich zu projezieren.
+        Wertebereich zu projezieren. Dazu werden die Mittelwerte der Features auf $0$ und die Varianzen auf $1$ gesetzt.
 
-  \item \textbf{Shufflen}: Um das Problem des Overfittings auf die Trainingdaten zu reduzieren, werden diese, bevor sie in ein Trainings und Validierungsset aufgeteilt werden,
-        zufällig durchgemischt. Dadurch enthalten beide Sets mit einer hohen Wahrscheinlichkeit Samples aus allen Videos.
+  \item \textbf{Shufflen}: 
+    Aufgrund der Struktur der Videos sind die Frames mit aktiver Action zeitlich nahe bei einander. Zwischen den Beginn und Ende einer Action ist sie die ganze Zeit aktiv.
+    Dies ist jedoch eine Struktur, die der Klassifikator nach Möglichkeit nicht lernen soll. Darum kann man die Features aus mehreren Frame mischen, damit diese zeitliche lokale Eigenschaft nicht mehr zu Geltung kommt.
 
   \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
-    sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. Wir
-        verwenden die PCA unter Erhaltung von 97\% der Varianz.
+    sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. 
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
@@ -128,20 +130,19 @@ Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Wert
   \item Sigmoid Kernel: $K(x_i,x_j) = \tanh(yx_i^Tx_j + \theta)$
 \end{itemize}
 
-Für den Random Forest haben wir die maximale Tiefe und die Anzahl der Bäume variiert.
-
-
 % TODO: Vermutlich in ein späteres Kapitel verschieben
 % \subsection{Überblick}
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.5\textwidth]{pipeline.png}
-\caption{Überblick über die Stationen des Trainings und der Klassifikation}
-\end{center}
-\end{figure}
+% &
+% \begin{figure}
+% \begin{center}
+% \includegraphics[width=0.5\textwidth]{pipeline.png}
+% \caption{Überblick über die Stationen des Trainings und der Klassifikation}
+% \end{center}
+% \end{figure}
 
 
-\section{Evaluierungsmethoden}
+\section{Training und Evaluierung}
+\subsection{Aufteilung der Mengen}
 Die im vorherigen Abschnitt beschrieben Methoden zur Feature Extraction,
 Verarbeitung und Klassifikation sollen in verschiedenen Kombinationen evaluiert
 werden. Der erste Datensatz aus 10 Personen wird dazu aufgeteilt in 60\%
@@ -151,21 +152,24 @@ wie die Personen auf die Mengen aufgeteilt werden:
 \item Erst die Frames durchmischen, dann aufteilen: Dies ist sinnvoll, wenn der
   Klassifikator nur verwendet werden soll, um Action Units in neuen Frames von schon bekannten
   Personen zu erkennen. Es wird nicht getestet, wie gut der Klassifikator auf
-  neue Personen generalisiert!
+  neue Personen generalisiert, da Frames von allen Personen zum Training verwendet werden.
   \item 6 Personen nur im Training, 4 nur in der Validierung verwenden: Die
     Performance auf der Validierungsmenge ist repräsentativ dafür, wie gut der
     Klassifikator Action Units bei bisher unbekannten Personen erkennt
 \end{enumerate}
-Erste Tests haben gezeigt, dass Methode 1 zu deutlich besserern
-Performancestatistiken führt. Wir haben uns aber für Methode 2 entschieden, weil
+% Erste Tests haben gezeigt, dass Methode 1 zu deutlich besserern
+% Performancestatistiken führt.  % <- Das müssten wir wohl noch igendwie belegen
+Wir haben uns aber für Methode 2 entschieden, weil
 die Generalisierung auf neue Personen das interessantere Problem ist: In
 Anwendungsfällen ist es wünschenswert, für neue Personen nicht erst mehrere
 tausend Frames manuell labeln zu müssen, um den Klassifikator auf dieser Person
 zu trainieren.
 
+Wir haben ein zweite Menge an Daten von 5 Personen, die als Testmenge.
+\subsection{Performanzberechnung}
 Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
 aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
-der die Action Unit immer als ``nicht aktiv'' klassifiziert, könnte sehr hohe
+der die Action Unit immer als "`nicht aktiv"' klassifiziert, könnte sehr hohe
 Accuracy erreichen, ohne tatsächlich etwas über die Action Unit gelernt zu haben.
 Stattdessen evaluieren wir die Klassifikatoren anhand von
 % \begin{table}[h]
@@ -185,9 +189,18 @@ Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
 von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
-Es werden alle Kombinationen aus Feature Extraction und Klassifikator mit verschiedenen Parametern
-auf dem ersten Datensatz trainiert und evaluiert. Anschließend werden die besten
-fünf pro Action Unit anhand des F1 scores ausgewählt. Da pro Action Unit ca. 160
+\subsection{Zustandekommen der Ergebnisse}
+Wir wollen in Kapitel \label{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt Zustande gekommen sind:
+Zuerst wird die Trainingsmenge und Validierungsmenge gebildet.
+Die Videos der Trainingsmenge wird durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
+Danach werden die Features aus den resultierenden Landmarks extrahiert.
+Es folgt eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz. 
+Für eine Reduktion des Feature-Raumes auf eine verbleibenden Varianz von $97\%$ wurde dann der PCA-Algorithmus angewendet.
+Eine Ausnahme ist hierbei die Interpolation, da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet.
+Schlussendlich wurden die Features für das Training dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur auf X-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=2$ gesetzt.
+
+Wir lernen dann mehrere SVM mit verschiedenen Kernelfunktionen und mehrere RF mit variierende  Anzahl an Bäumen und maximaler Tiefe für jeden der genannten Feature Extraction. Wir lernen auf der Trainingmenge und versuchen die Qualität des Klassifikator-Feature Paares für jede Action Unit anhand der Validierungsmenge und des dortige F1 score zu beurteilen.
+Da pro Action Unit ca. 160
 Kombinationen evaluiert werden, kann es durch diese Auswahl der besten fünf zu
 einem Overfitting gegen die Validierungsmenge kommen. Um realistische Zahlen für
 die Performance zu bekommen, werden deshalb die besten fünf nochmal auf einer
