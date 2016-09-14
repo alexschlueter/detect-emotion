@@ -4,10 +4,10 @@ als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Au�
 evaluiert wurden.
 
 \section{Ground-Truth Daten}
-Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichten wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`Aktiv"' und "`nicht Aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist gegeben hat.
+Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichten wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`aktiv"' und "`nicht aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist gegeben hat.
 \section{Vorverarbeitung}
 \subsection{Aufbereitung der Eingabedaten}\label{Methodik.Aufbereitung}
-Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
+Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 10 Videos, die der DISFA Datenbank entnommen sind.
 Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
 in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
 Damit die Klassifikation durch diese Störungen nicht beeinträchtigt wird, werden die Eingabedaten zunächst normalisiert. Dies geschieht
@@ -42,14 +42,14 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
   \item \textbf{X-/Y-Koordinaten (XY)}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
 
-    \item \textbf{Paarweise Orientierung}: es werden jeweils alle Paare von je zwei unterschiedlichen Landmarks betrachtet und die Rotation des Vektors zwischen
+    \item \textbf{Paarweise Orientierung (Orientation)}: es werden jeweils alle Paare von je zwei unterschiedlichen Landmarks betrachtet und die Rotation des Vektors zwischen
         den beiden Punkten als Merkmal genutzt. Weil sich bei verschiedenen Mimiken meist die Position markanter Punkte im Gesicht zueinander ändert, erscheint es sinnvoll
         Features zu nutzen, die die Landmarks untereinander explizit in Relation setzen.
 
       \item \textbf{Paarweise Euklidische Distanz (EuclidianDist.)}: auch hier werden jeweils alle Paare unterschiedlicher Landmarks betrachtet und die euklidische Distanz zwischen
         den beiden Punkten als Merkmal benutzt. Dieses Feature erscheint ebenfalls sinnvoll, weil es Informationen über die Relation von Landmarks untereinander hat.
 
-      \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks (Orientation)}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
+      \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks (CenterOrient.)}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
         das heisst es wird die Rotation des Vektors zwischen Mittelpunkt und Landmarks als Merkmal genutzt. Dieses Feature enthält Informationen darüber, wie die Position der Landmarks relativ
         zum gesamten Gesicht ist. Dies erscheint für viele Gesichtsausdrücke sinnvoll.
 
@@ -122,8 +122,8 @@ Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall
 weshalb verschiedene Kombination dieser getestet werden müssen.\newline
 Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Werten für $degree$ und $\theta$ angewandt:
 \begin{itemize}
-  \item Lineares Kernel: $K(x_i,x_j) = x_i^Tx_j$
-  \item Polynomielles Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
+  \item Linearer Kernel: $K(x_i,x_j) = x_i^Tx_j$
+  \item Polynomieller Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
   \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
   \item Sigmoid Kernel: $K(x_i,x_j) = \tanh(yx_i^Tx_j + \theta)$
 \end{itemize}
