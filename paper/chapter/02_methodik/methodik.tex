@@ -6,7 +6,7 @@ evaluiert wurden.
 \section{Ground-Truth Daten}
 Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichten wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`Aktiv"' und "`nicht Aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist gegeben hat.
 \section{Vorverarbeitung}
-\subsection{Aufbereitung der Eingabedaten}
+\subsection{Aufbereitung der Eingabedaten}\label{Methodik.Aufbereitung}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
 Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
 in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
@@ -37,7 +37,7 @@ Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander 
 der von uns verwendeten Features. Die Methode, wie diese erzeugt werden, werden wir im Folgenden als Feature-Extraction bezeichnen.
 
 \subsubsection{Statische Features}
-Mit statischen Features bezeichnen wir solche, die mit Hilde der Landmarks von genau einer Frame erzeugt werden.
+Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von genau einer Frame erzeugt werden.
 \begin{enumerate}
   \item \textbf{X-/Y-Koordinaten (XY)}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
@@ -94,15 +94,53 @@ Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was
 Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als "`Aktiv"'.
 
 \subsubsection{Featureverarbeitung}
-Zweck mitbeschreiben (z.B. PCA -> FeatureRaum weiter reduzieren)
+Mit den bis hierher extrahierten Features wäre es möglich einen Klassifikator zu trainieren. Dies kann jedoch effizienter geschehen,
+wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Features folgendermaßen verarbeitet:
+
 \begin{itemize}
-  \item Negativanteil verringern
-  \item MinMax/MeanVar Normalisieren
-  \item Shufflen
-  \item PCA
+  \item \textbf{Reduktion der true-negatives}: Aus der Natur der Eingabedaten ergibt sich, dass das Verhältnis von true-positives zu true-negatives sehr gering ist, das heisst
+        über die Gesamtheit der Frames ist eine ActionUnit in der Regel nur in sehr wenigen Frames aktiviert. Dies kann dazu führen, dass der Klassifikator Mühe hat diese zu erkennen.
+        Um dem Problem entgegenzuwirken können einige der true-negative Frames (das heisst sowohl die Einträge über die ActionUnit, als auch die zum Frame extrahierten Features) entfernt
+        und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
+
+  \item \textbf{Normalisierung}: Obwohl unsere Eingabedaten bereits normalisiert sind, ist unter Umständen eine erneute Normalisierung der Features notwendig. Die extrahierten
+        Features haben unterschiedliche Wertebereiche. Die Orientierungsfeatures können zum Beispiel Werte zwischen 0 und 360 annehmen. Die Distanzfeatures hingegeben, liegen
+        ungefähr im Bereich von 0 bis 1. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
+        Wertebereich zu projezieren.
+
+  \item \textbf{Shufflen}: Um das Problem des Overfittings auf die Trainingdaten zu reduzieren, werden diese, bevor sie in ein Trainings und Validierungsset aufgeteilt werden,
+        zufällig durchgemischt. Dadurch enthalten beide Sets mit einer hohen Wahrscheinlichkeit Samples aus allen Videos.
+
+  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
+        sinnvoll die Dimension der Features durch eine Principal Component Analysis zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. Wir
+        verwenden die PCA unter Erhaltung von 97\% der Varianz.
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
+Wir nutzen zwei verschiedene Klassifikatoren. Zum einen eine Support Vektor Maschine und zum anderen einen Random Forest.
+Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall sind die optimalen Parameter zuvor allerdings unbekannt,
+weshalb verschiedene Kombination dieser getestet werden müssen.\newline
+Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Werten für $degree$ und $\theta$ angewandt:
+\begin{itemize}
+  \item Lineares Kernel: $K(x_i,x_j) = x_i^Tx_j$
+  \item Polynomielles Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
+  \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
+  \item Sigmoid Kernel: $K(x_i,x_j) = tanh(yx_i^Tx_j + \theta)$
+\end{itemize}
+
+Für den Random Forest haben wir die maximale Tiefe und die Anzahl der Bäume variiert.
+
+
+% TODO: Vermutlich in ein späteres Kapitel verschieben
+\subsubsection{Überblick}
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{pipeline.png}
+\caption{Überblick über die Stationen des Trainings und der Klassifikation}
+\end{center}
+\label{fig:timediff}
+\end{figure}
+
 SVM + Random Forests, Art von Parametern
 Vielleicht noch eine Beschreibung einer allgemeinen Pipeline.
 
@@ -133,7 +171,7 @@ Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
 aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
 der die Action Unit immer als ``nicht aktiv'' klassifiziert, könnte sehr hohe
 Accuracy erreichen, ohne tatsächlich etwas über die Action Unit gelernt zu haben.
-Stattdessen evaluieren wir die Klassifikatoren anhand von 
+Stattdessen evaluieren wir die Klassifikatoren anhand von
 % \begin{table}[h]
 %   \def\arraystretch{2.5}
 %   \centering
