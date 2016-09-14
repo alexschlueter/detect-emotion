@@ -1,13 +1,16 @@
 \chapter{Einleitung}
+\label{ch:einleitung}
 
 Das Thema der (visuellen) Emotionserkennung durch Computersysteme hat in den letzten Jahren immer mehr an Bedeutung gewonnen.
 Die Einsatzgebiete sind vielseitig und reichen von Sicherheitsanwendungen, über Robotik, bis hin zu Unterhaltungsmedien.
 Meist wird versucht, anhand von verschiedenen Merkmalen im Gesicht, diesem eine oder mehrere Emotionen zuzuordnen. Im Rahmen
-unsere Praktikums, war es unsere Aufgabe ein solches Computersystem zur Erkennung von Emotionen zu entwickeln.\newline
-Im Folgenden Kapitel werden die Aufgabenstellung, sowie die Eingabedaten genauer beschrieben.
-In Kapitel 2 werden daraufhin die Methodiken vorgestellt, die wir für unser Programm nutzen, woraufhin in Kapitel 3 erläutert wird,
-wie wir diese implementiert haben. Daraufhin folgt die Vorstellung unserer Ergebnisse in Kapitel 4 und ein Ausblick auf mögliche
-Erweiterungen der Anwendung. Im letzten und 5. Kapitel wird das Ergebnis der Arbeit kurz resümiert.
+unsere Praktikums, war es unsere Aufgabe ein solches Computersystem zur Erkennung von Emotionen zu entwickeln.
+
+Im folgenden Kapitel werden die Aufgabenstellung, sowie die Eingabedaten genauer beschrieben.
+In \cref{ch:methodik} werden daraufhin die Methodiken vorgestellt, die wir für unser Programm nutzen, woraufhin in \cref{ch:implementierung} erläutert wird,
+wie wir diese implementiert haben. Daraufhin folgt die Vorstellung unserer
+Ergebnisse in \cref{ch:ergebnis}, die wir anschließend in \cref{ch:diskussion}
+diskutieren. Im letzten und \labelcref{ch:fazit}. \namecref{ch:fazit} wird das Ergebnis der Arbeit kurz resümiert.
 
 \section{Facial Action Code}
 Der Facial Action Code (kurz FAC) ist ein System zur Unterscheidung von Bewegungen von isolierten Teilen des menschlichen Gesichts, welches
@@ -26,3 +29,8 @@ Weiterhin enthält jedes Frame 66 Landmark Koordinaten, von markanten Punkten de
 Die Aufgabenstellung des Praktikums bestand darin, aus einer Auswahl von 12 Videos der DISFA Datenbank einen Klassifikator zu entwickeln,
 der möglichst präzise in der Lage ist für ein beliebiges Frame aus der Datenbank zu bestimmen, welche Action Units in dem Frame aktiviert
 sind (dh. eine Ausprägung größer oder gleich 1 haben).
+
+%%% Local Variables: 
+%%% mode: latex
+%%% TeX-master: "../../paper"
+%%% End: 

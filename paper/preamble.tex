@@ -97,7 +97,7 @@
 	sortlocale=auto,
 	natbib,
 	hyperref,
-	backref,
+	% backref,
 	style=alphabetic % eine unvollständige Auswahl von Styles: ieee, numeric, apa
 	]%
 {biblatex}
@@ -254,6 +254,11 @@ every last row/.style={
 \edef\etable{\noexpand\begin{table}[\floatspec]}
 
 \usepackage{float}
+
+\DeclareCiteCommand{\footurlcite}[\mkbibfootnote]
+  {\usebibmacro{prenote}}
+  {\printfield{url}}
+  {\usebibmacro{postnote}}
 
 %%% Local Variables:
 %%% mode: latex
