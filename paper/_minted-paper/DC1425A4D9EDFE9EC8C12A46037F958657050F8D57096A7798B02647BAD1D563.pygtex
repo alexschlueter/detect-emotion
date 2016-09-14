@@ -1,0 +1,145 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{p}{\PYGZob{}}
+  \PYG{n+nt}{\PYGZdq{}landmark\PYGZus{}dir\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}/path/to/landmarks\PYGZdq{}}\PYG{p}{,}
+  \PYG{n+nt}{\PYGZdq{}action\PYGZus{}dir\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}/path/to/actionunits\PYGZdq{}}\PYG{p}{,}
+  \PYG{n+nt}{\PYGZdq{}action\PYGZus{}threshold\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+  \PYG{n+nt}{\PYGZdq{}action\PYGZus{}names\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+    \PYG{l+s+s2}{\PYGZdq{}Lips Part\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Inner Brow Raiser\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Outer Brow Raiser\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Brow Lowerer\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Upper Lid Raiser\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Cheek Raiser\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Nose Wrinkler\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Lip Corner Puller\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Lip Corner Depressor\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Chin Raiser\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Lip Stretcher\PYGZdq{}}\PYG{p}{,}
+    \PYG{l+s+s2}{\PYGZdq{}Jaw Drop\PYGZdq{}}
+  \PYG{p}{],}
+  \PYG{n+nt}{\PYGZdq{}training\PYGZus{}percent\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.6}\PYG{p}{,}
+  \PYG{n+nt}{\PYGZdq{}classifier\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}linear\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rbf\PYGZdq{}}\PYG{p}{,}\PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rbf\PYGZdq{}}\PYG{p}{,}\PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rbf\PYGZdq{}}\PYG{p}{,}\PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{5} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}rbf\PYGZdq{}}\PYG{p}{,}\PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.4} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}sigmoid\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}sigmoid\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}sigmoid\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}sigmoid\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.4}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{5}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}svm\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}type\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}polynom\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}gamma\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.3}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}coef0\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}degree\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10} \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomforest\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}max\PYGZus{}depth\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{4}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}rand\PYGZus{}subset\PYGZus{}size\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}number\PYGZus{}of\PYGZus{}trees\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomforest\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}max\PYGZus{}depth\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}rand\PYGZus{}subset\PYGZus{}size\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}number\PYGZus{}of\PYGZus{}trees\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{20}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomforest\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}max\PYGZus{}depth\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{20}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}rand\PYGZus{}subset\PYGZus{}size\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}number\PYGZus{}of\PYGZus{}trees\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{20}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomforest\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}max\PYGZus{}depth\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{10}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}rand\PYGZus{}subset\PYGZus{}size\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}number\PYGZus{}of\PYGZus{}trees\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{50}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomforest\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}max\PYGZus{}depth\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{20}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}rand\PYGZus{}subset\PYGZus{}size\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}number\PYGZus{}of\PYGZus{}trees\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{50}\PYG{p}{\PYGZcb{}}
+  \PYG{p}{],}
+  \PYG{n+nt}{\PYGZdq{}cloud\PYGZus{}processor\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+  \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}randomJitterExpander\PYGZdq{}}\PYG{p}{,}
+    \PYG{n+nt}{\PYGZdq{}meanx\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{0}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}meany\PYGZdq{}}\PYG{p}{:}\PYG{l+m+mi}{0}\PYG{p}{,}
+    \PYG{n+nt}{\PYGZdq{}stdx\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}stdy\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}PointCloudNormalization\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+  \PYG{p}{],}
+  \PYG{n+nt}{\PYGZdq{}frame\PYGZus{}features\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}xy\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,}
+          \PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}interpolation\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}orientation\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,}
+          \PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}euclideandistance\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,}
+          \PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}centerdistance\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,}
+          \PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}centerorientation\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,}\PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{],}
+  \PYG{n+nt}{\PYGZdq{}time\PYGZus{}features\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}differential\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}base\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}xy\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}truth\PYGZus{}threshold\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}pcaReducer\PYGZdq{}}\PYG{p}{,} \PYG{n+nt}{\PYGZdq{}retain\PYGZus{}variance\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mf}{0.97}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{},}
+    \PYG{p}{\PYGZob{}}
+      \PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}differential\PYGZdq{}}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}base\PYGZdq{}}\PYG{p}{:} \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}interpolation\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+      \PYG{n+nt}{\PYGZdq{}truth\PYGZus{}threshold\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{1}\PYG{p}{,}
+      \PYG{n+nt}{\PYGZdq{}processors\PYGZdq{}}\PYG{p}{:} \PYG{p}{[}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}stdmeannormalize\PYGZdq{}}\PYG{p}{\PYGZcb{},}
+        \PYG{p}{\PYGZob{}}\PYG{n+nt}{\PYGZdq{}name\PYGZdq{}}\PYG{p}{:} \PYG{l+s+s2}{\PYGZdq{}shuffle\PYGZdq{}}\PYG{p}{\PYGZcb{}}
+      \PYG{p}{]}
+    \PYG{p}{\PYGZcb{}}
+  \PYG{p}{],}
+  \PYG{n+nt}{\PYGZdq{}time\PYGZus{}frame\PYGZus{}step\PYGZdq{}}\PYG{p}{:} \PYG{l+m+mi}{2}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}
