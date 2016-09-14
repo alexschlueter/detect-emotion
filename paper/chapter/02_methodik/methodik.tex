@@ -112,12 +112,12 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
         zufällig durchgemischt. Dadurch enthalten beide Sets mit einer hohen Wahrscheinlichkeit Samples aus allen Videos.
 
   \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
-        sinnvoll die Dimension der Features durch eine Principal Component Analysis zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. Wir
+    sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. Wir
         verwenden die PCA unter Erhaltung von 97\% der Varianz.
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
-Wir nutzen zwei verschiedene Klassifikatoren. Zum einen eine Support Vektor Maschine und zum anderen einen Random Forest.
+Wir nutzen zwei verschiedene Klassifikatoren. Zum einen eine Support Vektor Maschine (SVM) und zum anderen einen Random Forest (RF).
 Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall sind die optimalen Parameter zuvor allerdings unbekannt,
 weshalb verschiedene Kombination dieser getestet werden müssen.\newline
 Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Werten für $degree$ und $\theta$ angewandt:
@@ -125,7 +125,7 @@ Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Wert
   \item Lineares Kernel: $K(x_i,x_j) = x_i^Tx_j$
   \item Polynomielles Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
   \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
-  \item Sigmoid Kernel: $K(x_i,x_j) = tanh(yx_i^Tx_j + \theta)$
+  \item Sigmoid Kernel: $K(x_i,x_j) = \tanh(yx_i^Tx_j + \theta)$
 \end{itemize}
 
 Für den Random Forest haben wir die maximale Tiefe und die Anzahl der Bäume variiert.
