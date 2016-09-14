@@ -4,7 +4,7 @@ als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Au�
 evaluiert wurden.
 
 \section{Ground-Truth Daten}
-Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu vereinfachen wollen wir das Problem vereinfachen, indem wir die in zwei Kategorien klassifizieren: Action und keine Action. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Action aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass es eine Action gegeben hat.
+Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichten wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`Aktiv"' und "`nicht Aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist gegeben hat.
 \section{Vorverarbeitung}
 \subsection{Aufbereitung der Eingabedaten}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
@@ -18,48 +18,48 @@ in drei Schritten.
   \item Daraufhin wird die Punktwolke so skaliert, dass die maximale horizontale Distanz alle Landmarks genau 1 beträgt. Hierzu berechen wir diese maximale Distanz und
         teilen alle Koordinaten der Landmarks durch diese.
   \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen, normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu berechnen wir einen Vektor
-        zwischen den beiden Augen des Probanden und rotieren die gesamte Punktwolke so, dass dieser Vektor auf eine Rotation von 0° gebracht wird \ref{Methodik.CloudNormalization}
+    zwischen den beiden Augen des Probanden und rotieren die gesamte Punktwolke so, dass dieser Vektor auf eine Rotation von 0° gebracht wird (siehe Abbildung \ref{Methodik.CloudNormalization})
 \end{enumerate}
-\input{cloud_norm.pgf}\label{Methodik.CloudNormalization}
+\input{cloud_norm.pgf}
 
-Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heisst die Anzahl der Frames
+Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heißt die Anzahl der Frames
 in denen eine bestimmte Action Unit aktiv ist, ist für die meisten Action Units relativ gesehen sehr gering.\newline
 Um dieses Problem zu reduzieren, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
 und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
 
 
 \subsection{Feature Extraction}
-Bei der (visuellen) Emotionserkennung wird versucht anhand von einem oder mehreren, verschiedenen Merkmalen (engl. features)
+Bei der (visuellen) Emotionserkennung wird versucht anhand von einem oder mehreren, verschiedenen Merkmalen (engl. Features)
 einem Gesicht eine oder mehrere Emotionen zuzuordnen. Je mehr Aussagekraft die Kombination dieser Merkmale über die jeweiligen Emotionen haben,
 desto besser können diese klassifiziert werden. Das Problem dabei ist, dass meist weder die Merkmale, noch
 ihre Aussagekraft zuvor bekannt sind. Deshalb extrahieren wir aus den Eingabedaten, also den Videos mit je 66 Landmarks pro
 Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander zu testen. Es folgt eine Beschreibung
-der von uns verwendeten Features.
+der von uns verwendeten Features. Die Methode, wie diese erzeugt werden, werden wir im Folgenden als Feature-Extraction bezeichnen.
 
 \subsubsection{Statische Features}
-Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu genau einen Zeitpunkt berechnet werden. 
+Mit statischen Features bezeichnen wir solche, die mit Hilde der Landmarks von genau einer Frame erzeugt werden.
 \begin{enumerate}
-  \item \textbf{X-/Y-Koordinaten}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
+  \item \textbf{X-/Y-Koordinaten (XY)}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
 
-  \item \textbf{Paarweise Orientierung}: es werden jeweils alle Paare von je zwei unterschiedlichen Landmarks betrachtet und die Rotation des Vektors zwischen
+    \item \textbf{Paarweise Orientierung}: es werden jeweils alle Paare von je zwei unterschiedlichen Landmarks betrachtet und die Rotation des Vektors zwischen
         den beiden Punkten als Merkmal genutzt. Weil sich bei verschiedenen Mimiken meist die Position markanter Punkte im Gesicht zueinander ändert, erscheint es sinnvoll
         Features zu nutzen, die die Landmarks untereinander explizit in Relation setzen.
 
-  \item \textbf{Paarweise Euklidische Distanz}: auch hier werden jeweils alle Paare unterschiedlicher Landmarks betrachtet und die euklidische Distanz zwischen
-        den beiden Punkten als Merkmal genutzt. Dieses Feature erscheint ebenfalls sinnvoll, weil es Informationen über die Relation von Landmarks untereinander hat.
+      \item \textbf{Paarweise Euklidische Distanz (EuclidianDist.)}: auch hier werden jeweils alle Paare unterschiedlicher Landmarks betrachtet und die euklidische Distanz zwischen
+        den beiden Punkten als Merkmal benutzt. Dieses Feature erscheint ebenfalls sinnvoll, weil es Informationen über die Relation von Landmarks untereinander hat.
 
-  \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
+      \item \textbf{Orientierung relativ zum Mittelpunkt der Landmarks (Orientation)}: bei diesem Feature wird die Orientierung jedes Landmarks relativ zum Mittelpunkt aller Landmarks betrachtet,
         das heisst es wird die Rotation des Vektors zwischen Mittelpunkt und Landmarks als Merkmal genutzt. Dieses Feature enthält Informationen darüber, wie die Position der Landmarks relativ
         zum gesamten Gesicht ist. Dies erscheint für viele Gesichtsausdrücke sinnvoll.
 
-  \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
+      \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks (CenterDist.)}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
         etwas über die Relation der einzelnen Landmarks zum gesamten Gesicht aus.
 
-  \item \textbf{Polynominterpolation}: 
+      \item \textbf{Polynominterpolation (Interpolation)}: 
      hierbei werden verschiedene Bereiche der Gesichts einzeln betrachtet (z.B. die Oberlippe, siehe Abbildung \ref{fig:interpol}).
-     Diese Landmarks, das heißt die Punkte, werden zuerst normiert. Dazu verschiebt man die dortigen Punkte, so dass der Mittelpunkt der Koordinaten-Ursprung ist. Danach werden sie so skaliert, dass die maximale Entfernung in $x$-Richtung gleich $1$ ist.
-     Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate benutzt. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
+     Diese Landmarks werden zuerst normiert. Dazu verschiebt man die dortigen Punkte, so dass der Mittelpunkt der Koordinaten-Ursprung ist. Danach werden sie so skaliert, dass die maximale Entfernung in $x$-Richtung gleich $1$ ist.
+     Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate angewendet. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
      Dieses Verfahren hat folgende Vorteile: 
      %Erstens entsprechen die Punkte der einzelnen Gesichtsbereiche meist die wichtigen Punkte einer Action Unit.
      Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierende Feature mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
@@ -73,12 +73,12 @@ Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu gen
 \end{figure}
 
 \subsubsection{Zeitliche Features}
-Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten Features werden anhand einer der Landmarks zu einen gewissen Zeitpunkt berechnet.
-Man kann jedoch die oben aufgelisteten Arten von Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen. 
+Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten statischen Features werden nur anhand einer Frame berechnet.
+Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen. 
 Um die zeitliche Ableitung zu einen bestimmten Zeitpunkt zu berechnen, wird
-numerisch Differentation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}$ den Feature-Vektor einer der obigen Feature-Extraktoren. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
+numerisch Differentation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}\setminus\{0\}$ den Feature-Vektor eines statischen Features. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
 
-Als Beispiel nehmen wir die zeitliche Ableitung der XY-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}). 
+Als Beispiel nehmen wir die zeitliche Ableitung der X-/Y-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}). 
 Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander subtrahiert und halbiert. Zum Beispiel $\Delta v_{43} \coloneqq \frac{v_{43}(t+1) - v_{43}(t-1)}{2}\in\mathbb{R}^2$ (wobei $v_{j}(t)$ die Koordinate des Punktes $j\in\{0,\ldots,65\}$ zum Zeitpunkt $t$ ist).
 Diese sich so ergebene Differenz dient nun als neues Feature.
 
@@ -88,10 +88,10 @@ Diese sich so ergebene Differenz dient nun als neues Feature.
 \label{fig:timediff}
 \end{figure}
 
-Nun können jedoch nicht mehr die Intensität der Action Units als Vorlage für eine Action oder keine Action benutzt werden. 
-Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action ereignet, aber ihre Intensität nicht ändert.
-Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als Action klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und keine Action ereignet.
-Um dieses Problem zu lösen, betrachtet man die ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer Action aus, sonst von keiner. Somit ist sowohl der Beginn als auch das Ende einer Action Unit eine Action.
+Nun können jedoch nicht mehr die Intensität der Action Units direkt als Vorlage für eine aktive oder nicht aktive Action benutzt werden. 
+Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action aktiv ist , aber ihre Intensität nicht ändert.
+Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als aktiv klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und die Action nicht aktiv ist.
+Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als "`Aktiv"'.
 
 \subsubsection{Featureverarbeitung}
 Zweck mitbeschreiben (z.B. PCA -> FeatureRaum weiter reduzieren)
@@ -151,7 +151,7 @@ Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
 von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
-Es werden alle Kombinationen aus Feature Extraction, Klassifikator und Parametern
+Es werden alle Kombinationen aus Feature Extraction und Klassifikator mit verschiedenen Parametern
 auf dem ersten Datensatz trainiert und evaluiert. Anschließend werden die besten
 fünf pro Action Unit anhand des F1 scores ausgewählt. Da pro Action Unit ca. 160
 Kombinationen evaluiert werden, kann es durch diese Auswahl der besten fünf zu

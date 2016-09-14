@@ -12,6 +12,11 @@
 %   \item Erwähnen, dass Shuffle SVM-Ergebnisse ändert.
 % \end{itemize}
 
+Bei den hier folgenden Ergebnissen, wurden die Videos durch Rauschen künstlich erweitert und normalsiert. Danach wurden die Features aus den resultierenden Landmarks extrahiert. Es folte eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz. Für eine Reduktion des Fetaure-Raumes auf eine verbleibenden Varianz von $97\%$ wurde dann der PCA-Algorithmus angewendet. Eine Ausnahme ist hierbei die Interpolation, da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet. Schlussendlich wurden die Features dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur aufX-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=2$ gesetzt.
+Alle diese Methoden wurden in Kapitel \ref{ch:methodik} vorgestellt.
+
+Wir haben dann anhand dieser Feature mehrere SVM mit verschiedenen Kernelfunktionen trainiert. Dazu zählen lineare Kernelfunktionen, Radial Based Function (RBF), polynomielle Funktionen und Sigmoidfunktionen. Zusätzlich haben wir auch verschiedene RF getestet, indem wir die Anzahl der Bäume und ihre maximale Tiefe varrierten.
+
 \input{all_au_res.pgf}
 
 In \cref{tbl:all_au_res} sind die Ergebnisse des besten Klassifikators
