@@ -6,7 +6,7 @@ evaluiert wurden.
 \section{Ground-Truth Daten}
 Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu vereinfachen wollen wir das Problem vereinfachen, indem wir die in zwei Kategorien klassifizieren: Action und keine Action. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Action aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass es eine Action gegeben hat.
 \section{Vorverarbeitung}
-\subsection{Aufbereitung der Eingabedaten}
+\subsection{Aufbereitung der Eingabedaten}\label{Methodik.Aufbereitung}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 12 Videos, die der DISFA Datenbank entnommen sind.
 Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
 in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
@@ -37,7 +37,7 @@ Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander 
 der von uns verwendeten Features.
 
 \subsubsection{Statische Features}
-Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu genau einen Zeitpunkt berechnet werden. 
+Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu genau einen Zeitpunkt berechnet werden.
 \begin{enumerate}
   \item \textbf{X-/Y-Koordinaten}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
@@ -56,11 +56,11 @@ Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu gen
   \item \textbf{Euklidische Distanz zum Mittelpunkt der Landmarks}: dieses Feature betrachtet die euklidische Distanz jedes Landmarks zum Mittelpunkt aller Landmarks. Dieses Feature sagt ebenfalls
         etwas über die Relation der einzelnen Landmarks zum gesamten Gesicht aus.
 
-  \item \textbf{Polynominterpolation}: 
+  \item \textbf{Polynominterpolation}:
      hierbei werden verschiedene Bereiche der Gesichts einzeln betrachtet (z.B. die Oberlippe, siehe Abbildung \ref{fig:interpol}).
      Diese Landmarks, das heißt die Punkte, werden zuerst normiert. Dazu verschiebt man die dortigen Punkte, so dass der Mittelpunkt der Koordinaten-Ursprung ist. Danach werden sie so skaliert, dass die maximale Entfernung in $x$-Richtung gleich $1$ ist.
      Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate benutzt. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
-     Dieses Verfahren hat folgende Vorteile: 
+     Dieses Verfahren hat folgende Vorteile:
      %Erstens entsprechen die Punkte der einzelnen Gesichtsbereiche meist die wichtigen Punkte einer Action Unit.
      Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierende Feature mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
 \end{enumerate}
@@ -74,11 +74,11 @@ Mit statischen Features bezeichnen wir solche, die anhand eines Gesichtes zu gen
 
 \subsubsection{Zeitliche Features}
 Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten Features werden anhand einer der Landmarks zu einen gewissen Zeitpunkt berechnet.
-Man kann jedoch die oben aufgelisteten Arten von Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen. 
+Man kann jedoch die oben aufgelisteten Arten von Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen.
 Um die zeitliche Ableitung zu einen bestimmten Zeitpunkt zu berechnen, wird
 numerisch Differentation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}$ den Feature-Vektor einer der obigen Feature-Extraktoren. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
 
-Als Beispiel nehmen wir die zeitliche Ableitung der XY-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}). 
+Als Beispiel nehmen wir die zeitliche Ableitung der XY-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}).
 Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander subtrahiert und halbiert. Zum Beispiel $\Delta v_{43} \coloneqq \frac{v_{43}(t+1) - v_{43}(t-1)}{2}\in\mathbb{R}^2$ (wobei $v_{j}(t)$ die Koordinate des Punktes $j\in\{0,\ldots,65\}$ zum Zeitpunkt $t$ ist).
 Diese sich so ergebene Differenz dient nun als neues Feature.
 
@@ -88,21 +88,59 @@ Diese sich so ergebene Differenz dient nun als neues Feature.
 \label{fig:timediff}
 \end{figure}
 
-Nun können jedoch nicht mehr die Intensität der Action Units als Vorlage für eine Action oder keine Action benutzt werden. 
+Nun können jedoch nicht mehr die Intensität der Action Units als Vorlage für eine Action oder keine Action benutzt werden.
 Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action ereignet, aber ihre Intensität nicht ändert.
 Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als Action klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und keine Action ereignet.
 Um dieses Problem zu lösen, betrachtet man die ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer Action aus, sonst von keiner. Somit ist sowohl der Beginn als auch das Ende einer Action Unit eine Action.
 
 \subsubsection{Featureverarbeitung}
-Zweck mitbeschreiben (z.B. PCA -> FeatureRaum weiter reduzieren)
+Mit den bis hierher extrahierten Features wäre es möglich einen Klassifikator zu trainieren. Dies kann jedoch effizienter geschehen,
+wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Features folgendermaßen verarbeitet:
+
 \begin{itemize}
-  \item Negativanteil verringern
-  \item MinMax/MeanVar Normalisieren
-  \item Shufflen
-  \item PCA
+  \item \textbf{Reduktion der true-negatives}: Aus der Natur der Eingabedaten ergibt sich, dass das Verhältnis von true-positives zu true-negatives sehr gering ist, das heisst
+        über die Gesamtheit der Frames ist eine ActionUnit in der Regel nur in sehr wenigen Frames aktiviert. Dies kann dazu führen, dass der Klassifikator Mühe hat diese zu erkennen.
+        Um dem Problem entgegenzuwirken können einige der true-negative Frames (das heisst sowohl die Einträge über die ActionUnit, als auch die zum Frame extrahierten Features) entfernt
+        und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
+
+  \item \textbf{Normalisierung}: Obwohl unsere Eingabedaten bereits normalisiert sind, ist unter Umständen eine erneute Normalisierung der Features notwendig. Die extrahierten
+        Features haben unterschiedliche Wertebereiche. Die Orientierungsfeatures können zum Beispiel Werte zwischen 0 und 360 annehmen. Die Distanzfeatures hingegeben, liegen
+        ungefähr im Bereich von 0 bis 1. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
+        Wertebereich zu projezieren.
+
+  \item \textbf{Shufflen}: Um das Problem des Overfittings auf die Trainingdaten zu reduzieren, werden diese, bevor sie in ein Trainings und Validierungsset aufgeteilt werden,
+        zufällig durchgemischt. Dadurch enthalten beide Sets mit einer hohen Wahrscheinlichkeit Samples aus allen Videos.
+
+  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
+        sinnvoll die Dimension der Features durch eine Principal Component Analysis zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. Wir
+        verwenden die PCA unter Erhaltung von 97\% der Varianz.
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
+Wir nutzen zwei verschiedene Klassifikatoren. Zum einen eine Support Vektor Maschine und zum anderen einen Random Forest.
+Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall sind die optimalen Parameter zuvor allerdings unbekannt,
+weshalb verschiedene Kombination dieser getestet werden müssen.\newline
+Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Werten für $degree$ und $\theta$ angewandt:
+\begin{itemize}
+  \item Lineares Kernel: $K(x_i,x_j) = x_i^Tx_j$
+  \item Polynomielles Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
+  \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
+  \item Sigmoid Kernel: $K(x_i,x_j) = tanh(yx_i^Tx_j + \theta)$
+\end{itemize}
+
+Für den Random Forest haben wir die maximale Tiefe und die Anzahl der Bäume variiert.
+
+
+% TODO: Vermutlich in ein späteres Kapitel verschieben
+\subsubsection{Überblick}
+\begin{figure}
+\begin{center}
+\includegraphics[width=0.75\textwidth]{pipeline.png}
+\caption{Überblick über die Stationen des Trainings und der Klassifikation}
+\end{center}
+\label{fig:timediff}
+\end{figure}
+
 SVM + Random Forests, Art von Parametern
 Vielleicht noch eine Beschreibung einer allgemeinen Pipeline.
 
@@ -133,7 +171,7 @@ Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
 aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
 der die Action Unit immer als ``nicht aktiv'' klassifiziert, könnte sehr hohe
 Accuracy erreichen, ohne tatsächlich etwas über die Action Unit gelernt zu haben.
-Stattdessen evaluieren wir die Klassifikatoren anhand von 
+Stattdessen evaluieren wir die Klassifikatoren anhand von
 % \begin{table}[h]
 %   \def\arraystretch{2.5}
 %   \centering
