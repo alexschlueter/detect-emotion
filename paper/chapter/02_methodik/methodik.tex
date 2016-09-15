@@ -91,7 +91,7 @@ Diese sich so ergebene Differenz dient nun als neues Feature.
 \end{figure}
 
 Nun können jedoch nicht mehr die Intensität der Action Units direkt als Vorlage für eine aktive oder nicht aktive Action benutzt werden.
-Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action aktiv ist , aber ihre Intensität nicht ändert.
+Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action aktiv ist, aber ihre Intensität nicht ändert.
 Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als aktiv klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und die Action nicht aktiv ist.
 Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als aktiv.
 
@@ -165,7 +165,7 @@ Anwendungsfällen ist es wünschenswert, für neue Personen nicht erst mehrere
 tausend Frames manuell labeln zu müssen, um den Klassifikator auf dieser Person
 zu trainieren.
 
-Wir haben ein zweite Menge an Daten von 5 Personen, die als Testmenge.
+Wir haben ein zweite Menge an Daten von 5 Personen, die als Testmenge dient.
 \subsection{Performanzberechnung}
 Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
 aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
@@ -190,16 +190,16 @@ von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
 \subsection{Zustandekommen der Ergebnisse}
-Wir wollen in Kapitel \label{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt Zustande gekommen sind:
+Wir wollen in Kapitel \ref{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt Zustande gekommen sind:
 Zuerst wird die Trainingsmenge und Validierungsmenge gebildet.
-Die Videos der Trainingsmenge wird durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
+Die Videos der Trainingsmenge werden durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
 Danach werden die Features aus den resultierenden Landmarks extrahiert.
 Es folgt eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz. 
 Für eine Reduktion des Feature-Raumes auf eine verbleibenden Varianz von $97\%$ wurde dann der PCA-Algorithmus angewendet.
 Eine Ausnahme ist hierbei die Interpolation, da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet.
 Schlussendlich wurden die Features für das Training dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur auf X-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=2$ gesetzt.
 
-Wir lernen dann mehrere SVM mit verschiedenen Kernelfunktionen und mehrere RF mit variierende  Anzahl an Bäumen und maximaler Tiefe für jeden der genannten Feature Extraction. Wir lernen auf der Trainingmenge und versuchen die Qualität des Klassifikator-Feature Paares für jede Action Unit anhand der Validierungsmenge und des dortige F1 score zu beurteilen.
+Wir lernen dann mehrere SVM mit verschiedenen Kernelfunktionen und mehrere RF mit variierende  Anzahl an Bäumen und maximaler Tiefe für jeden der genannten Feature Extraction. Wir lernen auf der Trainingmenge und versuchen die Qualität des Klassifikator-Feature Paares für jede Action Unit anhand der Validierungsmenge und des dortigen F1 score zu beurteilen.
 Da pro Action Unit ca. 160
 Kombinationen evaluiert werden, kann es durch diese Auswahl der besten fünf zu
 einem Overfitting gegen die Validierungsmenge kommen. Um realistische Zahlen für
