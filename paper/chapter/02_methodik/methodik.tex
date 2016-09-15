@@ -4,7 +4,7 @@ als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Au�
 evaluiert wurden.
 
 \section{Ground-Truth Daten}
-Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichten wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`aktiv"' und "`nicht aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist gegeben hat.
+Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichtern, wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`aktiv"' und "`nicht aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist.
 \section{Vorverarbeitung}
 \subsection{Aufbereitung der Eingabedaten}\label{Methodik.Aufbereitung}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 10 Videos, die der DISFA Datenbank entnommen sind.
@@ -23,13 +23,12 @@ in drei Schritten.
     zwischen den beiden Augen des Probanden und berechnen den Winkel zur
     x-Achse. Dasselbe tun wir mit einer Linie zwischen zwei gegenüberliegenden
     Landmarks an den Gesichtsrändern. Schließlich rotieren wir die gesamte
-    Punktwolke um den Mittelwert der beiden Winkel in entgegengesetzter Richtung.  (siehe Abbildung \ref{Methodik.CloudNormalization})
+    Punktwolke um den Mittelwert der beiden Winkel in entgegengesetzter Richtung  (siehe Abbildung \ref{Methodik.CloudNormalization}).
 \end{enumerate}
 \input{cloud_norm.pgf}
 
-Ein weiteres Problem der Eingabedaten besteht darin, dass die Relation von true-positives zu true-negatives sehr gering ist, das heißt die Anzahl der Frames
-in denen eine bestimmte Action Unit aktiv ist, ist für die meisten Action Units relativ gesehen sehr gering.\newline
-Um dieses Problem zu verringern, ermöglichen wir es die true-positives der Eingabedaten zu erweitern, indem die entsprechenden Frames dupliziert
+Ein weiteres Problem der Eingabedaten besteht darin, dass die Anzahl von true-positives gering ist. True-positives sind die Frames, wo die betrachtete Action Unit aktiv ist.
+Um mehr Daten zu erzeugen und so auch mehr true-positives, erweitern wir die vorhandenen Daten, indem die alle Frames dupliziert
 und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
 
 
@@ -62,9 +61,9 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
         etwas über die Relation der einzelnen Landmarks zum gesamten Gesicht aus.
 
       \item \textbf{Polynominterpolation (Interpolation)}:
-     hierbei werden verschiedene Bereiche der Gesichts einzeln betrachtet (z.B. die Oberlippe, siehe Abbildung \ref{fig:interpol}).
+     hierbei werden verschiedenen Bereiche eines Gesichts einzeln betrachtet (z.B. die Oberlippe, siehe Abbildung \ref{fig:interpol}).
      Diese Landmarks werden zuerst normiert. Dazu verschiebt man die dortigen Punkte, so dass der Mittelpunkt der Koordinaten-Ursprung ist. Danach werden sie so skaliert, dass die maximale Entfernung in $x$-Richtung gleich $1$ ist.
-     Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate angewendet. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
+     Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate angewendet. Die dadurch berechneten Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
      Dieses Verfahren hat folgende Vorteile:
      %Erstens entsprechen die Punkte der einzelnen Gesichtsbereiche meist die wichtigen Punkte einer Action Unit.
      Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierenden Features mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
@@ -80,7 +79,7 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
 
 \subsubsection{Zeitliche Features}
 Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten statischen Features werden nur anhand eines Frames berechnet.
-Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem man dessen Veränderung über die Zeit als Feature benutzt (diese Methode bezeichnen wir als TimeDiff.)
+Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem man dessen Veränderung über die Zeit als Feature benutzt (diese Methode bezeichnen wir als TimeDiff.).
 Um die zeitliche Ableitung zu einem bestimmten Zeitpunkt zu berechnen, wird
 numerische Differentiation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}\setminus\{0\}$ den Feature-Vektor eines statischen Features. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man einen größeren zeitlichen Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
 
@@ -126,7 +125,7 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
 
   \item \textbf{Shufflen}: 
     Aufgrund der Struktur der Videos sind die Frames mit aktiver Action zeitlich nahe bei einander. Zwischen den Beginn und Ende einer Action ist sie die ganze Zeit aktiv.
-    Dies ist jedoch eine Struktur, die der Klassifikator nach Möglichkeit nicht lernen soll. Darum kann man die Features aus mehreren Frame mischen, damit diese zeitliche lokale Eigenschaft nicht mehr zu Geltung kommt.
+    Dies ist jedoch eine Struktur, die der Klassifikator nach Möglichkeit nicht lernen soll. Darum kann man die Features aus mehreren Frame mischen, damit diese zeitliche lokale Eigenschaft nicht mehr zur Geltung kommt.
 
   \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
     sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. 
@@ -170,7 +169,7 @@ wie die Personen auf die Mengen aufgeteilt werden:
   neue Personen generalisiert, da Frames von allen Personen zum Training verwendet werden.
   \item 6 Personen nur im Training, 4 nur in der Validierung verwenden: Die
     Performance auf der Validierungsmenge ist repräsentativ dafür, wie gut der
-    Klassifikator Action Units bei bisher unbekannten Personen erkennt
+    Klassifikator Action Units bei bisher unbekannten Personen erkennt.
 \end{enumerate}
 % Erste Tests haben gezeigt, dass Methode 1 zu deutlich besserern
 % Performancestatistiken führt.  % <- Das müssten wir wohl noch igendwie belegen
@@ -200,12 +199,13 @@ Stattdessen evaluieren wir die Klassifikatoren anhand von
 \text{Precision}=\frac{TP}{TP+FP}\,, \qquad \text{Recall}=\frac{TP}{TP+FN}\,, \qquad \text{F1 score}=2\cdot\frac{\text{Precision}\cdot\text{Recall}}{\text{Precision}+\text{Recall}}\,.
 \end{equation*}
 
-Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
+Hierbei ist $TP$ die Anzahl von true-positives, $FP$ die Anzahl false-postitives und $FN$ die Anzahl false-negatives. Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
 von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
 \subsection{Zustandekommen der Ergebnisse}
-Wir wollen in Kapitel \ref{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt zustande gekommen sind:
+%Wir wollen in Kapitel \ref{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt zustande gekommen sind:
+Wir wollen hier nochmal zusammenfassen, wie unsere Ergebnisse zustande kommen:
 Zuerst wird die Trainingsmenge und Validierungsmenge gebildet.
 Die Videos der Trainingsmenge werden durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
 Danach werden die Features aus den resultierenden Landmarks extrahiert.
@@ -222,7 +222,7 @@ Validierungsmenge und des dortigen F1 scores zu beurteilen. Da pro Action Unit
 ca. 160 Kombinationen evaluiert werden, kann es durch diese Auswahl der besten
 fünf zu einem Overfitting gegen die Validierungsmenge kommen. Um realistische
 Zahlen für die Performance zu bekommen, werden deshalb die besten fünf nochmal
-auf einer Testmenge evaluiert. Diese besteht aus fünf bisher unbekannten
+auf der Testmenge evaluiert. Diese besteht aus fünf bisher unbekannten
 Personen aus einem zweiten Datensatz.
 
 % \begin{itemize}

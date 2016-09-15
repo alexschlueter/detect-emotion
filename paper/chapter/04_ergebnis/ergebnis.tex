@@ -30,21 +30,21 @@ Die Klassifikatoren für Outer Brow Raiser und Upper Lid Raiser scheinen in der
 Validierung akzeptabel, erkennen jedoch im Test überhaupt keine Aktivierung der
 Action Units mehr. Die übrigen Action Units werden mit keiner unserer Feature
 Extraction-Methoden an neuen Personen befriedigend klassifiziert.
-\input{lips_part_corner_pull.pgf}
+
 \cref{fig:lips_prec_recall} zeigt, dass die verschiedenen Kombinationen aus
 Feature Extraction, Klassifikator und Parametern zu stark variierender
 Performance auf der Validierungsmenge führen. Der Tradeoff zwischen Precision
 und Recall ist deutlich zu sehen. Man sieht eine Trennung zwischen SVM und
 Random Forest Klassifikatoren: erstere tendieren dazu, zu viele negative Frames
 (ohne Aktivierung der Action Unit) als positiv zu klassifizieren, was zu
-schlechter Precision führt. Die Random Forests neigen hingegen zu vielen False
-Negatives. Sie schneiden bezogen auf Lips Part besser ab, bei anderen Action
+schlechter Precision führt. Die Random Forests neigen hingegen zu vielen false-negatives. Sie schneiden bezogen auf Lips Part besser ab, bei anderen Action
 Units ist die Performance zwischen den Klassifikatoren ausgeglichen.
 Aus Platzgründen werden hier nur Graphen für ausgewählte Action Units gezeigt.
 Unsere gesamten Ergebnisse sind aber auf einer von uns
 erstellten Internetseite veröffentlicht
 \footurlcite{web}.
 
+\input{lips_part_corner_pull.pgf}
 \input{lips_part_top.pgf}
 \input{lip_corner_pull_top.pgf}
 Die Dominanz der Random Forests für Lips Part ist auch in
