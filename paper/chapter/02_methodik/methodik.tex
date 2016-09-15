@@ -28,7 +28,7 @@ in drei Schritten.
 \input{cloud_norm.pgf}
 
 Ein weiteres Problem der Eingabedaten besteht darin, dass die Anzahl von true-positives gering ist. True-positives sind die Frames, wo die betrachtete Action Unit aktiv ist.
-Um mehr Daten zu erzeugen und so auch mehr true-positives, erweitern wir die vorhandenen Daten, indem die alle Frames dupliziert
+Um mehr Daten zu erzeugen und so auch mehr true-positives, erweitern wir die vorhandenen Daten, indem alle Frames dupliziert
 und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung verschoben werden.
 
 
@@ -196,10 +196,10 @@ Stattdessen evaluieren wir die Klassifikatoren anhand von
 %   \end{tabular}
 % \end{table}
 \begin{equation*}
-\text{Precision}=\frac{TP}{TP+FP}\,, \qquad \text{Recall}=\frac{TP}{TP+FN}\,, \qquad \text{F1 score}=2\cdot\frac{\text{Precision}\cdot\text{Recall}}{\text{Precision}+\text{Recall}}\,.
+  \text{Precision}=\frac{\text{TP}}{\text{TP}+\text{FP}}\,, \qquad \text{Recall}=\frac{\text{TP}}{\text{TP}+\text{FN}}\,, \qquad \text{F1 score}=2\cdot\frac{\text{Precision}\cdot\text{Recall}}{\text{Precision}+\text{Recall}}\,.
 \end{equation*}
 
-Hierbei ist $TP$ die Anzahl von true-positives, $FP$ die Anzahl false-postitives und $FN$ die Anzahl false-negatives. Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
+Hierbei ist $\text{TP}$ die Anzahl von true-positives, $\text{FP}$ die Anzahl false-postitives und $\text{FN}$ die Anzahl false-negatives. Der F1 score ist das harmonische Mittel zwischen Precision und Recall. Da wir
 von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
