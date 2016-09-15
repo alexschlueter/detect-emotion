@@ -17,8 +17,13 @@ in drei Schritten.
         die gesamte Punktwolke um diesen Vektor.
   \item Daraufhin wird die Punktwolke so skaliert, dass die maximale horizontale Distanz alle Landmarks genau 1 beträgt. Hierzu berechen wir diese maximale Distanz und
         teilen alle Koordinaten der Landmarks durch diese.
-  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen, normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu berechnen wir einen Vektor
-    zwischen den beiden Augen des Probanden und rotieren die gesamte Punktwolke so, dass dieser Vektor auf eine Rotation von 0° gebracht wird (siehe Abbildung \ref{Methodik.CloudNormalization})
+  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen,
+    normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu ziehen wir
+    eine Linie
+    zwischen den beiden Augen des Probanden und berechnen den Winkel zur
+    x-Achse. Dasselbe tun wir mit einer Linie zwischen zwei gegenüberliegenden
+    Landmarks an den Gesichtsrändern. Schließlich rotieren wir die gesamte
+    Punktwolke um den Mittelwert der beiden Winkel in entgegengesetzter Richtung.  (siehe Abbildung \ref{Methodik.CloudNormalization})
 \end{enumerate}
 \input{cloud_norm.pgf}
 
@@ -62,7 +67,7 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
      Nach dieser Normierung werden diese Punkte durch ein Polynom interpoliert. Hierzu wird die Methode der kleinsten Quadrate angewendet. Die dadurch berechnete Koeffizienten des Polynoms werden nun verwendet. Sie ergeben nämlich mit den Polynomkoeffizienten der anderen Gesichtsbereiche die Features.\\
      Dieses Verfahren hat folgende Vorteile:
      %Erstens entsprechen die Punkte der einzelnen Gesichtsbereiche meist die wichtigen Punkte einer Action Unit.
-     Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierende Feature mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
+     Erstens fließt ein eventuelles Rauschen durch Interpolation anhand mehrerer Punkte  weniger in die resultierenden Features mit ein. Und zweitens wird der Feature-Raum verringert, da mehrere Punkte durch wenige Koeffizienten repräsentiert werden.
 \end{enumerate}
 \begin{figure}
   \center
@@ -74,13 +79,14 @@ Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von g
 \end{figure}
 
 \subsubsection{Zeitliche Features}
-Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten statischen Features werden nur anhand einer Frame berechnet.
-Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem wir ihre Veränderung über die Zeit als Feature benutzen (diese Methode bezeichnen wir als TimeDiff.)
-Um die zeitliche Ableitung zu einen bestimmten Zeitpunkt zu berechnen, wird
-numerisch Differentation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}\setminus\{0\}$ den Feature-Vektor eines statischen Features. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man eine größeren zeitliche Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
+Bisher haben wir den zeitlichen Aspekt bei der Berechnung der Features außer Acht gelassen. Die oben aufgelisteten statischen Features werden nur anhand eines Frames berechnet.
+Man kann jedoch eine statische Featureberechnung um einen zeitlichen Aspekt erweitern, indem man dessen Veränderung über die Zeit als Feature benutzt (diese Methode bezeichnen wir als TimeDiff.)
+Um die zeitliche Ableitung zu einem bestimmten Zeitpunkt zu berechnen, wird
+numerische Differentiation benutzt. Es bezeichne $t\in\mathbb{N}$ den aktuellen Zeitpunkt und $f(t)\in\mathbb{R}^d,\;d\in\mathbb{N}\setminus\{0\}$ den Feature-Vektor eines statischen Features. Nun ergibt sich das zeitliche Feature durch die numerische Ableitung $\frac{f(t+\delta)-f(t-\delta)}{2}$. Üblicherweise nimmt man $\delta=1$ an, doch da sich eventuell ein aussagekräftigeres Resultat ergibt, wenn man einen größeren zeitlichen Abstand benutzt, wollen wir hier $\delta\in\mathbb{N}\setminus\{0\}$  beliebig voraussetzen.
 
 Als Beispiel nehmen wir die zeitliche Ableitung der X-/Y-Koordinaten (siehe dazu Abbildung \ref{fig:timediff}).
-Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander subtrahiert und halbiert. Zum Beispiel $\Delta v_{43} \coloneqq \frac{v_{43}(t+1) - v_{43}(t-1)}{2}\in\mathbb{R}^2$ (wobei $v_{j}(t)$ die Koordinate des Punktes $j\in\{0,\ldots,65\}$ zum Zeitpunkt $t$ ist).
+Hier werden zum Zeitpunkt $t+1$ und $t-1$ die Koordinaten voneinander
+subtrahiert und halbiert, zum Beispiel $\Delta v_{43} \coloneqq \frac{v_{43}(t+1) - v_{43}(t-1)}{2}\in\mathbb{R}^2$ (wobei $v_{j}(t)$ die Koordinate des Punktes $j\in\{0,\ldots,65\}$ zum Zeitpunkt $t$ ist).
 Diese sich so ergebene Differenz dient nun als neues Feature.
 
 \begin{figure}
@@ -90,10 +96,18 @@ Diese sich so ergebene Differenz dient nun als neues Feature.
 \label{fig:timediff}
 \end{figure}
 
-Nun können jedoch nicht mehr die Intensität der Action Units direkt als Vorlage für eine aktive oder nicht aktive Action benutzt werden.
-Um das zu veranschaulichen gehen wir von einen Zeitraum aus, an den sich eine Action aktiv ist, aber ihre Intensität nicht ändert.
-Da keine Änderung passiert, wird sich auch in den errechneten Features kaum was ändern. Die zeitliche Ableitung wird also nahe $0$ sein, soll aber als aktiv klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum was ändert und die Action nicht aktiv ist.
-Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der Intensität der Action Unit. Wir subtrahieren hierfür die Intensität zum Zeitpunkt $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen Schwellenwert überschreitet, gehen wir von einer aktiven Action aus, sonst von einer nicht aktiven. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als aktiv.
+Nun können jedoch nicht mehr die Intensitäten der Action Units direkt als
+Klassifikationsziel genutzt werden.
+Um das zu veranschaulichen, gehen wir von einen Zeitraum aus, währenddessen eine
+Action Unit aktiv ist, aber ihre Intensität sich nicht ändert.
+Da keine Änderung passiert, wird sich auch in den errechneten Features kaum etwas
+ändern. Die zeitliche Ableitung wird also nahe $0$ sein, müsste aber als aktiv
+klassifiziert werden. Die Ableitung ist aber auch nahe $0$, wenn sich kaum etwas
+ändert und die Action Unit nicht aktiv ist.
+Um dieses Problem zu lösen, betrachtet man ebenfalls die zeitliche Differenz der
+Intensität der Action Unit. Wir subtrahieren hierfür die Intensitäten zu den
+Zeitpunkten $t+1$ und $t-1$. Falls die absolute zeitliche Differenz einen
+Schwellenwert überschreitet, gehen wir von einer Aktivierung aus. Somit bezeichnen wir nun nur das Abklingen bzw. Aufkommen einer Action Unit als aktiv.
 
 \subsubsection{Featureverarbeitung}
 Mit den bis hierher extrahierten Features wäre es möglich einen Klassifikator zu trainieren. Dies kann jedoch effizienter geschehen,
@@ -122,10 +136,11 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
 Wir nutzen zwei verschiedene Klassifikatoren. Zum einen eine Support Vektor Maschine (SVM) und zum anderen einen Random Forest (RF).
 Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall sind die optimalen Parameter zuvor allerdings unbekannt,
 weshalb verschiedene Kombination dieser getestet werden müssen.\newline
-Für die SVM haben wir verschiedene Kernel Funktionen mit unterschiedlichen Werten für $degree$ und $\theta$ angewandt:
+Für die SVM haben wir verschiedene Kernelfunktionen mit unterschiedlichen
+Werten für $\theta$ und den Polynomgrad $d$ angewandt:
 \begin{itemize}
   \item Linearer Kernel: $K(x_i,x_j) = x_i^Tx_j$
-  \item Polynomieller Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{degree}$
+  \item Polynomieller Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{d}$
   \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
   \item Sigmoid Kernel: $K(x_i,x_j) = \tanh(yx_i^Tx_j + \theta)$
 \end{itemize}
@@ -159,7 +174,7 @@ wie die Personen auf die Mengen aufgeteilt werden:
 \end{enumerate}
 % Erste Tests haben gezeigt, dass Methode 1 zu deutlich besserern
 % Performancestatistiken führt.  % <- Das müssten wir wohl noch igendwie belegen
-Wir haben uns aber für Methode 2 entschieden, weil
+Wir haben uns für Methode 2 entschieden, weil
 die Generalisierung auf neue Personen das interessantere Problem ist: In
 Anwendungsfällen ist es wünschenswert, für neue Personen nicht erst mehrere
 tausend Frames manuell labeln zu müssen, um den Klassifikator auf dieser Person
@@ -190,22 +205,25 @@ von der Aufgabenstellung her keine Präferenz für hohe Precision / hohen Recall
 haben, nutzen wir den F1 score als erste Zahl zum Vergleich der Klassifikatoren.
 
 \subsection{Zustandekommen der Ergebnisse}
-Wir wollen in Kapitel \ref{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt Zustande gekommen sind:
+Wir wollen in Kapitel \ref{ch:ergebnis} die Ergebnisse vorstellen, die wie folgt zustande gekommen sind:
 Zuerst wird die Trainingsmenge und Validierungsmenge gebildet.
 Die Videos der Trainingsmenge werden durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
 Danach werden die Features aus den resultierenden Landmarks extrahiert.
 Es folgt eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz. 
 Für eine Reduktion des Feature-Raumes auf eine verbleibenden Varianz von $97\%$ wurde dann der PCA-Algorithmus angewendet.
-Eine Ausnahme ist hierbei die Interpolation, da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet.
-Schlussendlich wurden die Features für das Training dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur auf X-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=2$ gesetzt.
+Eine Ausnahme ist hierbei die Interpolation: Da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet.
+Schlussendlich wurden die Features für das Training dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur auf X-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=1$ gesetzt.
 
-Wir lernen dann mehrere SVM mit verschiedenen Kernelfunktionen und mehrere RF mit variierende  Anzahl an Bäumen und maximaler Tiefe für jeden der genannten Feature Extraction. Wir lernen auf der Trainingmenge und versuchen die Qualität des Klassifikator-Feature Paares für jede Action Unit anhand der Validierungsmenge und des dortigen F1 score zu beurteilen.
-Da pro Action Unit ca. 160
-Kombinationen evaluiert werden, kann es durch diese Auswahl der besten fünf zu
-einem Overfitting gegen die Validierungsmenge kommen. Um realistische Zahlen für
-die Performance zu bekommen, werden deshalb die besten fünf nochmal auf einer
-Testmenge evaluiert. Diese besteht aus fünf bisher unbekannten Personen aus
-einem zweiten Datensatz.
+Wir lernen dann mehrere SVM mit verschiedenen Kernelfunktionen und mehrere RF
+mit variierender Anzahl an Bäumen und maximaler Tiefe für jede der genannten
+Feature Extractions. Wir lernen auf der Trainingsmenge und versuchen die Qualität
+des Klassifikator-Feature Paares für jede Action Unit anhand der
+Validierungsmenge und des dortigen F1 scores zu beurteilen. Da pro Action Unit
+ca. 160 Kombinationen evaluiert werden, kann es durch diese Auswahl der besten
+fünf zu einem Overfitting gegen die Validierungsmenge kommen. Um realistische
+Zahlen für die Performance zu bekommen, werden deshalb die besten fünf nochmal
+auf einer Testmenge evaluiert. Diese besteht aus fünf bisher unbekannten
+Personen aus einem zweiten Datensatz.
 
 % \begin{itemize}
 % \item Welche Parameter/Pipeline zum trainieren
