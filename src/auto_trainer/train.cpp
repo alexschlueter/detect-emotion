@@ -150,10 +150,15 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
 
     // Train every classifier
     for(auto && classifier_constr: r.classifier){
+      try{
         cout << "\t\t\t - Train Classificator"<<flush;
         auto classifier = classifier_constr->train(trainset._features,trainset._truth);
         string classifier_outpath = savepath+"/classifier_"+classifier->name()+".dat";
+        try{
         classifier->serialize(classifier_outpath);
+        } catch (...){
+          cerr << "Exception while  saving classifier" << endl;
+        }
         auto conf_train = computeConfusionMatrixFromTestSet(*classifier,trainset._features,trainset._truth);
         auto conf_test = computeConfusionMatrixFromTestSet(*classifier,testset._features,testset._truth);
         auto writeConfusion = [&classifier](const ConfusionMatrix& conf, const string & filename){
@@ -183,5 +188,8 @@ void Trainer::loop_action_feature(const FeatureTruth & train, const FeatureTruth
         ofstream stream(curdir+"/config_"+classifier->name()+".json");
         stream << evalconfig;
         stream.close();
+      }catch(...){
+        cerr << "Exception in training/evaluating classifier" << endl;
+      }
     }
 }

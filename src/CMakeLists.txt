@@ -1,4 +1,4 @@
-option(WITH_KEYTEST "Compile KeyTest Program" ON)
+option(WITH_KEYTEST "Compile KeyTest Program" OFF)
 if (${WITH_KEYTEST})
 project(keytest)
 find_package( OpenCV REQUIRED )
@@ -12,7 +12,7 @@ project(playone)
 find_package( OpenCV REQUIRED )
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-option(WITH_PLAYONE "Compile PlayOne Program" ON)
+option(WITH_PLAYONE "Compile PlayOne Program" OFF)
 if (${WITH_PLAYONE})
 set(SOURCE_FILES playone.cpp controls.cpp)
 include_directories ("${CMAKE_SOURCE_DIR}/header")
@@ -22,7 +22,7 @@ target_link_libraries(playone ${OpenCV_LIBS})
 endif()
 
 
-option(WITH_PLAYALL "Compile PlayALL Program" ON)
+option(WITH_PLAYALL "Compile PlayALL Program" OFF)
 if (${WITH_PLAYALL})
 project(playall)
 find_package( OpenCV REQUIRED )
@@ -54,7 +54,7 @@ if (${WITH_TRAINER})
 endif()
 
 
-option(WITH_AUTO_TRAINER "Compile Auto-Trainer Program" ON)
+option(WITH_AUTO_TRAINER "Compile Auto-Trainer Program" OFF)
 if (${WITH_AUTO_TRAINER})
         project(auto_trainer)
         find_package( OpenCV REQUIRED )
