@@ -118,7 +118,7 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
   %       und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
 
   \item \textbf{Normalisierung}: Obwohl unsere Eingabedaten bereits normalisiert sind, ist unter Umständen eine erneute Normalisierung der Features notwendig. Die extrahierten
-        Features haben unterschiedliche Wertebereiche. Die Orientierungsfeatures können zum Beispiel Werte zwischen 0 und 360 annehmen. Die Distanzfeatures hingegeben, liegen
+        Features haben unterschiedliche Wertebereiche. Bei den Orientierungsfeatures können beispielsweise Werte zwischen 0 und 360 angenommen werden. Die Distanzfeatures hingegeben, liegen
         ungefähr im Bereich von 0 bis 1. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
         Wertebereich zu projezieren. Dazu werden die Mittelwerte der Features auf $0$ und die Varianzen auf $1$ gesetzt.
 
@@ -179,7 +179,7 @@ Anwendungsfällen ist es wünschenswert, für neue Personen nicht erst mehrere
 tausend Frames manuell labeln zu müssen, um den Klassifikator auf dieser Person
 zu trainieren.
 
-Wir haben ein zweite Menge an Daten von 5 Personen, die als Testmenge dient.
+Wir haben eine zweite Menge an Daten von 5 Personen, die als Testmenge dient.
 \subsection{Performanzberechnung}
 Aufgrund der geringen Anzahl positiver Samples (Frames, in denen die Action Unit
 aktiviert ist), ist die Accuracy keine zuverlässige Statistik. Ein Klassifikator,
