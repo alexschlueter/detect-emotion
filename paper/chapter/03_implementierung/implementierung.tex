@@ -5,19 +5,21 @@ als plattformunabhängiges Build-System \cite{cmake}. Für das Projekt haben wir
 Programm.
 
 Die im nächsten Kapitel vorgestellten Ergebnisse wurden an Computer mit den Betriebssystem Archlinux erstellt, der den Linux-Kernel in Version 4.7.3 verwendet. Weiter wurde OpenCV in der Version 2.4.13, der C++ Compiler GCC in Version 6.2, CMake in der Version 3.6.2 und Qt in der Version 5.7 benutzt. Der Rechner besitzt einen 4-Kern Prozessor von AMD mit jeweils 2.8 GHz an Kapazität und einen Arbeitsspeicher von 8 GB. 
+
 \begin{figure}[ht]
 \begin{center}
 \includegraphics[width=0.6\textwidth]{qviewer.png}
-\caption{Screenshot der QViewer Anwendung}
 \end{center}
-\label{Implementierung.QViewer}
+\caption{Screenshot der QViewer Anwendung}
+\label{fig:implementierung.QViewer}
 \end{figure}
+
 \section{QViewer}
 Der QViewer ermöglicht uns eine Visualisierung der Eingabedaten.
 Es ist eine in Qt geschrieben grafische Oberfläche, in der
 die Landmark und Action Unit Dateien geladen werden können. 
 Ein Nutzer kann dann eine Person auswählen und dessen Landmarks als Videos abspielen.
-Dabei werden dann die Intensitäten der Action Units angezeigt. Auf Abbildung \ref{Implementierung.QViewer} ist die Oberfläche des Programmes zu erkennen.
+Dabei werden dann die Intensitäten der Action Units angezeigt. Auf Abbildung~\ref{fig:implementierung.QViewer} ist die Oberfläche des Programmes zu erkennen.
 Zusätzlich können wir die Landmarks normalisieren. Weiter kann man durch PCA die Punkte auf einen neuen Raum mit weniger Dimensionen projezieren und dann wieder zurückprojezieren. Dadurch ist es möglich den Effekt von PCA zu veranschaulichen.
 Der QViewer ist also insgesamt eine Hilfe um Landmarks, Action-Unit und einige hier beschriebenen Verfahren zu verstehen.
 % was man sonst noch so machen kann
@@ -33,7 +35,7 @@ Wünschenswert wäre ein Programm, das automatisch alle möglichen Kombinationen
 Hier kommt das Programm Auto-Train ins Spiel. Das Programm liest aus einer JSON-Datei, wie sie im Anhang \ref{Anhang.config} zu finden ist, die gewünschte Konfiguration. Dazu zählen unter anderem die Schritte zur Vorverarbeitung der Landmarks und der extrahierten Features, als auch die zu verwendeten Feature-Extractoren. 
 
 Zusätzlich zum Training kann das Programm, mithilfe einer etwas anderen JSON-Datei, dann gelernte Klassifikatoren und Parameter (wie z.B. Eigenvektoren der PCA) verwenden und die Performanz für eine Testmenge berechnen.
-Der Einfachheit halber, wird die dafür benötigte JSON-Datei beim Training automatisch erstellt. Die Datei bedarf lediglich eines manuellen Eintrag für die zu evaluierenden Daten.
+Der Einfachheit halber, wird die dafür benötigte JSON-Datei beim Training automatisch erstellt. Die Datei bedarf lediglich eines manuellen Eintrages für die zu evaluierenden Daten.
 
 % \subsubsection{Feature-Extractor}
 % Um möglichst viele Kombinationen von einzelnen Features miteinander kombinieren zu können, haben wir eine Feature-Extractor Aggregat

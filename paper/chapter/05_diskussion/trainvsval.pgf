@@ -24,3 +24,4 @@
   \caption{Gute Klassifikation im Training überträgt sich nicht auf die neuen Personen in der Validierungsmenge.}
   \label{tbl:trainvsval}
 \end{table}
+
