@@ -35,9 +35,8 @@ und die Landmarks in diesen Frames durch eine leichte, normalverteilte Störung 
 \subsection{Feature Extraction}
 Bei der (visuellen) Emotionserkennung wird versucht anhand von einem oder mehreren, verschiedenen Merkmalen (engl. Features)
 einem Gesicht eine oder mehrere Emotionen zuzuordnen. Je mehr Aussagekraft die Kombination dieser Merkmale über die jeweiligen Emotionen haben,
-desto besser können diese klassifiziert werden. Das Problem dabei ist, dass meist weder die Merkmale, noch
-ihre Aussagekraft zuvor bekannt sind. Deshalb extrahieren wir aus den Eingabedaten, also den Videos mit je 66 Landmarks pro
-Frame, verschiedene Merkmale, um sie in verschiedenen Kombinationen miteinander zu testen. Es folgt eine Beschreibung
+desto besser können diese klassifiziert werden. Die Aussagekraft ist aber a priori nicht bekannt. Deshalb extrahieren wir aus den Eingabedaten, also den Videos mit je 66 Landmarks pro
+Frame, verschiedene Features, um sie in verschiedenen Kombinationen miteinander zu testen. Es folgt eine Beschreibung
 der von uns verwendeten Features. Die Methode, wie diese erzeugt werden, werden wir im Folgenden als Feature-Extraction bezeichnen.
 
 \subsubsection{Statische Features}
@@ -127,8 +126,7 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
     Aufgrund der Struktur der Videos sind die Frames mit aktiver Action zeitlich nahe bei einander. Zwischen den Beginn und Ende einer Action ist sie die ganze Zeit aktiv.
     Dies ist jedoch eine Struktur, die der Klassifikator nach Möglichkeit nicht lernen soll. Darum kann man die Features aus mehreren Frame mischen, damit diese zeitliche lokale Eigenschaft nicht mehr zur Geltung kommt.
 
-  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), ist es unter Umständen
-    sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. 
+  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), scheint es  sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. 
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
@@ -137,12 +135,14 @@ Diese können mit verschiedenen Parametern trainiert werden. Auch in diesem Fall
 weshalb verschiedene Kombination dieser getestet werden müssen.\newline
 Für die SVM haben wir verschiedene Kernelfunktionen mit unterschiedlichen
 Werten für $\theta$ und den Polynomgrad $d$ angewandt:
+\begin{multicols}{2}
 \begin{itemize}
   \item Linearer Kernel: $K(x_i,x_j) = x_i^Tx_j$
   \item Polynomieller Kernel: $K(x_i,x_j) = (yx_i^Tx_j + \theta)^{d}$
   \item Radial Basis Kernel: $K(x_i,x_j) = e^{-y||x_i-x_j||^2}$
   \item Sigmoid Kernel: $K(x_i,x_j) = \tanh(yx_i^Tx_j + \theta)$
 \end{itemize}
+\end{multicols}
 
 % TODO: Vermutlich in ein späteres Kapitel verschieben
 % \subsection{Überblick}

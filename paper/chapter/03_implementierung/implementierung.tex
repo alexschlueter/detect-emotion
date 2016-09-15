@@ -5,6 +5,13 @@ als plattformunabhängiges Build-System \cite{cmake}. Für das Projekt haben wir
 Programm.
 
 Die im nächsten Kapitel vorgestellten Ergebnisse wurden an Computer mit den Betriebssystem Archlinux erstellt, der den Linux-Kernel in Version 4.7.3 verwendet. Weiter wurde OpenCV in der Version 2.4.13, der C++ Compiler GCC in Version 6.2, CMake in der Version 3.6.2 und Qt in der Version 5.7 benutzt. Der Rechner besitzt einen 4-Kern Prozessor von AMD mit jeweils 2.8 GHz an Kapazität und einen Arbeitsspeicher von 8 GB. 
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.6\textwidth]{qviewer.png}
+\caption{Screenshot der QViewer Anwendung}
+\end{center}
+\label{Implementierung.QViewer}
+\end{figure}
 \section{QViewer}
 Der QViewer ermöglicht uns eine Visualisierung der Eingabedaten.
 Es ist eine in Qt geschrieben grafische Oberfläche, in der
@@ -15,13 +22,6 @@ Zusätzlich können wir die Landmarks normalisieren. Weiter kann man durch PCA d
 Der QViewer ist also insgesamt eine Hilfe um Landmarks, Action-Unit und einige hier beschriebenen Verfahren zu verstehen.
 % was man sonst noch so machen kann
 
-\begin{figure}
-\begin{center}
-\includegraphics[width=0.75\textwidth]{qviewer.png}
-\caption{Screenshot der QViewer Anwendung}
-\end{center}
-\label{Implementierung.QViewer}
-\end{figure}
 
 
 \section{Auto-Train}
