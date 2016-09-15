@@ -1,23 +1,23 @@
 \chapter{Methodik}\label{ch:methodik}
 In diesem Kapitel werden sowohl die von uns verwendeten Methoden zum Training der Klassifikatoren und zum Klassifizieren,
-als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Außerdem wird erläutert, wie die Ergebnisse
+als auch die von uns verwendeten Klassifikatoren selbst genauer beschrieben. Außerdem wird erläutert wie die Ergebnisse
 evaluiert wurden.
 
 \section{Ground-Truth Daten}
-Wie zuvor erwähnt, besitzt eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$. Um die spätere Klassifikation zu erleichtern, wollen wir das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`aktiv"' und "`nicht aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist.
+Obwohl eine Action Unit eine Ausprägung $I$ zwischen $0$ und $5$ besitzen kann, wollen wir - um die spätere Klassifikation zu erleichtern - das Problem vereinfachen, indem wir nur in zwei Kategorien klassifizieren: "`aktiv"' und "`nicht aktiv"'. Dazu setzen wir ein Schwellenwert $0<h\leq5$ ein. Falls $I<h$, so gehen wir von keiner Aktivierung aus. Falls $h\leq I$, so wollen wir davon ausgehen, dass die Action Unit aktiv ist.
 \section{Vorverarbeitung}
 \subsection{Aufbereitung der Eingabedaten}\label{Methodik.Aufbereitung}
 Wie bereits in der Einleitung erwähnt, handelt es sich bei den Eingabedaten um 10 Videos, die der DISFA Datenbank entnommen sind.
-Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch, sind die Landmarks
+Die Videos wurden nacheinander aufgenommen und zeigen verschiedene Probanden. Bedingt dadurch sind die Landmarks
 in den Videos nicht identisch bezüglich Skalierung, Rotation und Position.\newline
-Damit die Klassifikation durch diese Störungen nicht beeinträchtigt wird, werden die Eingabedaten zunächst normalisiert. Dies geschieht
+Damit die Klassifikation durch diese Störungen nicht beeinträchtigt wird werden die Eingabedaten zunächst normalisiert. Dies geschieht
 in drei Schritten.
 \begin{enumerate}
   \item Die Landmarks werden um den Koordinaten-Ursprung zentriert. Hierzu berechnen wir einen Vektor vom Mittelpunkt aller Landmarks zum Ursprung und translatieren
         die gesamte Punktwolke um diesen Vektor.
   \item Daraufhin wird die Punktwolke so skaliert, dass die maximale horizontale Distanz alle Landmarks genau 1 beträgt. Hierzu berechen wir diese maximale Distanz und
         teilen alle Koordinaten der Landmarks durch diese.
-  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen,
+  \item Um Störungen durch Drehung des Kopfes der Probanden auszugleichen
     normalisieren wir ebenfalls die Rotation der Punktwolke. Dazu ziehen wir
     eine Linie
     zwischen den beiden Augen des Probanden und berechnen den Winkel zur
@@ -40,7 +40,7 @@ Frame, verschiedene Features, um sie in verschiedenen Kombinationen miteinander 
 der von uns verwendeten Features. Die Methode, wie diese erzeugt werden, werden wir im Folgenden als Feature-Extraction bezeichnen.
 
 \subsubsection{Statische Features}
-Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von genau einer Frame erzeugt werden.
+Mit statischen Features bezeichnen wir solche, die mit Hilfe der Landmarks von genau einem Frame erzeugt werden.
 \begin{enumerate}
   \item \textbf{X-/Y-Koordinaten (XY)}: die Koordinaten der Landmarks werden als Merkmale genutzt. Da in der Menge der Koordinaten sowohl Informationen
         über die individuellen Punkte liegen, als auch Informationen über ihre Relation zueinander, ist es sinnvoll dieses Feature zu testen.
@@ -96,7 +96,7 @@ Diese sich so ergebene Differenz dient nun als neues Feature.
 
 Nun können jedoch nicht mehr die Intensitäten der Action Units direkt als
 Klassifikationsziel genutzt werden.
-Um das zu veranschaulichen, gehen wir von einen Zeitraum aus, währenddessen eine
+Um das zu veranschaulichen, gehen wir von einem Zeitraum aus, während dem eine
 Action Unit aktiv ist, aber ihre Intensität sich nicht ändert.
 Da keine Änderung passiert, wird sich auch in den errechneten Features kaum etwas
 ändern. Die zeitliche Ableitung wird also nahe $0$ sein, müsste aber als aktiv
@@ -118,15 +118,15 @@ wenn die Features zuvor noch einmal vorverarbeitet werden. Wir haben die Feature
   %       und so das Verhältnis von true-positives zu true-negatives gestärkt werden. Zu beachten ist, dass hierdurch die Gesamtgröße der Trainingsdaten reduziert wird.
 
   \item \textbf{Normalisierung}: Obwohl unsere Eingabedaten bereits normalisiert sind, ist unter Umständen eine erneute Normalisierung der Features notwendig. Die extrahierten
-        Features haben unterschiedliche Wertebereiche. Bei den Orientierungsfeatures können beispielsweise Werte zwischen 0 und 360 angenommen werden. Die Distanzfeatures hingegeben, liegen
-        ungefähr im Bereich von 0 bis 1. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
+        Features haben unterschiedliche Wertebereiche. Bei den Orientierungsfeatures können beispielsweise Werte zwischen $0$ und $360$ angenommen werden. Die Distanzfeatures hingegeben, liegen
+        ungefähr im Bereich von $0$ bis $1$. Damit der Klassifikator dadurch nicht beeinträchtigt wird, ist es wichtig die Features durch erneute Normalisierung in einen einheitlichen
         Wertebereich zu projezieren. Dazu werden die Mittelwerte der Features auf $0$ und die Varianzen auf $1$ gesetzt.
 
-  \item \textbf{Shufflen}: 
+  \item \textbf{Shufflen}:
     Aufgrund der Struktur der Videos sind die Frames mit aktiver Action zeitlich nahe bei einander. Zwischen den Beginn und Ende einer Action ist sie die ganze Zeit aktiv.
     Dies ist jedoch eine Struktur, die der Klassifikator nach Möglichkeit nicht lernen soll. Darum kann man die Features aus mehreren Frame mischen, damit diese zeitliche lokale Eigenschaft nicht mehr zur Geltung kommt.
 
-  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), scheint es  sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert. 
+  \item \textbf{PCA}: Da die Anzahl der extrahierten Features teilweise sehr hoch ist (zum Beispiel 2145 Features für die paarweise Extraktion alleine), scheint es  sinnvoll die Dimension der Features durch eine Principal Component Analysis (PCA) zu reduzieren. Dadurch wird die benötigte Trainingszeit zum Teil enorm verringert.
 \end{itemize}
 
 \subsubsection{Klassifikatoren}
@@ -209,7 +209,7 @@ Wir wollen hier nochmal zusammenfassen, wie unsere Ergebnisse zustande kommen:
 Zuerst wird die Trainingsmenge und Validierungsmenge gebildet.
 Die Videos der Trainingsmenge werden durch Rauschen künstlich erweitert und bei beiden Mengen die Landmarks normalisiert.
 Danach werden die Features aus den resultierenden Landmarks extrahiert.
-Es folgt eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz. 
+Es folgt eine Normalisierung der Features anhand ihres Mittelwerts und ihrer Varianz.
 Für eine Reduktion des Feature-Raumes auf eine verbleibenden Varianz von $97\%$ wurde dann der PCA-Algorithmus angewendet.
 Eine Ausnahme ist hierbei die Interpolation: Da dieses Feature schon den Raum verkleinert hat, wurde auf eine weitere Reduktion durch PCA verzichtet.
 Schlussendlich wurden die Features für das Training dann zufällig geshuffled. Für zeitlichen Features haben wir uns nur auf X-/Y-Koordinaten und die Interpolationskoeffizienten konzentriert. Für die Ableitung wurde $\delta=1$ gesetzt.

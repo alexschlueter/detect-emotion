@@ -1,8 +1,8 @@
 \chapter{Ergebnis}\label{ch:ergebnis}
 Die hier vorgestellten Ergebnisse wurden mit Hilfe von Auto-Train und der JSON
-Konfiguration im Anhang \ref{Anhang.config} berechnet. Für die Action Units Lip
-Stretcher und Jaw Drop hat die Zeit nicht mehr gereicht und das Training wurde
-vorher abgebrochen.
+Konfiguration im Anhang \ref{Anhang.config} berechnet. Das Training der Action Units Lip Stretcher
+und Jaw Drop wurde konnte im vorgegebenen Zeitrahmen nicht beendet und musste vorzeitig
+abgebrochen werden.
 % \begin{itemize}
 %   \item Alle Plots zeigen (oder nur eine Teilmenge?)
 %     \begin{itemize}
@@ -55,13 +55,13 @@ SVM am besten erkannt, allerdings dominieren wieder Random Forests in den Top 5.
 \input{features.pgf}
 Schließlich liefert \cref{tbl:features} einen Vergleich der verschiedenen
 Features am Beispiel von Lips Part. Der Vergleichswert ist ein F1 score von
-$0.585$, wenn man die Koordinaten aller Landmarks als Features übernimmt ("`XY"' 
+$0.585$, wenn man die Koordinaten aller Landmarks als Features übernimmt ("`XY"'
 in der Tabelle). Besser schneiden die Features "`CenterDistance"' und
 "`Interpolation"' ab. Es fällt auf, dass die PCA die Dimensionen von
 "`Orientation"' überhaupt nicht und von "`CenterOrientation"' fast vollständig reduziert. Die zeitbasierten Features bilden das Schlusslicht in den
 F1-Wertungen, mehr dazu in der Diskussion.
 
-%%% Local Variables: 
+%%% Local Variables:
 %%% mode: latex
 %%% TeX-master: "../../paper"
-%%% End: 
+%%% End:
